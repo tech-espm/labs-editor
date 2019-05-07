@@ -1,0 +1,1383 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pt-br" dir="ltr">
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<meta name="viewport" content="width=1024, initial-scale=1" />
+
+	<meta property="og:locale" content="pt_BR" />
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content="https://tech-espm.github.io/labs-editor/" />
+	<meta property="og:title" content="Editor" />
+	<meta property="og:site_name" content="Editor" />
+	<meta property="og:description" content="Editor HTML + CSS para uso em sala de aula." />
+	<!--
+	<meta property="og:image" content="fb.jpg" />
+	<meta property="og:image:type" content="image/jpeg">
+	<meta property="og:image:width" content="768">
+	<meta property="og:image:height" content="768">
+	-->
+
+	<meta name="author" content="ESPM TECH" />
+	<meta name="description" content="Editor HTML + CSS para uso em sala de aula." />
+	<meta name="keywords" content="html, css, editor, wysiwyg" />
+
+	<!--
+	<link rel="apple-touch-icon" sizes="57x57" href="apple-icon-57x57.png" />
+	<link rel="apple-touch-icon" sizes="60x60" href="apple-icon-60x60.png" />
+	<link rel="apple-touch-icon" sizes="72x72" href="apple-icon-72x72.png" />
+	<link rel="apple-touch-icon" sizes="76x76" href="apple-icon-76x76.png" />
+	<link rel="apple-touch-icon" sizes="114x114" href="apple-icon-114x114.png" />
+	<link rel="apple-touch-icon" sizes="120x120" href="apple-icon-120x120.png" />
+	<link rel="apple-touch-icon" sizes="144x144" href="apple-icon-144x144.png" />
+	<link rel="apple-touch-icon" sizes="152x152" href="apple-icon-152x152.png" />
+	<link rel="apple-touch-icon" sizes="180x180" href="apple-icon-180x180.png" />
+	<link rel="icon" type="image/png" sizes="192x192" href="android-icon-192x192.png" />
+	<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
+	<link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png" />
+	<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
+	<link rel="Shortcut Icon" href="favicon.ico" />
+	<link rel="Shortcut Icon" href="favicon.png" />
+	<link rel="manifest" href="manifest.json" />
+	<meta name="msapplication-config" content="browserconfig.xml" />
+	<meta name="theme-color" content="#222222" />
+	-->
+
+	<title>Editor</title>
+
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,600|Roboto+Mono:400,700" />
+	<link rel="stylesheet" href="lib/bootstrap/css/bootstrap-1.0.18.min.css" />
+	<link rel="stylesheet" href="lib/font-awesome/css/font-awesome-1.0.2.min.css" />
+
+	<style type="text/css">
+		html, body {
+			min-height: 100%;
+		}
+
+		body {
+			background: #fff;
+		}
+
+		.nav-tabs {
+			padding: 4px 0 0 4px;
+		}
+
+			.nav-tabs > li > a {
+				-webkit-transition: background-color ease-in-out .2s, border-color ease-in-out .2s, color ease-in-out .2s;
+				-o-transition: background-color ease-in-out .2s, border-color ease-in-out .2s, color ease-in-out .2s;
+				transition: background-color ease-in-out .2s, border-color ease-in-out .2s, color ease-in-out .2s;
+			}
+
+				.nav-tabs > li > a:focus, .nav-tabs > li > a:hover, .nav-tabs > li > a:active {
+					border-color: #ddd;
+					background-color: #f0f0f0;
+					color: #333;
+				}
+
+		.editor-container {
+			position: absolute;
+			left: 0;
+			top: 0;
+			bottom: 0;
+			cursor: default;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			-webkit-user-select: none;
+			user-select: none;
+		}
+
+		.editor {
+			position: absolute;
+			left: 0;
+			top: 46px;
+			right: 0;
+			bottom: 0;
+			font: normal 14px 'Roboto Mono', monospace;
+			overflow: auto;
+		}
+
+		.editor-bar {
+			display: none;
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			width: 8px;
+			cursor: ew-resize;
+			background-color: #fff;
+			border-left: 1px solid #ddd;
+			border-right: 1px solid #ddd;
+			-webkit-transition: background-color ease-in-out .2s;
+			-o-transition: background-color ease-in-out .2s;
+			transition: background-color ease-in-out .2s;
+		}
+
+			.editor-bar:hover, .editor-bar-drag {
+				background-color: #f0f0f0;
+			}
+
+		.editor-iframe {
+			position: absolute;
+			top: 0;
+			height: 100%;
+		}
+
+		.move-target {
+			border-top: 2px solid transparent;
+			-webkit-transition: border-color ease-in-out .2s;
+			-o-transition: border-color ease-in-out .2s;
+			transition: border-color ease-in-out .2s;
+		}
+
+		.editor.moving .move-target {
+			border-top-color: #ddd;
+		}
+
+			.editor.moving .move-target:hover {
+				border-top-color: #00f;
+			}
+
+		.element {
+			padding: 0;
+			margin: 8px 0;
+			-webkit-transition: background-color ease-in-out .2s;
+			-o-transition: background-color ease-in-out .2s;
+			transition: background-color ease-in-out .2s;
+		}
+
+			.element.moving {
+				background-color: #eee;
+			}
+
+				.element.moving .move-target, .element.moving .move-target:hover {
+					border-top-color: transparent;
+				}
+
+		.element-tag {
+			cursor: pointer;
+			color: #00f;
+			white-space: pre;
+			font-weight: bold;
+		}
+
+		.element-name {
+			color: #f0f;
+			font-weight: normal;
+		}
+
+		.element-name-block {
+			color: #a00;
+			font-weight: normal;
+		}
+
+		.element-text {
+			color: #000;
+			font-weight: normal;
+		}
+
+		.element-container {
+			padding-left: 4ch;
+		}
+
+		.fa-floating-help {
+			float: right;
+			margin-top: 2px;
+			color: #aaa;
+		}
+
+			.fa-floating-help:hover {
+				color: #000;
+			}
+
+		.dropdown-menu {
+			margin: 0;
+		}
+
+		.dropdown-menu-input-container {
+			position: relative;
+			margin: 0 5px;
+		}
+
+		.dropdown-menu-container {
+			position: relative;
+			overflow: auto;
+		}
+
+		.editor-menu {
+			display: none;
+			position: fixed;
+			background: #fff;
+			width: auto;
+			border-radius: 4px;
+			-webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+			box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+			z-index: 10;
+		}
+
+		.editor-menu-animated {
+			opacity: 0;
+			cursor: default;
+			-webkit-transition: opacity ease-in-out .2s, margin-left ease-in-out .2s, margin-top ease-in-out .2s;
+			-o-transition: opacity ease-in-out .2s, margin-left ease-in-out .2s, margin-top ease-in-out .2s;
+			transition: opacity ease-in-out .2s, margin-left ease-in-out .2s, margin-top ease-in-out .2s;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			-webkit-user-select: none;
+			user-select: none;
+		}
+
+		.editor-menu-top {
+			margin-top: 12px;
+		}
+
+		.editor-menu-left {
+			margin-left: 12px;
+		}
+
+		.editor-menu-right {
+			margin-left: -12px;
+		}
+
+		.editor-menu-bottom {
+			margin-top: -12px;
+		}
+
+		.editor-menu-visible {
+			margin: 0;
+			opacity: 1;
+		}
+	</style>
+</head>
+<body>
+
+	<div class="modal fade" tabindex="-1" role="dialog" id="modalTxt">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Fechar"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title">Editar Texto</h4>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label for="modalTxtInput">Digite o novo text:</label>
+						<input type="text" class="form-control" id="modalTxtInput" spellcheck="true" autocomplete="off" />
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-outline btn-default" data-dismiss="modal">Cancelar</button>
+					<button type="button" class="btn btn-primary" id="modalTxtOk">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" tabindex="-1" role="dialog" id="modalAttributes">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Fechar"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title">Editar Atributos</h4>
+				</div>
+				<div class="modal-body" id="modalAttributesBody"></div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-outline btn-default" data-dismiss="modal">Cancelar</button>
+					<button type="button" class="btn btn-primary" id="modalAttributesOk">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="editor-container" id="editorContainer">
+		<ul class="nav nav-tabs" role="tablist">
+			<li role="presentation" class="active"><a href="#editor" aria-controls="editor" role="tab" data-toggle="tab">HTML</a></li>
+			<li role="presentation"><a href="#editorCss" aria-controls="editorCss" role="tab" data-toggle="tab">CSS</a></li>
+		</ul>
+		<div class="tab-content">
+			<div class="tab-pane fade in active editor" id="editor" role="tabpanel"></div>
+			<div id="editorCss" role="tabpanel" class="tab-pane fade editor">Em construção</div>
+		</div>
+	</div>
+	<div class="editor-bar" id="bar"></div>
+	<iframe class="editor-iframe" id="iframe" frameborder="0"></iframe>
+	<ul class="dropdown-menu editor-menu-animated" id="dropdownType">
+		<li class="dropdown-menu-input-container">
+			<input id="dropdownTypeInput" spellcheck="false" autocomplete="off" class="dropdown-menu-input form-control input-sm" placeholder="Nome do elemento" />
+		</li>
+		<li class="divider"></li>
+		<li class="dropdown-menu-container" id="dropdownTypeContainer"></li>
+	</ul>
+	<div class="editor-menu editor-menu-animated editor-menu-top" id="dropdownMenuTop">
+		<button class="btn btn-outline btn-xs btn-success" type="button" title="Criar Elemento" onclick="dropdownShowType(true, false)"><i class="fa fa-nomargin fa-code"></i></button>
+		<button class="btn btn-outline btn-xs btn-primary" type="button" title="Criar Texto" onclick="dropdownCreateText(true)"><i class="fa fa-nomargin fa-i-cursor"></i></button>
+	</div>
+	<div class="editor-menu editor-menu-animated editor-menu-left" id="dropdownMenuLeft">
+		<button class="btn btn-outline btn-xs btn-default" type="button" onclick="dropdownToggleVisibility()" id="dropdownMenuLeftToggleVisibility"><i class="fa fa-nomargin fa-plus"></i></button>
+	</div>
+	<div class="editor-menu editor-menu-animated editor-menu-right" id="dropdownMenuRight">
+		<button class="btn btn-outline btn-xs btn-default" type="button" title="Mover" onclick="dropdownMove()"><i class="fa fa-nomargin fa-arrows"></i></button>
+		<button class="btn btn-outline btn-xs btn-default" type="button" title="Editar Texto" onclick="dropdownEditText()" id="dropdownMenuRightEditText"><i class="fa fa-nomargin fa-i-cursor"></i></button>
+		<button class="btn btn-outline btn-xs btn-default" type="button" title="Localizar Elemento" onclick="dropdownFind()" id="dropdownMenuRightFind"><i class="fa fa-nomargin fa-search"></i></button>
+		<button class="btn btn-outline btn-xs btn-default" type="button" title="Alterar Elemento" onclick="dropdownShowType(true, true)" id="dropdownMenuRightChangeType"><i class="fa fa-nomargin fa-code"></i></button>
+		<button class="btn btn-outline btn-xs btn-primary" type="button" title="Editar Atributos" onclick="dropdownEditAttributes()" id="dropdownMenuRightEditAttributes"><i class="fa fa-nomargin fa-info"></i></button>
+		<button class="btn btn-outline btn-xs btn-danger" type="button" title="Excluir" onclick="dropdownDelete()"><i class="fa fa-nomargin fa-times"></i></button>
+	</div>
+	<div class="editor-menu editor-menu-animated editor-menu-bottom" id="dropdownMenuBottom">
+		<button class="btn btn-outline btn-xs btn-success" type="button" title="Criar Elemento" onclick="dropdownShowType(false, false)"><i class="fa fa-nomargin fa-code"></i></button>
+		<button class="btn btn-outline btn-xs btn-primary" type="button" title="Criar Texto" onclick="dropdownCreateText(false)"><i class="fa fa-nomargin fa-i-cursor"></i></button>
+	</div>
+
+	<script type="text/javascript" src="lib/jquery/jquery-1.0.0.min.js"></script>
+	<script type="text/javascript" src="lib/bootstrap/js/bootstrap-1.0.0.min.js"></script>
+	<script type="text/javascript" src="js/main.js"></script>
+
+	<script type="text/javascript">
+		"use strict";
+
+		Notification.wait();
+
+		// Funções para faciliar a escrita
+		function _ID(id) { return document.getElementById(id); }
+		function _SA(parent, name, value) { parent.setAttribute(name, value); return parent; }
+		function _GA(parent, name) { return (parent.getAttribute(name) || ""); }
+		function _RA(parent, name) { parent.removeAttribute(name); return parent; }
+		function _CE(tagName, className, parent) { var e = document.createElement(tagName); if (className) e.className = className; if (parent) _AC(parent, e); return e; }
+		function _ICE(tagName, className, parent) { var e = iframeDocument.createElement(tagName); if (className) e.className = className; if (parent) _AC(parent, e); return e; }
+		function _TXT(text, parent) { var e = document.createTextNode(text); if (parent) _AC(parent, e); return e; }
+		function _ITXT(text, parent) { var e = iframeDocument.createTextNode(text); if (parent) _AC(parent, e); return e; }
+		function _AC(parent, newChild) { parent.appendChild(newChild); return parent; }
+		function _IB(parent, newChild, refChild) { parent.insertBefore(newChild, refChild); return parent; }
+		function _BTN(className, icon, title, parent, clickHandler) { var btn = _CE("button", "btn btn-outline btn-xs " + className, parent); _CE("i", "fa fa-nomargin " + icon, btn); _SA(btn, "type", "button"); btn.onclick = clickHandler; if (title) _SA(btn, "title", title); return btn; }
+		function _RC(parent, oldChild) { parent.removeChild(oldChild); return parent; }
+
+		var loading = false;
+		var valueFreeText = null;
+		var valueColor = 0;
+		var valueNumber = 1;
+		var htmlAttributes = [
+			{ name: "class", values: [""], common: true },
+			{ name: "id", values: valueFreeText, common: true },
+			{ name: "title", values: valueFreeText, common: true },
+		];
+		var htmlAttributeClass = htmlAttributes[0];
+		var elementTypes = [
+			{ name: "hr", block: true, noChildren: true, attributes: null },
+			{ name: "br", noChildren: true, attributes: null },
+			{ name: "img", noChildren: true, attributes: [{ name: "src", values: valueFreeText }, { name: "alt", values: valueFreeText }, { name: "width", values: valueNumber }, { name: "height", values: valueNumber }] },
+			{ name: "a", attributes: [{ name: "href", values: valueFreeText }, { name: "target", values: ["_blank"] }] },
+			{ name: "button", attributes: [{ name: "type", values: valueFreeText }, { name: "disabled", values: ["", "disabled"] }] },
+			{ name: "input", noChildren: true, attributes: [{ name: "type", values: ["", "button", "checkbox", "color", "date", "datetime-local", "email", "file", "hidden", "month", "number", "password", "radio", "range", "reset", "search", "submit", "tel", "text", "time", "url", "week"] }, { name: "autocomplete", values: ["", "on", "off"] }, { name: "spellcheck", values: ["", "true", "false"] }, { name: "readonly", values: ["", "readonly"] }, { name: "disabled", values: ["", "disabled"] }, { name: "name", values: valueFreeText }, { name: "value", values: valueFreeText }, { name: "min", values: valueNumber }, { name: "max", values: valueNumber }, { name: "maxlength", values: valueNumber }, { name: "checked", values: ["", "checked"] }, { name: "size", values: valueNumber }] },
+			{ name: "select", attributes: [{ name: "size", values: valueNumber }] },
+			{ name: "option", block: true, attributes: [{ name: "value", values: valueFreeText }, { name: "selected", values: ["", "selected"] }] },
+			{ name: "optgroup", block: true, attributes: [{ name: "label", values: valueFreeText }] },
+			{ name: "label", attributes: [{ name: "for", values: valueFreeText }] },
+			{ name: "p", block: true, attributes: null },
+			{ name: "b", attributes: null },
+			{ name: "i", attributes: null },
+			{ name: "span", attributes: null },
+			{ name: "div", block: true, attributes: null },
+			{ name: "section", block: true, attributes: null },
+			{ name: "nav", block: true, attributes: null },
+			{ name: "header", block: true, attributes: null },
+			{ name: "footer", block: true, attributes: null },
+			{ name: "main", block: true, attributes: null },
+			{ name: "article", block: true, attributes: null },
+			{ name: "aside", block: true, attributes: null },
+			{ name: "ul", block: true, attributes: null },
+			{ name: "ol", block: true, attributes: null },
+			{ name: "li", block: true, attributes: null },
+			{ name: "figure", block: true, attributes: null },
+			{ name: "h1", block: true, attributes: null },
+			{ name: "h2", block: true, attributes: null },
+			{ name: "h3", block: true, attributes: null },
+			{ name: "h4", block: true, attributes: null },
+			{ name: "h5", block: true, attributes: null },
+			{ name: "h6", block: true, attributes: null },
+		];
+		var elementTypesByName = {};
+		var elementTypeBody = null;
+		var elementTypeText = null;
+		var cssAttributes = [
+			{ name: "margin", values: valueFreeText },
+			{ name: "margin-top", values: valueFreeText },
+			{ name: "margin-right", values: valueFreeText },
+			{ name: "margin-bottom", values: valueFreeText },
+			{ name: "margin-left", values: valueFreeText },
+			{ name: "padding", values: valueFreeText },
+			{ name: "padding-top", values: valueFreeText },
+			{ name: "padding-right", values: valueFreeText },
+			{ name: "padding-bottom", values: valueFreeText },
+			{ name: "padding-left", values: valueFreeText },
+			{ name: "border", values: valueFreeText },
+			{ name: "border-top", values: valueFreeText },
+			{ name: "border-right", values: valueFreeText },
+			{ name: "border-bottom", values: valueFreeText },
+			{ name: "border-left", values: valueFreeText },
+			{ name: "border-color", values: valueColor },
+			{ name: "border-width", values: valueFreeText },
+			{ name: "border-style", values: ["none", "hidden", "dashed", "dotted", "double", "groove", "inset", "outset", "ridge", "solid"] },
+			{ name: "border-collapse", values: ["collapse", "separate"] },
+			{ name: "background", values: valueFreeText },
+			{ name: "background-color", values: valueColor },
+			{ name: "background-image", values: valueFreeText },
+			{ name: "background-attachment", values: ["fixed", "scroll"] },
+			{ name: "background-size", values: valueFreeText },
+			{ name: "background-position", values: valueFreeText },
+			{ name: "background-repeat", values: ["no-repeat", "repeat", "repeat-x", "repeat-y"] },
+			{ name: "width", values: valueFreeText },
+			{ name: "height", values: valueFreeText },
+			{ name: "min-width", values: valueFreeText },
+			{ name: "min-height", values: valueFreeText },
+			{ name: "max-width", values: valueFreeText },
+			{ name: "max-height", values: valueFreeText },
+			{ name: "z-index", values: valueFreeText },
+			{ name: "box-shadow", values: valueFreeText },
+			{ name: "box-sizing", values: ["border-box", "content-box"] },
+			{ name: "color", values: valueColor },
+			{ name: "opacity", values: valueFreeText },
+			{ name: "line-height", values: valueFreeText },
+			{ name: "font", values: valueFreeText },
+			{ name: "font-family", values: valueFreeText },
+			{ name: "font-size", values: valueFreeText },
+			{ name: "font-style", values: ["normal", "italic"] },
+			{ name: "font-weight", values: ["normal", "bold", "100", "200", "300", "400", "500", "600", "700", "800", "900"] },
+			{ name: "cursor", values: ["auto", "crosshair", "default", "pointer", "move", "e-resize", "ne-resize", "nw-resize", "n-resize", "se-resize", "sw-resize", "s-resize", "w-resize", "text", "wait", "help", "progress", "copy", "alias", "context-menu", "cell", "not-allowed", "col-resize", "row-resize", "no-drop", "vertical-text", "all-scroll", "nesw-resize", "nwse-resize", "ns-resize", "ew-resize"] },
+			{ name: "top", values: valueFreeText },
+			{ name: "right", values: valueFreeText },
+			{ name: "bottom", values: valueFreeText },
+			{ name: "left", values: valueFreeText },
+			{ name: "display", values: ["none", "block", "inline", "inline-block"] },
+			{ name: "position", values: ["static", "relative", "absolute", "fixed"] },
+			{ name: "float", values: ["left", "right"] },
+			{ name: "resize", values: ["none", "both", "horizontal", "vertical"] },
+			{ name: "text-align", values: ["left", "right", "center", "justify"] },
+			{ name: "text-shadow", values: valueFreeText },
+			{ name: "overflow", values: ["auto", "hidden", "visible", "scroll"] },
+			{ name: "text-overflow", values: ["clip", "ellipsis"] },
+			{ name: "text-decoration", values: valueFreeText },
+			{ name: "text-decoration-line", values: ["none", "underline", "overline", "line-through", "blink"] },
+			{ name: "text-decoration-color", values: valueColor },
+			{ name: "text-decoration-style", values: ["solid", "double", "dotted", "dashed", "wavy"] },
+			{ name: "vertical-align", values: ["baseline", "sub", "super", "text-top", "text-bottom", "middle", "top", "bottom"] },
+			{ name: "visibility", values: ["visible", "hidden"] },
+			{ name: "white-space", values: ["normal", "nowrap", "pre", "pre-wrap", "pre-line", "break-spaces"] },
+		];
+		var cssAttributesByName = {};
+		var editorContainer = _ID("editorContainer");
+		var editor = _ID("editor");
+		var editorCss = _ID("editorCss");
+		var moveTargetTop = 1;
+		var moveTargetClosingTag = 2;
+		var placeholderText = "[Digite seu text aqui]";
+		var bodyElement = null;
+		var iframe = _ID("iframe");
+		var iframeWindow = null;
+		var iframeDocument = null;
+		var iframeBody = null;
+		var iframeStyle = null;
+
+		function iframeCarregado(win, doc, style) {
+			iframeWindow = win;
+			iframeDocument = doc;
+			iframeBody = doc.body;
+			iframeStyle = style;
+
+			loading = false;
+			Notification.hide();
+
+			createElement("body");
+		}
+
+		function tagClick(e) {
+			dropdownShow(e, this.element, false);
+		}
+
+		function closingTagClick(e) {
+			dropdownShow(e, this.element, true);
+		}
+
+		function createElement(name, parent, siblingBelow) {
+			if (loading)
+				return;
+
+			if (!parent) {
+				// The body element is a special case
+				bodyElement = _CE("div", "element");
+				// These attribute names were chosen like this in order to
+				// avoid any conflicts with existing attribute names!
+				bodyElement.elementType = elementTypeBody;
+				bodyElement.elementParent = null;
+				bodyElement.elementIframe = iframeBody;
+
+				bodyElement.elementTag = _CE("span", "element-tag", bodyElement);
+				bodyElement.elementTag.element = bodyElement;
+				bodyElement.elementTag.onclick = tagClick;
+				_TXT("<", bodyElement.elementTag);
+				_TXT("body", _CE("span", "element-name-block", bodyElement.elementTag));
+				_TXT(">", bodyElement.elementTag);
+
+				bodyElement.elementContainer = _CE("div", "element-container", bodyElement);
+				bodyElement.elementContainer.element = bodyElement;
+
+				bodyElement.elementClosingTag = _CE("span", "element-tag move-target", bodyElement);
+				bodyElement.elementClosingTag.element = bodyElement;
+				bodyElement.elementClosingTag.onclick = closingTagClick;
+				bodyElement.elementClosingTag.moveTarget = moveTargetClosingTag;
+				_TXT("</", bodyElement.elementClosingTag);
+				_TXT("body", _CE("span", "element-name-block", bodyElement.elementClosingTag));
+				_TXT(">", bodyElement.elementClosingTag);
+
+				_AC(editor, bodyElement);
+
+				return bodyElement;
+			}
+
+			var e, elementType = elementTypesByName[name];
+			if (!elementType)
+				return;
+
+			if (elementType !== elementTypeText &&
+				elementType.block && !parent.elementType.block) {
+				Notification.error("Um elemento block não pode ser filho de um elemento inline \uD83D\uDE22", true);
+				return;
+			}
+
+			e = _CE("div", "element");
+			e.elementParent = parent;
+			e.elementType = elementType;
+
+			if (elementType === elementTypeText) {
+				e.elementTag = _CE("span", "element-tag element-text move-target", e);
+				e.elementTag.element = e;
+				e.elementTag.onclick = tagClick;
+				e.elementTag.moveTarget = moveTargetTop;
+				e.elementTag.empty = true;
+				_TXT(placeholderText, e.elementTag);
+				e.elementIframe = _ITXT("");
+			} else {
+				e.elementTag = _CE("span", "element-tag move-target", e);
+				e.elementTag.element = e;
+				e.elementTag.onclick = tagClick;
+				e.elementTag.moveTarget = moveTargetTop;
+				_TXT("<", e.elementTag);
+				_TXT(name, _CE("span", elementType.block ? "element-name-block" : "element-name", e.elementTag));
+				_TXT(elementType.noChildren ? " />" : ">", e.elementTag);
+				e.elementIframe = _ICE(name);
+
+				if (!elementType.noChildren) {
+					e.elementContainerVisible = true;
+					e.elementContainerPlaceholder = _CE("span", "hidden", e);
+					_TXT("...", e.elementContainerPlaceholder);
+					e.elementContainer = _CE("div", "element-container", e);
+					e.elementContainer.element = e;
+
+					e.elementClosingTag = _CE("span", "element-tag move-target", e);
+					e.elementClosingTag.element = e;
+					e.elementClosingTag.onclick = closingTagClick;
+					e.elementClosingTag.moveTarget = moveTargetClosingTag;
+					_TXT("</", e.elementClosingTag);
+					_TXT(name, _CE("span", elementType.block ? "element-name-block" : "element-name", e.elementClosingTag));
+					_TXT(">", e.elementClosingTag);
+				}
+			}
+
+			if (siblingBelow) {
+				_IB(parent.elementContainer, e, siblingBelow);
+				_IB(parent.elementIframe, e.elementIframe, siblingBelow.elementIframe);
+			} else {
+				_AC(parent.elementContainer, e);
+				_AC(parent.elementIframe, e.elementIframe);
+			}
+
+			if (elementType === elementTypeText)
+				editText(e);
+
+			return e;
+		}
+
+		function deleteElement(element) {
+			if (loading || !element || !element.elementParent || !element.elementParent.elementContainer)
+				return;
+
+			_RC(element.elementParent.elementContainer, element);
+			_RC(element.elementParent.elementIframe, element.elementIframe);
+		}
+
+		function editText(element) {
+			if (loading || !element || element.elementType !== elementTypeText)
+				return;
+
+			var elementTag = element.elementTag, txt = elementTag.firstChild.nodeValue,
+				modalTxtInput = _ID("modalTxtInput"), modalTxtOk = _ID("modalTxtOk");
+			modalTxtInput.value = elementTag.empty ? "" : txt;
+			modalTxtOk.onclick = function () {
+				$("#modalTxt").modal("hide");
+				var txt = modalTxtInput.value;
+				if (!txt) {
+					elementTag.empty = true;
+					elementTag.firstChild.nodeValue = placeholderText;
+					element.elementIframe.nodeValue = "";
+				} else {
+					elementTag.empty = false;
+					elementTag.firstChild.nodeValue = txt;
+					element.elementIframe.nodeValue = txt;
+				}
+			};
+			$("#modalTxt").modal({
+				keyboard: true,
+				backdrop: true
+			});
+		}
+
+		function changeType(newName, element) {
+			if (loading || !element)
+				return;
+
+			var i, newElementType = elementTypesByName[newName];
+			if (!newElementType || newElementType === elementTypeText || element.elementType === newElementType)
+				return;
+
+			if (newElementType.block) {
+				if (!element.elementParent.elementType.block) {
+					Notification.error("Um elemento block não pode ser filho de um elemento inline \uD83D\uDE22", true);
+					return;
+				}
+			} else if (!element.elementType.noChildren) {
+				for (i = element.elementContainer.childNodes.length - 1; i >= 0; i--) {
+					if (element.elementContainer.childNodes[i].elementType.block) {
+						Notification.error("Um elemento inline não pode ser pai de um elemento block \uD83D\uDE22", true);
+						return;
+					}
+				}
+			}
+
+			if (!newElementType.noChildren !== !element.elementType.noChildren) {
+				Notification.error(newElementType.noChildren ? "O novo elemento também deve poder ter filhos \uD83D\uDE22" : "O novo elemento também não pode ter filhos \uD83D\uDE22", true);
+				return;
+			}
+
+			var newElement = createElement(newName, element.elementParent, element);
+
+			if (!element.elementType.noChildren) {
+				var e,
+					container = element.elementContainer,
+					newContainer = newElement.elementContainer,
+					icontainer = element.elementIframe,
+					inewContainer = newElement.elementIframe;
+				while ((e = container.firstChild)) {
+					_RC(container, e);
+					e.elementParent = newElement;
+					_AC(newContainer, e);
+					_RC(icontainer, e.elementIframe);
+					_AC(inewContainer, e.elementIframe);
+				}
+			}
+
+			deleteElement(element);
+		}
+
+		function toggleVisibility(element) {
+			if (loading || !element || element.elementType.noChildren)
+				return;
+
+			element.elementContainerVisible = !element.elementContainerVisible;
+			if (element.elementContainerVisible) {
+				element.elementContainerPlaceholder.className = "hidden";
+				element.elementContainer.className = "element-container";
+			} else {
+				element.elementContainer.className = "hidden";
+				element.elementContainerPlaceholder.className = "";
+			}
+		}
+
+		function lockUI(lock) {
+			if (lock) {
+				editorContainer.style.pointerEvents = "none";
+				iframe.style.pointerEvents = "none";
+				bar.style.pointerEvents = "none";
+			} else {
+				editorContainer.style.pointerEvents = "";
+				iframe.style.pointerEvents = "";
+				bar.style.pointerEvents = "";
+			}
+		}
+
+		(function initial() {
+			var i, a, e,
+				modalTxtInput = _ID("modalTxtInput"),
+				modalTxtOk = _ID("modalTxtOk");
+
+			$("#modalTxt").on("shown.bs.modal", function () {
+				modalTxtInput.focus();
+			});
+			modalTxtInput.onkeydown = function (e) {
+				if (e.key === "Enter" || e.keyCode === 13)
+					modalTxtOk.click();
+			};
+
+			function sortByName(a, b) {
+				return (a.name < b.name ? -1 : 1);
+			}
+
+			for (i = elementTypes.length - 1; i >= 0; i--) {
+				e = elementTypes[i];
+				elementTypesByName[e.name] = e;
+				e.urlHelp = "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/" + e.name;
+				a = e.attributes;
+				if (!a) {
+					e.attributes = htmlAttributes;
+				} else {
+					a.push.apply(a, htmlAttributes);
+					a.sort(function (a, b) {
+						if (!a.common === !b.common)
+							return (a.name < b.name ? -1 : 1);
+						return (a.common ? -1 : 1);
+					});
+				}
+			}
+
+			for (i = cssAttributes.length - 1; i >= 0; i--) {
+				e = cssAttributes[i];
+				cssAttributesByName[e.name] = e;
+				e.urlHelp = "https://developer.mozilla.org/en-US/docs/Web/CSS/" + e.name;
+				e.common = true;
+			}
+
+			elementTypes.sort(sortByName);
+			cssAttributes.sort(sortByName);
+
+			elementTypeBody = {
+				name: "body",
+				block: true,
+				attributes: null
+			};
+			elementTypeText = {
+				name: "text",
+				attributes: null,
+				noChildren: true
+			};
+			elementTypesByName["text"] = elementTypeText;
+
+			loading = true;
+			_SA(iframe, "src", "empty.html");
+
+			window.onbeforeunload = function () {
+				return null; // "Deseja mesmo sair da página? Você perderá o documento atual.";
+			};
+		})();
+
+		(function resize() {
+			var bar = _ID("bar");
+			var barDrag = false;
+			var barDragX = 0;
+			var barX = (window.innerWidth >> 1);
+
+			function resizeWindow() {
+				var width = (window.innerWidth | 0);
+				var editorWidth = barX, iframeWidth = width - editorWidth - 8;
+				if (iframeWidth < 150) {
+					iframeWidth = 150;
+					editorWidth = width - iframeWidth - 8;
+				}
+				if (editorWidth < 150) {
+					editorWidth = 150;
+					iframeWidth = width - editorWidth - 8;
+				}
+				editorContainer.style.width = editorWidth + "px";
+				bar.style.left = editorContainer.style.width;
+				iframe.style.left = (width - iframeWidth) + "px";
+				iframe.style.width = iframeWidth + "px";
+			}
+
+			window.onresize = resizeWindow;
+
+			bar.onmousedown = function (e) {
+				if (e.button)
+					return;
+				var rect = bar.getBoundingClientRect();
+				barDragX = (e.clientX - rect.left) | 0;
+				barDrag = true;
+				document.body.style.cursor = "ew-resize";
+				editorContainer.style.cursor = "ew-resize";
+				iframe.style.cursor = "ew-resize";
+				bar.className = "editor-bar editor-bar-drag";
+				lockUI(true);
+				return cancelEvent(e);
+			};
+
+			document.addEventListener("mousemove", function (e) {
+				if (!barDrag)
+					return;
+				var x = (e.clientX - barDragX) | 0;
+				if (barX !== x) {
+					barX = x;
+					resizeWindow();
+				}
+			}, true);
+
+			document.addEventListener("mouseup", function (e) {
+				if (!barDrag)
+					return;
+				barDrag = false;
+				document.body.style.cursor = "";
+				editorContainer.style.cursor = "";
+				iframe.style.cursor = "";
+				bar.className = "editor-bar";
+				lockUI(false);
+			}, true);
+
+			resizeWindow();
+			bar.style.display = "block";
+		})();
+
+		(function dropdownMenus() {
+			var dropdownX = 0,
+				dropdownY = 0,
+				dropdownFading = false, dropdownMoving = false,
+				dropdownVisible = false, dropdownTypeVisible = false, dropdownHighlighting = false,
+				dropdownActionTop = false, dropdownActionClosingTag = false, dropdownActionChangeType = false,
+				dropdownShowTop = false, dropdownShowLeft = false, dropdownShowRight = false, dropdownShowBottom = false,
+				dropdownShowTypeOnHide = false, dropdownCreateTextOnHide = false, dropdownMoveOnHide = false, dropdownEditTextOnHide = false, dropdownEditAttributesOnHide = false,
+				dropdownElement = null,
+				dropdownType = _ID("dropdownType"),
+				dropdownTypeInput = _("dropdownTypeInput"),
+				dropdownTypeContainer = _("dropdownTypeContainer"),
+				dropdownMenuTop = _ID("dropdownMenuTop"),
+				dropdownMenuLeft = _ID("dropdownMenuLeft"),
+				dropdownMenuLeftToggleVisibility = _ID("dropdownMenuLeftToggleVisibility"),
+				dropdownMenuRight = _ID("dropdownMenuRight"),
+				dropdownMenuRightEditText = _ID("dropdownMenuRightEditText"),
+				dropdownMenuRightFind = _ID("dropdownMenuRightFind"),
+				dropdownMenuRightChangeType = _ID("dropdownMenuRightChangeType"),
+				dropdownMenuRightEditAttributes = _ID("dropdownMenuRightEditAttributes"),
+				dropdownMenuBottom = _ID("dropdownMenuBottom");
+
+			dropdownTypeContainer.style.height = (300 - 59) + "px";
+
+			function fadeInFinished() {
+				dropdownFading = false;
+				if (dropdownShowTop)
+					dropdownMenuTop.style.pointerEvents = "";
+				if (dropdownShowLeft)
+					dropdownMenuLeft.style.pointerEvents = "";
+				if (dropdownShowRight)
+					dropdownMenuRight.style.pointerEvents = "";
+				if (dropdownShowBottom)
+					dropdownMenuBottom.style.pointerEvents = "";
+			}
+
+			function fadeInTypeFinished() {
+				dropdownFading = false;
+				dropdownType.style.pointerEvents = "";
+				dropdownTypeInput.focus();
+				dropdownTypeInput.setSelectionRange(0, dropdownTypeInput.value.length);
+			}
+
+			function fadeOutFinished() {
+				dropdownFading = false;
+				dropdownMenuTop.style.display = "";
+				dropdownMenuLeft.style.display = "";
+				dropdownMenuRight.style.display = "";
+				dropdownMenuBottom.style.display = "";
+
+				if (dropdownShowTypeOnHide) {
+					dropdownShowTypeOnHide = false;
+					dropdownTypeVisible = true;
+					dropdownFading = true;
+					document.addEventListener("mousedown", mouseDown, true);
+					document.addEventListener("keydown", keyDown, true);
+					var width = (window.innerWidth | 0),
+						height = (window.innerHeight | 0),
+						x = dropdownX,
+						y = dropdownY;
+					if ((x + 160 + 4) > width)
+						x = width - 160 - 4;
+					if ((y + 300 + 4) > height)
+						y = height - 300 - 4;
+					dropdownType.style.display = "block";
+					dropdownType.style.left = x + "px";
+					dropdownType.style.top = y + "px";
+					dropdownType.style.width = 160 + "px";
+					dropdownType.style.height = 300 + "px";
+					setTimeout(startFadeInType, 50);
+					return;
+				} else if (dropdownCreateTextOnHide) {
+					dropdownCreateTextOnHide = false;
+					dropdownCreateElement("text");
+				} else if (dropdownMoveOnHide) {
+					lockUI(false);
+					dropdownMoveOnHide = false;
+					move(true);
+				} else if (dropdownEditTextOnHide) {
+					dropdownEditTextOnHide = false;
+					editText(dropdownElement);
+				} else if (dropdownEditAttributesOnHide) {
+					dropdownEditAttributesOnHide = false;
+					showModalAttributes();
+				}
+
+				lockUI(false);
+			}
+
+			function fadeOutTypeFinished() {
+				dropdownFading = false;
+				dropdownType.style.display = "";
+				lockUI(false);
+			}
+
+			function startFadeIn() {
+				if (dropdownShowTop) {
+					dropdownMenuTop.style.pointerEvents = "none";
+					dropdownMenuTop.className = "editor-menu editor-menu-animated editor-menu-top editor-menu-visible";
+				}
+				if (dropdownShowLeft) {
+					dropdownMenuLeft.style.pointerEvents = "none";
+					dropdownMenuLeft.className = "editor-menu editor-menu-animated editor-menu-left editor-menu-visible";
+				}
+				if (dropdownShowRight) {
+					dropdownMenuRight.style.pointerEvents = "none";
+					dropdownMenuRight.className = "editor-menu editor-menu-animated editor-menu-right editor-menu-visible";
+				}
+				if (dropdownShowBottom) {
+					dropdownMenuBottom.style.pointerEvents = "none";
+					dropdownMenuBottom.className = "editor-menu editor-menu-animated editor-menu-bottom editor-menu-visible";
+				}
+				setTimeout(fadeInFinished, 210);
+			}
+
+			function startFadeInType() {
+				dropdownType.style.pointerEvents = "none";
+				dropdownType.className = "dropdown-menu editor-menu-animated editor-menu-visible";
+				setTimeout(fadeInTypeFinished, 210);
+			}
+
+			function startFadeOut() {
+				dropdownFading = true;
+				dropdownVisible = false;
+				dropdownMenuTop.style.pointerEvents = "none";
+				dropdownMenuLeft.style.pointerEvents = "none";
+				dropdownMenuRight.style.pointerEvents = "none";
+				dropdownMenuBottom.style.pointerEvents = "none";
+				dropdownMenuTop.className = "editor-menu editor-menu-animated editor-menu-top";
+				dropdownMenuLeft.className = "editor-menu editor-menu-animated editor-menu-left";
+				dropdownMenuRight.className = "editor-menu editor-menu-animated editor-menu-right";
+				dropdownMenuBottom.className = "editor-menu editor-menu-animated editor-menu-bottom";
+				setTimeout(fadeOutFinished, 210);
+			}
+
+			function startFadeOutType() {
+				dropdownFading = true;
+				dropdownTypeVisible = false;
+				dropdownType.style.pointerEvents = "none";
+				dropdownType.className = "dropdown-menu editor-menu-animated";
+				setTimeout(fadeOutTypeFinished, 210);
+			}
+
+			function hide() {
+				document.removeEventListener("mousedown", mouseDown, true);
+				document.removeEventListener("keydown", keyDown, true);
+				if (dropdownVisible)
+					startFadeOut();
+				else if (dropdownTypeVisible)
+					startFadeOutType();
+			}
+
+			function mouseDown(e) {
+				if ((!dropdownVisible && !dropdownTypeVisible) || dropdownFading || e.button)
+					return;
+				// Ignora todos os cliques sobre os menus
+				var t = e.target;
+				while (t && t.parentNode && t !== document.body) {
+					if (t === dropdownMenuTop || t === dropdownMenuLeft || t === dropdownMenuRight || t === dropdownMenuBottom || t === dropdownType)
+						return;
+					t = t.parentNode;
+				}
+				hide();
+			}
+
+			function keyDown(e) {
+				if ((!dropdownVisible && !dropdownTypeVisible) || dropdownFading || dropdownMoving)
+					return;
+				if (e.key === "Escape" || e.keyCode === 27)
+					hide();
+			}
+
+			function clickMoving(e) {
+				if (!dropdownMoving || e.button)
+					return;
+
+				var moveTarget = e.target.moveTarget, targetElement, targetParent, parent;
+				if (!moveTarget && e.target.parentNode) {
+					moveTarget = e.target.parentNode.moveTarget;
+					if (!moveTarget)
+						return;
+					targetElement = e.target.parentNode.element;
+				} else {
+					targetElement = e.target.element;
+				}
+
+				parent = targetElement;
+				while (parent && parent !== bodyElement) {
+					if (parent === dropdownElement)
+						return;
+					parent = parent.parentNode;
+				}
+
+				if (moveTarget === moveTargetClosingTag)
+					targetParent = targetElement;
+				else
+					targetParent = targetElement.elementParent;
+
+				if (dropdownElement.elementType.block) {
+					parent = targetParent;
+					while (parent && parent !== bodyElement) {
+						if (!parent.elementType.block)
+							return;
+						parent = parent.elementParent;
+					}
+				}
+
+				_RC(dropdownElement.parentNode, dropdownElement);
+				_RC(dropdownElement.elementIframe.parentNode, dropdownElement.elementIframe);
+
+				dropdownElement.elementParent = targetParent;
+
+				if (moveTarget === moveTargetClosingTag) {
+					_AC(targetParent.elementContainer, dropdownElement);
+					_AC(targetParent.elementIframe, dropdownElement.elementIframe);
+				} else {
+					_IB(targetParent.elementContainer, dropdownElement, targetElement);
+					_IB(targetParent.elementIframe, dropdownElement.elementIframe, targetElement.elementIframe);
+				}
+
+				move(false);
+
+				cancelEvent(e);
+
+				return false;
+			}
+
+			function keyDownMoving(e) {
+				if (!dropdownMoving)
+					return;
+				if (e.key === "Escape" || e.keyCode === 27)
+					move(false);
+			}
+
+			function move(start) {
+				if (start) {
+					dropdownMoving = true;
+					document.addEventListener("click", clickMoving, true);
+					document.addEventListener("keydown", keyDownMoving, true);
+					$(dropdownElement).addClass("moving");
+					$(editor).addClass("moving");
+					Notification.show("Clique sobre onde deseja mover o elemento, ou tecle Esc para cancelar", "default", -1, false);
+				} else {
+					dropdownMoving = false;
+					document.removeEventListener("click", clickMoving, true);
+					document.removeEventListener("keydown", keyDownMoving, true);
+					$(dropdownElement).removeClass("moving");
+					$(editor).removeClass("moving");
+					Notification.hide();
+				}
+			}
+
+			window.dropdownShow = function (e, element, closingTag) {
+				if (dropdownFading || dropdownMoving || dropdownVisible || dropdownTypeVisible)
+					return;
+
+				var rect = (closingTag ? element.elementClosingTag : element.elementTag).getBoundingClientRect(),
+					height = (rect.height | 0);
+
+				dropdownX = (rect.left | 0) + 12;
+				dropdownY = (rect.top | 0) + (height >> 1);
+				dropdownVisible = true;
+				dropdownFading = true;
+				dropdownActionClosingTag = closingTag;
+				dropdownActionChangeType = false;
+				dropdownElement = element;
+				lockUI(true);
+				document.addEventListener("mousedown", mouseDown, true);
+				document.addEventListener("keydown", keyDown, true);
+
+				dropdownShowTop = (closingTag || element.elementType !== elementTypeBody);
+				dropdownShowLeft = (element.elementType !== elementTypeBody && !element.elementType.noChildren);
+				dropdownShowRight = (element.elementType !== elementTypeBody);
+				dropdownShowBottom = (!closingTag || element.elementType !== elementTypeBody);
+				if (element.elementType === elementTypeText) {
+					dropdownMenuRightEditText.style.display = "";
+					dropdownMenuRightFind.style.display = "none";
+					dropdownMenuRightChangeType.style.display = "none";
+					dropdownMenuRightEditAttributes.style.display = "none";
+				} else {
+					dropdownMenuRightEditText.style.display = "none";
+					dropdownMenuRightFind.style.display = "";
+					dropdownMenuRightChangeType.style.display = "";
+					dropdownMenuRightEditAttributes.style.display = "";
+				}
+				if (dropdownShowLeft) {
+					if (dropdownElement.elementContainerVisible) {
+						_SA(dropdownMenuLeftToggleVisibility, "title", "Ocultar Filhos");
+						dropdownMenuLeftToggleVisibility.firstChild.className = "fa fa-nomargin fa-minus";
+					} else {
+						_SA(dropdownMenuLeftToggleVisibility, "title", "Mostrar Filhos");
+						dropdownMenuLeftToggleVisibility.firstChild.className = "fa fa-nomargin fa-plus";
+					}
+				}
+				dropdownShowTypeOnHide = false;
+				dropdownCreateTextOnHide = false;
+				dropdownMoveOnHide = false;
+				dropdownEditTextOnHide = false;
+				dropdownEditAttributesOnHide = false;
+
+				if (dropdownShowTop) {
+					dropdownMenuTop.style.display = "block";
+					dropdownMenuTop.style.left = (dropdownX - 1) + "px";
+					dropdownMenuTop.style.top = (dropdownY - (height >> 1) - 25) + "px";
+				}
+				if (dropdownShowLeft) {
+					dropdownMenuLeft.style.display = "block";
+					dropdownMenuLeft.style.left = (rect.left - 24) + "px";
+					dropdownMenuLeft.style.top = (dropdownY - 10) + "px";
+				}
+				if (dropdownShowRight) {
+					dropdownMenuRight.style.display = "block";
+					dropdownMenuRight.style.left = (dropdownX + 18) + "px";
+					dropdownMenuRight.style.top = (dropdownY - 10) + "px";
+				}
+				if (dropdownShowBottom) {
+					dropdownMenuBottom.style.display = "block";
+					dropdownMenuBottom.style.left = (dropdownX - 1) + "px";
+					dropdownMenuBottom.style.top = (dropdownY + (height >> 1) + 5) + "px";
+				}
+				setTimeout(startFadeIn, 50);
+			};
+
+			window.dropdownShowType = function (top, changeType) {
+				if (dropdownFading || dropdownMoving || !dropdownVisible || dropdownTypeVisible)
+					return;
+
+				dropdownActionTop = top;
+				dropdownActionChangeType = changeType;
+				dropdownShowTypeOnHide = true;
+				hide();
+			};
+
+			window.dropdownCreateText = function (top) {
+				if (dropdownFading || dropdownMoving || !dropdownVisible || dropdownTypeVisible)
+					return;
+
+				dropdownActionTop = top;
+				dropdownCreateTextOnHide = true;
+				hide();
+			};
+
+			window.dropdownEditText = function () {
+				if (dropdownFading || dropdownMoving || !dropdownVisible || dropdownTypeVisible)
+					return;
+
+				dropdownEditTextOnHide = true;
+				hide();
+			};
+
+			window.dropdownMove = function () {
+				if (dropdownFading || dropdownMoving || !dropdownVisible || dropdownTypeVisible)
+					return;
+
+				dropdownMoveOnHide = true;
+				hide();
+			};
+
+			window.dropdownFind = function () {
+				if (dropdownFading || dropdownMoving || !dropdownVisible || dropdownHighlighting)
+					return;
+
+				hide();
+				dropdownHighlighting = true;
+
+				var times = 0, interval = 0,
+					e = dropdownElement.elementIframe,
+					y = e.getBoundingClientRect().top;
+
+				if (y < 0 || y > iframeWindow.innerHeight)
+					iframeWindow.scroll({ top: y + iframeWindow.scrollY, behavior: "smooth" });
+
+				interval = setInterval(function () {
+					if (!dropdownHighlighting) {
+						if (interval) {
+							e.style.backgroundColor = "";
+							e.style.color = "";
+							clearInterval(interval);
+							interval = 0;
+						}
+						return;
+					}
+					times++;
+					if ((times & 1)) {
+						e.style.backgroundColor = "#000";
+						e.style.color = "#fff";
+					} else {
+						e.style.backgroundColor = "#fff";
+						e.style.color = "#000";
+					}
+					if (times >= 10) {
+						e.style.backgroundColor = "";
+						e.style.color = "";
+						dropdownHighlighting = false;
+						clearInterval(interval);
+						interval = 0;
+					}
+				}, 200);
+			};
+
+			window.dropdownToggleVisibility = function () {
+				if (dropdownFading || dropdownMoving || !dropdownVisible || dropdownTypeVisible)
+					return;
+
+				toggleVisibility(dropdownElement);
+				hide();
+			};
+
+			window.dropdownEditAttributes = function () {
+				if (dropdownFading || dropdownMoving || !dropdownVisible || dropdownTypeVisible)
+					return;
+
+				dropdownEditAttributesOnHide = true;
+				hide();
+			};
+
+			window.dropdownDelete = function () {
+				if (dropdownFading || dropdownMoving || !dropdownVisible || dropdownTypeVisible)
+					return;
+
+				deleteElement(dropdownElement);
+				hide();
+			};
+
+			function dropdownCreateElement(name) {
+				if (dropdownActionChangeType) {
+					changeType(name, dropdownElement);
+				} else if (dropdownActionClosingTag) {
+					if (dropdownActionTop)
+						createElement(name, dropdownElement, null);
+					else
+						createElement(name, dropdownElement.elementParent, dropdownElement.nextSibling);
+				} else {
+					if (dropdownActionTop)
+						createElement(name, dropdownElement.elementParent, dropdownElement);
+					else if (dropdownElement.elementType.noChildren)
+						createElement(name, dropdownElement.elementParent, dropdownElement.nextSibling);
+					else
+						createElement(name, dropdownElement, dropdownElement.elementContainer.firstChild);
+				}
+				hide();
+			}
+
+			dropdownTypeInput.onkeydown = function (e) {
+				if (e.key === "Enter" || e.keyCode === 13) {
+					var name = trimValue(dropdownTypeInput).toLowerCase();
+					if ((name in elementTypesByName) && name !== "text" && dropdownTypeVisible)
+						dropdownCreateElement(name);
+				}
+			};
+
+			_ID("modalAttributesOk").onclick = function () {
+				var i, a, v, e = dropdownElement.elementIframe,
+					elementType = dropdownElement.elementType,
+					attributes = elementType.attributes;
+
+				for (i = 0; i < attributes.length; i++) {
+					a = attributes[i];
+					v = _ID("attributeInput" + a.name).value;
+					if (!v)
+						_RA(e, a.name);
+					else
+						_SA(e, a.name, v);
+				}
+
+				$("#modalAttributes").modal("hide");
+			};
+
+			function attributeInputKeyDown(e) {
+				if (e.key === "Enter" || e.keyCode === 13)
+					_ID("modalAttributesOk").click();
+			};
+
+			function showModalAttributes() {
+				var i, j, a, c, row, v, div, input, opt,
+					e = dropdownElement.elementIframe,
+					elementType = dropdownElement.elementType,
+					attributes = elementType.attributes,
+					modalAttributesBody = _ID("modalAttributesBody");
+
+				while (modalAttributesBody.firstChild)
+					_RC(modalAttributesBody, modalAttributesBody.firstChild);
+
+				for (i = 0, c = 3; i < attributes.length; i++) {
+					a = attributes[i];
+
+					if (i === htmlAttributes.length) {
+						_CE("hr", null, modalAttributesBody);
+						c = 0;
+						row = _CE("div", "row", modalAttributesBody);
+					} else if (c >= 3) {
+						c = 0;
+						row = _CE("div", "row", modalAttributesBody);
+					}
+					c++;
+
+					div = _CE("div", "form-group", _CE("div", "col-sm-4", row));
+					_TXT(a.name, _SA(_CE("label", null, div), "for", "attributeInput" + a.name));
+					v = _GA(e, a.name);
+					if (a.values && (typeof a.values === "object")) {
+						input = _SA(_CE("select", "form-control", div), "size", "1");
+						for (j = 0; j < a.values.length; j++) {
+							opt = _SA(_CE("option", null, input), "value", a.values[j]);
+							_TXT(a.values[j], opt);
+							if (v == a.values[j])
+								_SA(opt, "selected", "selected");
+						}
+					} else {
+						input = _SA(_SA(_SA(_CE("input", "form-control", div), "spellcheck", "false"), "type", a.values === valueNumber ? "number" : "text"), "autocomplete", "off");
+						input.onkeydown = attributeInputKeyDown;
+						input.value = v;
+					}
+					_SA(input, "id", "attributeInput" + a.name);
+				}
+
+				$("#modalAttributes").modal({
+					keyboard: true,
+					backdrop: true
+				});
+			}
+
+			(function initial() {
+				var i, a, floatingHelp;
+
+				function aClick(e) {
+					if (e.target.tagName !== "A")
+						return cancelEvent(e);
+					if (e.button)
+						return;
+					dropdownCreateElement(this.elementType.name);
+					return cancelEvent(e);
+				}
+
+				function helpClick(e) {
+					window.open(this.parentNode.elementType.urlHelp);
+					return cancelEvent(e);
+				}
+
+				for (i = 0; i < elementTypes.length; i++) {
+					a = _CE("a", null, dropdownTypeContainer);
+					_SA(a, "href", "#");
+					a.onclick = aClick;
+					a.elementType = elementTypes[i];
+					_TXT(elementTypes[i].name + " ", a);
+					floatingHelp = _CE("i", "fa fa-nomargin fa-question-circle fa-floating-help", a);
+					_SA(floatingHelp, "title", "Ajuda do elemento");
+					floatingHelp.onclick = helpClick;
+				}
+			})();
+		})();
+	</script>
+</body>
+</html>
