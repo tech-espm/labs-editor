@@ -1,2 +1,2 @@
 # labs-editor
-HTML + CSS editor for in-class use
+HTML + CSS editor for in-class use.
