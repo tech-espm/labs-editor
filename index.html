@@ -258,8 +258,12 @@
 				</div>
 				<div class="modal-body">
 					<div class="form-group">
-						<label for="modalTxtInput" data-string="text|EnterNewText"></label>
+						<label for="modalTxtInput" data-string="text|NewText"></label>
 						<input type="text" class="form-control" id="modalTxtInput" spellcheck="true" autocomplete="off" />
+					</div>
+					<div class="form-group no-margin-bottom">
+						<button type="button" class="btn btn-outline btn-primary" id="modalTxtBtnLoremIpsum" data-string="text|UseLoremIpsum"></button>
+						<select size="1" class="form-control" id="modalTxtSelectLoremIpsum" style="display: inline-block; width: auto;"></select>
 					</div>
 				</div>
 				<div class="modal-footer">
@@ -314,6 +318,7 @@
 	</div>
 	<div class="editor-menu editor-menu-animated editor-menu-right" id="dropdownMenuRight">
 		<button class="btn btn-outline btn-xs btn-default" type="button" data-string="title|Move" onclick="dropdownMove()"><i class="fa fa-nomargin fa-arrows"></i></button>
+		<button class="btn btn-outline btn-xs btn-default" type="button" data-string="title|Duplicate" onclick="dropdownDuplicate()"><i class="fa fa-nomargin fa-copy"></i></button>
 		<button class="btn btn-outline btn-xs btn-default" type="button" data-string="title|EditText" onclick="dropdownEditText()" id="dropdownMenuRightEditText"><i class="fa fa-nomargin fa-i-cursor"></i></button>
 		<button class="btn btn-outline btn-xs btn-default" type="button" data-string="title|FindElement" onclick="dropdownFind()" id="dropdownMenuRightFind"><i class="fa fa-nomargin fa-search"></i></button>
 		<button class="btn btn-outline btn-xs btn-default" type="button" data-string="title|ChangeElement" onclick="dropdownShowType(true, true)" id="dropdownMenuRightChangeType"><i class="fa fa-nomargin fa-code"></i></button>
@@ -464,6 +469,18 @@
 		var editorContainer = _ID("editorContainer");
 		var editor = _ID("editor");
 		var editorCss = _ID("editorCss");
+		var loremIpsum = [
+			"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse erat nulla, mattis et maximus in, molestie at felis. Vestibulum ac eros vel est commodo egestas. Fusce blandit, purus sit amet aliquam tincidunt, nisl mauris euismod nisi, euismod pulvinar dolor metus sit amet orci. Praesent lectus magna, porta a volutpat ac, egestas a dui. Quisque semper, ex eget pretium faucibus, ante ipsum dictum nisl, sed iaculis ante nisi vehicula arcu. Praesent at feugiat dolor, placerat auctor ligula. Cras venenatis viverra nisi eu volutpat.",
+			"Morbi sed tortor ac lectus porta vehicula. Nullam venenatis magna in accumsan sodales. Donec massa orci, egestas vel tincidunt eu, laoreet et enim. Curabitur fermentum tempor felis, ac condimentum urna dictum sed. Maecenas at purus finibus, pellentesque sem at, scelerisque lorem. Nam pretium vitae lorem ac volutpat. Integer ligula turpis, lobortis quis congue ut, suscipit semper velit. Integer scelerisque quis lacus eu imperdiet. Integer ex tortor, finibus nec ultrices quis, pretium vel elit. Phasellus tincidunt hendrerit purus, in cursus erat euismod vitae.",
+			"In laoreet iaculis nibh, ut varius massa consectetur sit amet. Pellentesque auctor purus id sem posuere porta. Praesent vitae massa mi. Donec eget tellus egestas, aliquet justo vitae, vulputate lacus. Praesent eu tempor eros. Proin risus tellus, accumsan quis magna eget, viverra rutrum nunc. Nullam id placerat nisl, vel tempor augue. Phasellus dignissim dapibus dui a sollicitudin. Nam vulputate accumsan suscipit. Ut rhoncus risus a volutpat porta. Praesent eros ipsum, molestie eget dictum nec, malesuada vitae lectus. Aliquam pretium fermentum arcu, ultricies varius magna lobortis sit amet. Aenean tristique nisl sit amet turpis fringilla suscipit. Maecenas tincidunt, orci eget tincidunt suscipit, lectus nibh condimentum odio, non fermentum purus libero sagittis nibh. Nulla finibus, nulla ut gravida gravida, massa ipsum auctor lectus, et aliquam ligula sapien id felis.",
+			"Donec quis iaculis lorem. Vestibulum sollicitudin felis massa, et commodo neque sagittis sed. Phasellus et laoreet ligula, id lacinia orci. Suspendisse luctus eget odio et fringilla. Phasellus vel velit at ligula ullamcorper sollicitudin. Ut efficitur varius diam, fringilla accumsan nisi mattis vitae. Cras dapibus nec augue posuere rhoncus. Mauris dolor felis, malesuada et risus eu, tempus rhoncus libero. Quisque iaculis volutpat nunc, lacinia aliquet libero viverra in. Etiam sit amet lectus ut ante gravida malesuada sed a massa. Nulla a blandit lacus. Ut eleifend convallis libero a posuere. Fusce a tempus urna, eu molestie enim.",
+			"Cras fringilla, leo eu dignissim placerat, ligula lacus efficitur enim, eu congue arcu ante eu odio. Donec egestas bibendum est. Etiam non dolor pharetra, scelerisque tortor a, pulvinar diam. Suspendisse euismod elit lacus, ac gravida ligula malesuada nec. Etiam fringilla nisl odio, et luctus lorem posuere at. Nam justo enim, blandit ac lorem vitae, vestibulum scelerisque leo. Pellentesque molestie mattis neque non imperdiet. Nulla commodo orci risus, id molestie ex efficitur non. Sed quis elit non ante aliquet pharetra. Morbi lacinia mi metus, gravida accumsan ante cursus et. Morbi sed ipsum augue.",
+			"Curabitur vel turpis maximus, rhoncus metus at, fringilla massa. Nunc bibendum eros eget nunc scelerisque dictum. In dignissim imperdiet dolor, non ornare metus iaculis nec. Fusce nec rhoncus lectus, id rutrum odio. Nam varius ornare elit. Duis eget cursus diam. Proin fringilla ex libero, at consequat risus vulputate in. Proin nec magna ut tortor placerat commodo ut id metus. Praesent mollis quam id purus vulputate consectetur. Nam at tortor sit amet tellus vestibulum tempus. Pellentesque ante ipsum, viverra ut imperdiet sed, commodo mollis nibh.",
+			"Curabitur cursus lacus at commodo dictum. Sed sed pharetra purus. Quisque pharetra neque dolor, a interdum arcu eleifend quis. Donec feugiat mollis justo ut molestie. Donec sit amet eros eu sapien cursus sollicitudin at ac dolor. Duis in interdum eros, vitae rutrum lacus. Sed placerat ac arcu sit amet fringilla. Suspendisse et tincidunt augue. Duis mattis ex leo, nec iaculis orci porta in. Donec ultrices risus tempus est dignissim laoreet. Sed justo dolor, mattis ut dolor et, interdum pharetra neque. Aenean congue enim ligula, vitae interdum metus consectetur at.",
+			"Sed ullamcorper gravida odio vel auctor. Proin in velit pulvinar, consequat arcu non, congue arcu. Morbi ut egestas magna. Integer mattis lectus nec magna fringilla, vel gravida nisl eleifend. Quisque condimentum commodo mollis. Mauris convallis massa nec tincidunt porta. Fusce faucibus eros quis ante dignissim, maximus auctor justo posuere.",
+			"Integer nibh orci, finibus eu cursus nec, aliquam vitae augue. Sed lectus lectus, venenatis et venenatis eget, efficitur et turpis. Fusce enim nibh, imperdiet sit amet condimentum vel, suscipit et ex. Nullam elementum consequat elementum. Ut tempor, ante sed posuere vehicula, sapien est commodo sapien, ultrices porttitor magna felis at felis. Maecenas rutrum vehicula nisl, quis semper ex blandit quis. Aenean neque nunc, hendrerit sed feugiat sit amet, aliquet sed sapien. Ut varius lobortis nisi.",
+			"Donec urna dolor, congue ac dolor at, consequat laoreet mi. Vivamus a turpis lacus. Morbi diam velit, vestibulum sit amet feugiat vitae, laoreet at enim. Praesent facilisis convallis condimentum. Fusce ac mi risus. Donec pharetra augue nec pharetra tincidunt. Fusce vestibulum eros leo, sed bibendum felis vehicula non. Integer quis arcu arcu. Nam molestie nunc ac lorem consequat efficitur. Vestibulum et egestas mauris. Suspendisse vehicula tincidunt justo. Nunc vitae malesuada erat, in gravida arcu. Curabitur placerat, ex quis egestas placerat, erat urna bibendum mauris, at finibus nisi tortor in eros."
+		];
 		var moveTargetTop = 1;
 		var moveTargetClosingTag = 2;
 		var placeholderText = null;
@@ -494,7 +511,7 @@
 			dropdownShow(e, this.element, true);
 		}
 
-		function createElement(name, parent, siblingBelow) {
+		function createElement(name, parent, siblingBelow, hideUI) {
 			if (loading)
 				return;
 
@@ -587,7 +604,7 @@
 				_AC(parent.elementIframe, e.elementIframe);
 			}
 
-			if (elementType === elementTypeText)
+			if (elementType === elementTypeText && !hideUI)
 				editText(e);
 
 			return e;
@@ -601,25 +618,35 @@
 			_RC(element.elementParent.elementIframe, element.elementIframe);
 		}
 
-		function editText(element) {
-			if (loading || !element || element.elementType !== elementTypeText)
-				return;
+		function getElementText(element) {
+			return (element.elementType === elementTypeText && !element.elementTag.empty ? element.elementTag.firstChild.nodeValue : "");
+		}
 
-			var elementTag = element.elementTag, txt = elementTag.firstChild.nodeValue,
-				modalTxtInput = _ID("modalTxtInput"), modalTxtOk = _ID("modalTxtOk");
-			modalTxtInput.value = elementTag.empty ? "" : txt;
-			modalTxtOk.onclick = function () {
-				$("#modalTxt").modal("hide");
-				var txt = modalTxtInput.value;
-				if (!txt) {
+		function setElementText(element, text) {
+			if (element.elementType === elementTypeText) {
+				var elementTag = element.elementTag;
+				if (!text) {
 					elementTag.empty = true;
 					elementTag.firstChild.nodeValue = placeholderText;
 					element.elementIframe.nodeValue = "";
 				} else {
 					elementTag.empty = false;
-					elementTag.firstChild.nodeValue = txt;
-					element.elementIframe.nodeValue = txt;
+					elementTag.firstChild.nodeValue = text;
+					element.elementIframe.nodeValue = text;
 				}
+			}
+		}
+
+		function editText(element) {
+			if (loading || !element || element.elementType !== elementTypeText)
+				return;
+
+			var modalTxtInput = _ID("modalTxtInput"),
+				modalTxtOk = _ID("modalTxtOk");
+			modalTxtInput.value = getElementText(element);
+			modalTxtOk.onclick = function () {
+				$("#modalTxt").modal("hide");
+				setElementText(element, modalTxtInput.value);
 			};
 			$("#modalTxt").modal({
 				keyboard: true,
@@ -709,8 +736,9 @@
 			addString("Cancel", "Cancelar");
 			addString("Close", "Fechar");
 			addString("EditText", "Editar Texto");
-			addString("EnterNewText", "Digite o novo texto:");
+			addString("NewText", "Novo Texto");
 			addString("Move", "Mover");
+			addString("Duplicate", "Duplicar");
 			addString("Delete", "Excluir");
 			addString("ElementName", "Nome do Elemento");
 			addString("FindElement", "Localizar Elemento");
@@ -718,6 +746,7 @@
 			addString("EditAttributes", "Editar Atributos");
 			addString("CreateElement", "Criar Elemento");
 			addString("CreateText", "Criar Texto");
+			addString("UseLoremIpsum", "Utilizar Parágrafo de Lorem Ipsum");
 			addString("PlaceholderText", "[Digite seu texto aqui]");
 			addString("ErrorBlockInsideInline", "Um elemento block não pode ser filho de um elemento inline \uD83D\uDE22");
 			addString("ErrorInlineParentBlock", "Um elemento inline não pode ser pai de um elemento block \uD83D\uDE22");
@@ -758,7 +787,9 @@
 		(function initial() {
 			var i, a, e,
 				modalTxtInput = _ID("modalTxtInput"),
-				modalTxtOk = _ID("modalTxtOk");
+				modalTxtOk = _ID("modalTxtOk"),
+				modalTxtBtnLoremIpsum = _ID("modalTxtBtnLoremIpsum"),
+				modalTxtSelectLoremIpsum = _ID("modalTxtSelectLoremIpsum");
 
 			$("#modalTxt").on("shown.bs.modal", function () {
 				modalTxtInput.focus();
@@ -767,6 +798,12 @@
 				if (e.key === "Enter" || e.keyCode === 13)
 					modalTxtOk.click();
 			};
+			modalTxtBtnLoremIpsum.onclick = function () {
+				modalTxtInput.value = loremIpsum[parseInt(modalTxtSelectLoremIpsum.value)];
+				modalTxtOk.click();
+			};
+			for (i = 0; i < loremIpsum.length; i++)
+				_TXT((i + 1).toString(), _SA(_CE("option", null, modalTxtSelectLoremIpsum), "value", i));
 
 			function sortByName(a, b) {
 				return (a.name < b.name ? -1 : 1);
@@ -1238,6 +1275,41 @@
 					return;
 
 				dropdownMoveOnHide = true;
+				hide();
+			};
+
+			window.dropdownDuplicate = function () {
+				if (dropdownFading || dropdownMoving || !dropdownVisible || dropdownTypeVisible)
+					return;
+
+				function duplicate(element, parent, siblingBelow) {
+					var elementType = element.elementType,
+						newElement = createElement(elementType.name, parent, siblingBelow, true);
+
+					if (elementType === elementTypeText) {
+						setElementText(newElement, getElementText(element));
+					} else {
+						var i, a, v;
+						for (i = elementType.attributes.length - 1; i >= 0; i--) {
+							a = elementType.attributes[i].name;
+							if ((v = _GA(element.elementIframe, a)))
+								_SA(newElement.elementIframe, a, v);
+						}
+						if (!elementType.noChildren) {
+							if (!element.elementContainerVisible)
+								toggleVisibility(newElement);
+							if ((i = element.elementContainer.childNodes.length)) {
+								i--;
+								duplicate(element.elementContainer.childNodes[i--], newElement, null);
+								while (i >= 0)
+									duplicate(element.elementContainer.childNodes[i--], newElement, newElement.elementContainer.childNodes[0]);
+							}
+						}
+					}
+				}
+
+				duplicate(dropdownElement, dropdownElement.elementParent, dropdownElement);
+
 				hide();
 			};
 
