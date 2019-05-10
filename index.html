@@ -245,6 +245,11 @@
 			margin: 0;
 			opacity: 1;
 		}
+
+		.editor-hidden-file-input {
+			width: 0;
+			position: absolute;
+		}
 	</style>
 </head>
 <body>
@@ -350,146 +355,147 @@
 		function _ITXT(text, parent) { var e = iframeDocument.createTextNode(text); if (parent) _AC(parent, e); return e; }
 		function _AC(parent, newChild) { parent.appendChild(newChild); return parent; }
 		function _IB(parent, newChild, refChild) { parent.insertBefore(newChild, refChild); return parent; }
-		function _BTN(className, icon, title, parent, clickHandler) { var btn = _CE("button", "btn btn-outline btn-xs " + className, parent); _CE("i", "fa fa-nomargin " + icon, btn); _SA(btn, "type", "button"); btn.onclick = clickHandler; if (title) _SA(btn, "title", title); return btn; }
+		function _BTN(className, icon, title, parent, clickHandler) { var btn = _CE("button", className, parent); _CE("i", "fa fa-nomargin " + icon, btn); _SA(btn, "type", "button"); btn.onclick = clickHandler; if (title) _SA(btn, "title", title); return btn; }
 		function _RC(parent, oldChild) { parent.removeChild(oldChild); return parent; }
 
-		var loading = false;
-		var valueFreeText = null;
-		var valueColor = 0;
-		var valueNumber = 1;
-		var htmlAttributes = [
-			{ name: "class", values: [""], common: true },
-			{ name: "id", values: valueFreeText, common: true },
-			{ name: "title", values: valueFreeText, common: true },
-		];
-		var htmlAttributeClass = htmlAttributes[0];
-		var elementTypes = [
-			{ name: "hr", block: true, noChildren: true, attributes: null },
-			{ name: "br", noChildren: true, attributes: null },
-			{ name: "img", noChildren: true, attributes: [{ name: "src", values: valueFreeText }, { name: "alt", values: valueFreeText }, { name: "width", values: valueNumber }, { name: "height", values: valueNumber }] },
-			{ name: "a", attributes: [{ name: "href", values: valueFreeText }, { name: "target", values: ["_blank"] }] },
-			{ name: "button", attributes: [{ name: "type", values: valueFreeText }, { name: "disabled", values: ["", "disabled"] }] },
-			{ name: "input", noChildren: true, attributes: [{ name: "type", values: ["", "button", "checkbox", "color", "date", "datetime-local", "email", "file", "hidden", "month", "number", "password", "radio", "range", "reset", "search", "submit", "tel", "text", "time", "url", "week"] }, { name: "autocomplete", values: ["", "on", "off"] }, { name: "spellcheck", values: ["", "true", "false"] }, { name: "readonly", values: ["", "readonly"] }, { name: "disabled", values: ["", "disabled"] }, { name: "name", values: valueFreeText }, { name: "value", values: valueFreeText }, { name: "min", values: valueNumber }, { name: "max", values: valueNumber }, { name: "maxlength", values: valueNumber }, { name: "checked", values: ["", "checked"] }, { name: "size", values: valueNumber }] },
-			{ name: "select", attributes: [{ name: "size", values: valueNumber }] },
-			{ name: "option", block: true, attributes: [{ name: "value", values: valueFreeText }, { name: "selected", values: ["", "selected"] }] },
-			{ name: "optgroup", block: true, attributes: [{ name: "label", values: valueFreeText }] },
-			{ name: "label", attributes: [{ name: "for", values: valueFreeText }] },
-			{ name: "p", block: true, attributes: null },
-			{ name: "b", attributes: null },
-			{ name: "i", attributes: null },
-			{ name: "span", attributes: null },
-			{ name: "div", block: true, attributes: null },
-			{ name: "section", block: true, attributes: null },
-			{ name: "nav", block: true, attributes: null },
-			{ name: "header", block: true, attributes: null },
-			{ name: "footer", block: true, attributes: null },
-			{ name: "main", block: true, attributes: null },
-			{ name: "article", block: true, attributes: null },
-			{ name: "aside", block: true, attributes: null },
-			{ name: "ul", block: true, attributes: null },
-			{ name: "ol", block: true, attributes: null },
-			{ name: "li", block: true, attributes: null },
-			{ name: "figure", block: true, attributes: null },
-			{ name: "h1", block: true, attributes: null },
-			{ name: "h2", block: true, attributes: null },
-			{ name: "h3", block: true, attributes: null },
-			{ name: "h4", block: true, attributes: null },
-			{ name: "h5", block: true, attributes: null },
-			{ name: "h6", block: true, attributes: null },
-		];
-		var elementTypesByName = {};
-		var elementTypeBody = null;
-		var elementTypeText = null;
-		var cssAttributes = [
-			{ name: "margin", values: valueFreeText },
-			{ name: "margin-top", values: valueFreeText },
-			{ name: "margin-right", values: valueFreeText },
-			{ name: "margin-bottom", values: valueFreeText },
-			{ name: "margin-left", values: valueFreeText },
-			{ name: "padding", values: valueFreeText },
-			{ name: "padding-top", values: valueFreeText },
-			{ name: "padding-right", values: valueFreeText },
-			{ name: "padding-bottom", values: valueFreeText },
-			{ name: "padding-left", values: valueFreeText },
-			{ name: "border", values: valueFreeText },
-			{ name: "border-top", values: valueFreeText },
-			{ name: "border-right", values: valueFreeText },
-			{ name: "border-bottom", values: valueFreeText },
-			{ name: "border-left", values: valueFreeText },
-			{ name: "border-color", values: valueColor },
-			{ name: "border-width", values: valueFreeText },
-			{ name: "border-style", values: ["none", "hidden", "dashed", "dotted", "double", "groove", "inset", "outset", "ridge", "solid"] },
-			{ name: "border-collapse", values: ["collapse", "separate"] },
-			{ name: "background", values: valueFreeText },
-			{ name: "background-color", values: valueColor },
-			{ name: "background-image", values: valueFreeText },
-			{ name: "background-attachment", values: ["fixed", "scroll"] },
-			{ name: "background-size", values: valueFreeText },
-			{ name: "background-position", values: valueFreeText },
-			{ name: "background-repeat", values: ["no-repeat", "repeat", "repeat-x", "repeat-y"] },
-			{ name: "width", values: valueFreeText },
-			{ name: "height", values: valueFreeText },
-			{ name: "min-width", values: valueFreeText },
-			{ name: "min-height", values: valueFreeText },
-			{ name: "max-width", values: valueFreeText },
-			{ name: "max-height", values: valueFreeText },
-			{ name: "z-index", values: valueFreeText },
-			{ name: "box-shadow", values: valueFreeText },
-			{ name: "box-sizing", values: ["border-box", "content-box"] },
-			{ name: "color", values: valueColor },
-			{ name: "opacity", values: valueFreeText },
-			{ name: "line-height", values: valueFreeText },
-			{ name: "font", values: valueFreeText },
-			{ name: "font-family", values: valueFreeText },
-			{ name: "font-size", values: valueFreeText },
-			{ name: "font-style", values: ["normal", "italic"] },
-			{ name: "font-weight", values: ["normal", "bold", "100", "200", "300", "400", "500", "600", "700", "800", "900"] },
-			{ name: "cursor", values: ["auto", "crosshair", "default", "pointer", "move", "e-resize", "ne-resize", "nw-resize", "n-resize", "se-resize", "sw-resize", "s-resize", "w-resize", "text", "wait", "help", "progress", "copy", "alias", "context-menu", "cell", "not-allowed", "col-resize", "row-resize", "no-drop", "vertical-text", "all-scroll", "nesw-resize", "nwse-resize", "ns-resize", "ew-resize"] },
-			{ name: "top", values: valueFreeText },
-			{ name: "right", values: valueFreeText },
-			{ name: "bottom", values: valueFreeText },
-			{ name: "left", values: valueFreeText },
-			{ name: "display", values: ["none", "block", "inline", "inline-block"] },
-			{ name: "position", values: ["static", "relative", "absolute", "fixed"] },
-			{ name: "float", values: ["left", "right"] },
-			{ name: "resize", values: ["none", "both", "horizontal", "vertical"] },
-			{ name: "text-align", values: ["left", "right", "center", "justify"] },
-			{ name: "text-shadow", values: valueFreeText },
-			{ name: "overflow", values: ["auto", "hidden", "visible", "scroll"] },
-			{ name: "text-overflow", values: ["clip", "ellipsis"] },
-			{ name: "text-decoration", values: valueFreeText },
-			{ name: "text-decoration-line", values: ["none", "underline", "overline", "line-through", "blink"] },
-			{ name: "text-decoration-color", values: valueColor },
-			{ name: "text-decoration-style", values: ["solid", "double", "dotted", "dashed", "wavy"] },
-			{ name: "vertical-align", values: ["baseline", "sub", "super", "text-top", "text-bottom", "middle", "top", "bottom"] },
-			{ name: "visibility", values: ["visible", "hidden"] },
-			{ name: "white-space", values: ["normal", "nowrap", "pre", "pre-wrap", "pre-line", "break-spaces"] },
-		];
-		var cssAttributesByName = {};
-		var editorContainer = _ID("editorContainer");
-		var editor = _ID("editor");
-		var editorCss = _ID("editorCss");
-		var loremIpsum = [
-			"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse erat nulla, mattis et maximus in, molestie at felis. Vestibulum ac eros vel est commodo egestas. Fusce blandit, purus sit amet aliquam tincidunt, nisl mauris euismod nisi, euismod pulvinar dolor metus sit amet orci. Praesent lectus magna, porta a volutpat ac, egestas a dui. Quisque semper, ex eget pretium faucibus, ante ipsum dictum nisl, sed iaculis ante nisi vehicula arcu. Praesent at feugiat dolor, placerat auctor ligula. Cras venenatis viverra nisi eu volutpat.",
-			"Morbi sed tortor ac lectus porta vehicula. Nullam venenatis magna in accumsan sodales. Donec massa orci, egestas vel tincidunt eu, laoreet et enim. Curabitur fermentum tempor felis, ac condimentum urna dictum sed. Maecenas at purus finibus, pellentesque sem at, scelerisque lorem. Nam pretium vitae lorem ac volutpat. Integer ligula turpis, lobortis quis congue ut, suscipit semper velit. Integer scelerisque quis lacus eu imperdiet. Integer ex tortor, finibus nec ultrices quis, pretium vel elit. Phasellus tincidunt hendrerit purus, in cursus erat euismod vitae.",
-			"In laoreet iaculis nibh, ut varius massa consectetur sit amet. Pellentesque auctor purus id sem posuere porta. Praesent vitae massa mi. Donec eget tellus egestas, aliquet justo vitae, vulputate lacus. Praesent eu tempor eros. Proin risus tellus, accumsan quis magna eget, viverra rutrum nunc. Nullam id placerat nisl, vel tempor augue. Phasellus dignissim dapibus dui a sollicitudin. Nam vulputate accumsan suscipit. Ut rhoncus risus a volutpat porta. Praesent eros ipsum, molestie eget dictum nec, malesuada vitae lectus. Aliquam pretium fermentum arcu, ultricies varius magna lobortis sit amet. Aenean tristique nisl sit amet turpis fringilla suscipit. Maecenas tincidunt, orci eget tincidunt suscipit, lectus nibh condimentum odio, non fermentum purus libero sagittis nibh. Nulla finibus, nulla ut gravida gravida, massa ipsum auctor lectus, et aliquam ligula sapien id felis.",
-			"Donec quis iaculis lorem. Vestibulum sollicitudin felis massa, et commodo neque sagittis sed. Phasellus et laoreet ligula, id lacinia orci. Suspendisse luctus eget odio et fringilla. Phasellus vel velit at ligula ullamcorper sollicitudin. Ut efficitur varius diam, fringilla accumsan nisi mattis vitae. Cras dapibus nec augue posuere rhoncus. Mauris dolor felis, malesuada et risus eu, tempus rhoncus libero. Quisque iaculis volutpat nunc, lacinia aliquet libero viverra in. Etiam sit amet lectus ut ante gravida malesuada sed a massa. Nulla a blandit lacus. Ut eleifend convallis libero a posuere. Fusce a tempus urna, eu molestie enim.",
-			"Cras fringilla, leo eu dignissim placerat, ligula lacus efficitur enim, eu congue arcu ante eu odio. Donec egestas bibendum est. Etiam non dolor pharetra, scelerisque tortor a, pulvinar diam. Suspendisse euismod elit lacus, ac gravida ligula malesuada nec. Etiam fringilla nisl odio, et luctus lorem posuere at. Nam justo enim, blandit ac lorem vitae, vestibulum scelerisque leo. Pellentesque molestie mattis neque non imperdiet. Nulla commodo orci risus, id molestie ex efficitur non. Sed quis elit non ante aliquet pharetra. Morbi lacinia mi metus, gravida accumsan ante cursus et. Morbi sed ipsum augue.",
-			"Curabitur vel turpis maximus, rhoncus metus at, fringilla massa. Nunc bibendum eros eget nunc scelerisque dictum. In dignissim imperdiet dolor, non ornare metus iaculis nec. Fusce nec rhoncus lectus, id rutrum odio. Nam varius ornare elit. Duis eget cursus diam. Proin fringilla ex libero, at consequat risus vulputate in. Proin nec magna ut tortor placerat commodo ut id metus. Praesent mollis quam id purus vulputate consectetur. Nam at tortor sit amet tellus vestibulum tempus. Pellentesque ante ipsum, viverra ut imperdiet sed, commodo mollis nibh.",
-			"Curabitur cursus lacus at commodo dictum. Sed sed pharetra purus. Quisque pharetra neque dolor, a interdum arcu eleifend quis. Donec feugiat mollis justo ut molestie. Donec sit amet eros eu sapien cursus sollicitudin at ac dolor. Duis in interdum eros, vitae rutrum lacus. Sed placerat ac arcu sit amet fringilla. Suspendisse et tincidunt augue. Duis mattis ex leo, nec iaculis orci porta in. Donec ultrices risus tempus est dignissim laoreet. Sed justo dolor, mattis ut dolor et, interdum pharetra neque. Aenean congue enim ligula, vitae interdum metus consectetur at.",
-			"Sed ullamcorper gravida odio vel auctor. Proin in velit pulvinar, consequat arcu non, congue arcu. Morbi ut egestas magna. Integer mattis lectus nec magna fringilla, vel gravida nisl eleifend. Quisque condimentum commodo mollis. Mauris convallis massa nec tincidunt porta. Fusce faucibus eros quis ante dignissim, maximus auctor justo posuere.",
-			"Integer nibh orci, finibus eu cursus nec, aliquam vitae augue. Sed lectus lectus, venenatis et venenatis eget, efficitur et turpis. Fusce enim nibh, imperdiet sit amet condimentum vel, suscipit et ex. Nullam elementum consequat elementum. Ut tempor, ante sed posuere vehicula, sapien est commodo sapien, ultrices porttitor magna felis at felis. Maecenas rutrum vehicula nisl, quis semper ex blandit quis. Aenean neque nunc, hendrerit sed feugiat sit amet, aliquet sed sapien. Ut varius lobortis nisi.",
-			"Donec urna dolor, congue ac dolor at, consequat laoreet mi. Vivamus a turpis lacus. Morbi diam velit, vestibulum sit amet feugiat vitae, laoreet at enim. Praesent facilisis convallis condimentum. Fusce ac mi risus. Donec pharetra augue nec pharetra tincidunt. Fusce vestibulum eros leo, sed bibendum felis vehicula non. Integer quis arcu arcu. Nam molestie nunc ac lorem consequat efficitur. Vestibulum et egestas mauris. Suspendisse vehicula tincidunt justo. Nunc vitae malesuada erat, in gravida arcu. Curabitur placerat, ex quis egestas placerat, erat urna bibendum mauris, at finibus nisi tortor in eros."
-		];
-		var moveTargetTop = 1;
-		var moveTargetClosingTag = 2;
-		var placeholderText = null;
-		var bodyElement = null;
-		var iframe = _ID("iframe");
-		var iframeWindow = null;
-		var iframeDocument = null;
-		var iframeBody = null;
-		var iframeStyle = null;
+		var loading = false,
+			valueFreeText = null,
+			valueColor = 0,
+			valueNumber = 1,
+			valueImage = 2,
+			htmlAttributes = [
+				{ name: "class", values: [""], common: true },
+				{ name: "id", values: valueFreeText, common: true },
+				{ name: "title", values: valueFreeText, common: true },
+			],
+			htmlAttributeClass = htmlAttributes[0],
+			elementTypes = [
+				{ name: "hr", block: true, noChildren: true, attributes: null },
+				{ name: "br", noChildren: true, attributes: null },
+				{ name: "img", noChildren: true, attributes: [{ name: "src", values: valueImage }, { name: "alt", values: valueFreeText }, { name: "width", values: valueNumber }, { name: "height", values: valueNumber }] },
+				{ name: "a", attributes: [{ name: "href", values: valueFreeText }, { name: "target", values: ["_blank"] }] },
+				{ name: "button", attributes: [{ name: "type", values: valueFreeText }, { name: "disabled", values: ["", "disabled"] }] },
+				{ name: "input", noChildren: true, attributes: [{ name: "type", values: ["", "button", "checkbox", "color", "date", "datetime-local", "email", "file", "hidden", "month", "number", "password", "radio", "range", "reset", "search", "submit", "tel", "text", "time", "url", "week"] }, { name: "autocomplete", values: ["", "on", "off"] }, { name: "spellcheck", values: ["", "true", "false"] }, { name: "readonly", values: ["", "readonly"] }, { name: "disabled", values: ["", "disabled"] }, { name: "name", values: valueFreeText }, { name: "value", values: valueFreeText }, { name: "min", values: valueNumber }, { name: "max", values: valueNumber }, { name: "maxlength", values: valueNumber }, { name: "checked", values: ["", "checked"] }, { name: "size", values: valueNumber }] },
+				{ name: "select", attributes: [{ name: "size", values: valueNumber }] },
+				{ name: "option", block: true, attributes: [{ name: "value", values: valueFreeText }, { name: "selected", values: ["", "selected"] }] },
+				{ name: "optgroup", block: true, attributes: [{ name: "label", values: valueFreeText }] },
+				{ name: "label", attributes: [{ name: "for", values: valueFreeText }] },
+				{ name: "p", block: true, attributes: null },
+				{ name: "b", attributes: null },
+				{ name: "i", attributes: null },
+				{ name: "span", attributes: null },
+				{ name: "div", block: true, attributes: null },
+				{ name: "section", block: true, attributes: null },
+				{ name: "nav", block: true, attributes: null },
+				{ name: "header", block: true, attributes: null },
+				{ name: "footer", block: true, attributes: null },
+				{ name: "main", block: true, attributes: null },
+				{ name: "article", block: true, attributes: null },
+				{ name: "aside", block: true, attributes: null },
+				{ name: "ul", block: true, attributes: null },
+				{ name: "ol", block: true, attributes: null },
+				{ name: "li", block: true, attributes: null },
+				{ name: "figure", block: true, attributes: null },
+				{ name: "h1", block: true, attributes: null },
+				{ name: "h2", block: true, attributes: null },
+				{ name: "h3", block: true, attributes: null },
+				{ name: "h4", block: true, attributes: null },
+				{ name: "h5", block: true, attributes: null },
+				{ name: "h6", block: true, attributes: null },
+			],
+			elementTypesByName = {},
+			elementTypeBody = null,
+			elementTypeText = null,
+			cssAttributes = [
+				{ name: "margin", values: valueFreeText },
+				{ name: "margin-top", values: valueFreeText },
+				{ name: "margin-right", values: valueFreeText },
+				{ name: "margin-bottom", values: valueFreeText },
+				{ name: "margin-left", values: valueFreeText },
+				{ name: "padding", values: valueFreeText },
+				{ name: "padding-top", values: valueFreeText },
+				{ name: "padding-right", values: valueFreeText },
+				{ name: "padding-bottom", values: valueFreeText },
+				{ name: "padding-left", values: valueFreeText },
+				{ name: "border", values: valueFreeText },
+				{ name: "border-top", values: valueFreeText },
+				{ name: "border-right", values: valueFreeText },
+				{ name: "border-bottom", values: valueFreeText },
+				{ name: "border-left", values: valueFreeText },
+				{ name: "border-color", values: valueColor },
+				{ name: "border-width", values: valueFreeText },
+				{ name: "border-style", values: ["none", "hidden", "dashed", "dotted", "double", "groove", "inset", "outset", "ridge", "solid"] },
+				{ name: "border-collapse", values: ["collapse", "separate"] },
+				{ name: "background", values: valueFreeText },
+				{ name: "background-color", values: valueColor },
+				{ name: "background-image", values: valueImage },
+				{ name: "background-attachment", values: ["fixed", "scroll"] },
+				{ name: "background-size", values: valueFreeText },
+				{ name: "background-position", values: valueFreeText },
+				{ name: "background-repeat", values: ["no-repeat", "repeat", "repeat-x", "repeat-y"] },
+				{ name: "width", values: valueFreeText },
+				{ name: "height", values: valueFreeText },
+				{ name: "min-width", values: valueFreeText },
+				{ name: "min-height", values: valueFreeText },
+				{ name: "max-width", values: valueFreeText },
+				{ name: "max-height", values: valueFreeText },
+				{ name: "z-index", values: valueFreeText },
+				{ name: "box-shadow", values: valueFreeText },
+				{ name: "box-sizing", values: ["border-box", "content-box"] },
+				{ name: "color", values: valueColor },
+				{ name: "opacity", values: valueFreeText },
+				{ name: "line-height", values: valueFreeText },
+				{ name: "font", values: valueFreeText },
+				{ name: "font-family", values: valueFreeText },
+				{ name: "font-size", values: valueFreeText },
+				{ name: "font-style", values: ["normal", "italic"] },
+				{ name: "font-weight", values: ["normal", "bold", "100", "200", "300", "400", "500", "600", "700", "800", "900"] },
+				{ name: "cursor", values: ["auto", "crosshair", "default", "pointer", "move", "e-resize", "ne-resize", "nw-resize", "n-resize", "se-resize", "sw-resize", "s-resize", "w-resize", "text", "wait", "help", "progress", "copy", "alias", "context-menu", "cell", "not-allowed", "col-resize", "row-resize", "no-drop", "vertical-text", "all-scroll", "nesw-resize", "nwse-resize", "ns-resize", "ew-resize"] },
+				{ name: "top", values: valueFreeText },
+				{ name: "right", values: valueFreeText },
+				{ name: "bottom", values: valueFreeText },
+				{ name: "left", values: valueFreeText },
+				{ name: "display", values: ["none", "block", "inline", "inline-block"] },
+				{ name: "position", values: ["static", "relative", "absolute", "fixed"] },
+				{ name: "float", values: ["left", "right"] },
+				{ name: "resize", values: ["none", "both", "horizontal", "vertical"] },
+				{ name: "text-align", values: ["left", "right", "center", "justify"] },
+				{ name: "text-shadow", values: valueFreeText },
+				{ name: "overflow", values: ["auto", "hidden", "visible", "scroll"] },
+				{ name: "text-overflow", values: ["clip", "ellipsis"] },
+				{ name: "text-decoration", values: valueFreeText },
+				{ name: "text-decoration-line", values: ["none", "underline", "overline", "line-through", "blink"] },
+				{ name: "text-decoration-color", values: valueColor },
+				{ name: "text-decoration-style", values: ["solid", "double", "dotted", "dashed", "wavy"] },
+				{ name: "vertical-align", values: ["baseline", "sub", "super", "text-top", "text-bottom", "middle", "top", "bottom"] },
+				{ name: "visibility", values: ["visible", "hidden"] },
+				{ name: "white-space", values: ["normal", "nowrap", "pre", "pre-wrap", "pre-line", "break-spaces"] },
+			],
+			cssAttributesByName = {},
+			editorContainer = _ID("editorContainer"),
+			editor = _ID("editor"),
+			editorCss = _ID("editorCss"),
+			loremIpsum = [
+				"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse erat nulla, mattis et maximus in, molestie at felis. Vestibulum ac eros vel est commodo egestas. Fusce blandit, purus sit amet aliquam tincidunt, nisl mauris euismod nisi, euismod pulvinar dolor metus sit amet orci. Praesent lectus magna, porta a volutpat ac, egestas a dui. Quisque semper, ex eget pretium faucibus, ante ipsum dictum nisl, sed iaculis ante nisi vehicula arcu. Praesent at feugiat dolor, placerat auctor ligula. Cras venenatis viverra nisi eu volutpat.",
+				"Morbi sed tortor ac lectus porta vehicula. Nullam venenatis magna in accumsan sodales. Donec massa orci, egestas vel tincidunt eu, laoreet et enim. Curabitur fermentum tempor felis, ac condimentum urna dictum sed. Maecenas at purus finibus, pellentesque sem at, scelerisque lorem. Nam pretium vitae lorem ac volutpat. Integer ligula turpis, lobortis quis congue ut, suscipit semper velit. Integer scelerisque quis lacus eu imperdiet. Integer ex tortor, finibus nec ultrices quis, pretium vel elit. Phasellus tincidunt hendrerit purus, in cursus erat euismod vitae.",
+				"In laoreet iaculis nibh, ut varius massa consectetur sit amet. Pellentesque auctor purus id sem posuere porta. Praesent vitae massa mi. Donec eget tellus egestas, aliquet justo vitae, vulputate lacus. Praesent eu tempor eros. Proin risus tellus, accumsan quis magna eget, viverra rutrum nunc. Nullam id placerat nisl, vel tempor augue. Phasellus dignissim dapibus dui a sollicitudin. Nam vulputate accumsan suscipit. Ut rhoncus risus a volutpat porta. Praesent eros ipsum, molestie eget dictum nec, malesuada vitae lectus. Aliquam pretium fermentum arcu, ultricies varius magna lobortis sit amet. Aenean tristique nisl sit amet turpis fringilla suscipit. Maecenas tincidunt, orci eget tincidunt suscipit, lectus nibh condimentum odio, non fermentum purus libero sagittis nibh. Nulla finibus, nulla ut gravida gravida, massa ipsum auctor lectus, et aliquam ligula sapien id felis.",
+				"Donec quis iaculis lorem. Vestibulum sollicitudin felis massa, et commodo neque sagittis sed. Phasellus et laoreet ligula, id lacinia orci. Suspendisse luctus eget odio et fringilla. Phasellus vel velit at ligula ullamcorper sollicitudin. Ut efficitur varius diam, fringilla accumsan nisi mattis vitae. Cras dapibus nec augue posuere rhoncus. Mauris dolor felis, malesuada et risus eu, tempus rhoncus libero. Quisque iaculis volutpat nunc, lacinia aliquet libero viverra in. Etiam sit amet lectus ut ante gravida malesuada sed a massa. Nulla a blandit lacus. Ut eleifend convallis libero a posuere. Fusce a tempus urna, eu molestie enim.",
+				"Cras fringilla, leo eu dignissim placerat, ligula lacus efficitur enim, eu congue arcu ante eu odio. Donec egestas bibendum est. Etiam non dolor pharetra, scelerisque tortor a, pulvinar diam. Suspendisse euismod elit lacus, ac gravida ligula malesuada nec. Etiam fringilla nisl odio, et luctus lorem posuere at. Nam justo enim, blandit ac lorem vitae, vestibulum scelerisque leo. Pellentesque molestie mattis neque non imperdiet. Nulla commodo orci risus, id molestie ex efficitur non. Sed quis elit non ante aliquet pharetra. Morbi lacinia mi metus, gravida accumsan ante cursus et. Morbi sed ipsum augue.",
+				"Curabitur vel turpis maximus, rhoncus metus at, fringilla massa. Nunc bibendum eros eget nunc scelerisque dictum. In dignissim imperdiet dolor, non ornare metus iaculis nec. Fusce nec rhoncus lectus, id rutrum odio. Nam varius ornare elit. Duis eget cursus diam. Proin fringilla ex libero, at consequat risus vulputate in. Proin nec magna ut tortor placerat commodo ut id metus. Praesent mollis quam id purus vulputate consectetur. Nam at tortor sit amet tellus vestibulum tempus. Pellentesque ante ipsum, viverra ut imperdiet sed, commodo mollis nibh.",
+				"Curabitur cursus lacus at commodo dictum. Sed sed pharetra purus. Quisque pharetra neque dolor, a interdum arcu eleifend quis. Donec feugiat mollis justo ut molestie. Donec sit amet eros eu sapien cursus sollicitudin at ac dolor. Duis in interdum eros, vitae rutrum lacus. Sed placerat ac arcu sit amet fringilla. Suspendisse et tincidunt augue. Duis mattis ex leo, nec iaculis orci porta in. Donec ultrices risus tempus est dignissim laoreet. Sed justo dolor, mattis ut dolor et, interdum pharetra neque. Aenean congue enim ligula, vitae interdum metus consectetur at.",
+				"Sed ullamcorper gravida odio vel auctor. Proin in velit pulvinar, consequat arcu non, congue arcu. Morbi ut egestas magna. Integer mattis lectus nec magna fringilla, vel gravida nisl eleifend. Quisque condimentum commodo mollis. Mauris convallis massa nec tincidunt porta. Fusce faucibus eros quis ante dignissim, maximus auctor justo posuere.",
+				"Integer nibh orci, finibus eu cursus nec, aliquam vitae augue. Sed lectus lectus, venenatis et venenatis eget, efficitur et turpis. Fusce enim nibh, imperdiet sit amet condimentum vel, suscipit et ex. Nullam elementum consequat elementum. Ut tempor, ante sed posuere vehicula, sapien est commodo sapien, ultrices porttitor magna felis at felis. Maecenas rutrum vehicula nisl, quis semper ex blandit quis. Aenean neque nunc, hendrerit sed feugiat sit amet, aliquet sed sapien. Ut varius lobortis nisi.",
+				"Donec urna dolor, congue ac dolor at, consequat laoreet mi. Vivamus a turpis lacus. Morbi diam velit, vestibulum sit amet feugiat vitae, laoreet at enim. Praesent facilisis convallis condimentum. Fusce ac mi risus. Donec pharetra augue nec pharetra tincidunt. Fusce vestibulum eros leo, sed bibendum felis vehicula non. Integer quis arcu arcu. Nam molestie nunc ac lorem consequat efficitur. Vestibulum et egestas mauris. Suspendisse vehicula tincidunt justo. Nunc vitae malesuada erat, in gravida arcu. Curabitur placerat, ex quis egestas placerat, erat urna bibendum mauris, at finibus nisi tortor in eros."
+			],
+			moveTargetTop = 1,
+			moveTargetClosingTag = 2,
+			placeholderText = null,
+			bodyElement = null,
+			iframe = _ID("iframe"),
+			iframeWindow = null,
+			iframeDocument = null,
+			iframeBody = null,
+			iframeStyle = null;
 
 		function iframeLoaded(win, doc, style) {
 			iframeWindow = win;
@@ -727,6 +733,35 @@
 			}
 		}
 
+		function loadFileDataURL(file, callback) {
+			if (loading) {
+				callback(null);
+				return;
+			}
+
+			if (!("FileReader" in window)) {
+				Notification.error(translate("ErrorNoFile"), true);
+				callback(null);
+				return;
+			}
+
+			loading = true;
+			Notification.wait();
+
+			var reader = new FileReader();
+			reader.onload = function () {
+				loading = false;
+				Notification.hide();
+				callback(reader.result);
+			};
+			reader.onerror = function () {
+				loading = false;
+				Notification.error(translate("ErrorFileLoad"), true);
+				callback(null);
+			};
+			reader.readAsDataURL(file);
+		}
+
 		(function translation() {
 			if (!window.editorStrings || (typeof window.editorStrings !== "object")) window.editorStrings = {};
 
@@ -746,12 +781,16 @@
 			addString("EditAttributes", "Editar Atributos");
 			addString("CreateElement", "Criar Elemento");
 			addString("CreateText", "Criar Texto");
+			addString("LoadImage", "Carregar Imagem");
 			addString("UseLoremIpsum", "Utilizar Parágrafo de Lorem Ipsum");
 			addString("PlaceholderText", "[Digite seu texto aqui]");
 			addString("ErrorBlockInsideInline", "Um elemento block não pode ser filho de um elemento inline \uD83D\uDE22");
 			addString("ErrorInlineParentBlock", "Um elemento inline não pode ser pai de um elemento block \uD83D\uDE22");
 			addString("ErrorNewElementMustHaveChildren", "O novo elemento também deve poder ter filhos \uD83D\uDE22");
 			addString("ErrorNewElementMustNotHaveChildren", "O novo elemento também não pode ter filhos \uD83D\uDE22");
+			addString("ErrorNoFile", "Seu browser não oferece suporte a acesso avançado de arquivos \uD83D\uDE22");
+			addString("ErrorFileTooLarge", "Por favor, escolha uma imagem com tamanho de até 1 MiB \uD83D\uDE22");
+			addString("ErrorFileLoad", "Ocorreu um erro ao ler o arquivo \uD83D\uDE22");
 			addString("ConfirmQuit", "Deseja mesmo sair da página? Você perderá o documento atual.");
 			addString("MoveMessage", "Clique sobre onde deseja mover o elemento, ou tecle Esc para cancelar");
 			addString("HideChildren", "Ocultar Filhos");
@@ -1173,7 +1212,7 @@
 			}
 
 			window.dropdownShow = function (e, element, closingTag) {
-				if (dropdownFading || dropdownMoving || dropdownVisible || dropdownTypeVisible)
+				if (loading || dropdownFading || dropdownMoving || dropdownVisible || dropdownTypeVisible)
 					return;
 
 				var rect = (closingTag ? element.elementClosingTag : element.elementTag).getBoundingClientRect(),
@@ -1244,7 +1283,7 @@
 			};
 
 			window.dropdownShowType = function (top, changeType) {
-				if (dropdownFading || dropdownMoving || !dropdownVisible || dropdownTypeVisible)
+				if (loading || dropdownFading || dropdownMoving || !dropdownVisible || dropdownTypeVisible)
 					return;
 
 				dropdownActionTop = top;
@@ -1254,7 +1293,7 @@
 			};
 
 			window.dropdownCreateText = function (top) {
-				if (dropdownFading || dropdownMoving || !dropdownVisible || dropdownTypeVisible)
+				if (loading || dropdownFading || dropdownMoving || !dropdownVisible || dropdownTypeVisible)
 					return;
 
 				dropdownActionTop = top;
@@ -1263,7 +1302,7 @@
 			};
 
 			window.dropdownEditText = function () {
-				if (dropdownFading || dropdownMoving || !dropdownVisible || dropdownTypeVisible)
+				if (loading || dropdownFading || dropdownMoving || !dropdownVisible || dropdownTypeVisible)
 					return;
 
 				dropdownEditTextOnHide = true;
@@ -1271,7 +1310,7 @@
 			};
 
 			window.dropdownMove = function () {
-				if (dropdownFading || dropdownMoving || !dropdownVisible || dropdownTypeVisible)
+				if (loading || dropdownFading || dropdownMoving || !dropdownVisible || dropdownTypeVisible)
 					return;
 
 				dropdownMoveOnHide = true;
@@ -1279,7 +1318,7 @@
 			};
 
 			window.dropdownDuplicate = function () {
-				if (dropdownFading || dropdownMoving || !dropdownVisible || dropdownTypeVisible)
+				if (loading || dropdownFading || dropdownMoving || !dropdownVisible || dropdownTypeVisible)
 					return;
 
 				function duplicate(element, parent, siblingBelow) {
@@ -1314,7 +1353,7 @@
 			};
 
 			window.dropdownFind = function () {
-				if (dropdownFading || dropdownMoving || !dropdownVisible || dropdownHighlighting)
+				if (loading || dropdownFading || dropdownMoving || !dropdownVisible || dropdownHighlighting)
 					return;
 
 				hide();
@@ -1327,9 +1366,12 @@
 				if (y < 0 || y > iframeWindow.innerHeight)
 					iframeWindow.scroll({ top: y + iframeWindow.scrollY, behavior: "smooth" });
 
+				loading = true;
+
 				interval = setInterval(function () {
 					if (!dropdownHighlighting) {
 						if (interval) {
+							loading = false;
 							e.style.backgroundColor = "";
 							e.style.color = "";
 							clearInterval(interval);
@@ -1346,6 +1388,7 @@
 						e.style.color = "#000";
 					}
 					if (times >= 10) {
+						loading = false;
 						e.style.backgroundColor = "";
 						e.style.color = "";
 						dropdownHighlighting = false;
@@ -1356,7 +1399,7 @@
 			};
 
 			window.dropdownToggleVisibility = function () {
-				if (dropdownFading || dropdownMoving || !dropdownVisible || dropdownTypeVisible)
+				if (loading || dropdownFading || dropdownMoving || !dropdownVisible || dropdownTypeVisible)
 					return;
 
 				toggleVisibility(dropdownElement);
@@ -1364,7 +1407,7 @@
 			};
 
 			window.dropdownEditAttributes = function () {
-				if (dropdownFading || dropdownMoving || !dropdownVisible || dropdownTypeVisible)
+				if (loading || dropdownFading || dropdownMoving || !dropdownVisible || dropdownTypeVisible)
 					return;
 
 				dropdownEditAttributesOnHide = true;
@@ -1372,7 +1415,7 @@
 			};
 
 			window.dropdownDelete = function () {
-				if (dropdownFading || dropdownMoving || !dropdownVisible || dropdownTypeVisible)
+				if (loading || dropdownFading || dropdownMoving || !dropdownVisible || dropdownTypeVisible)
 					return;
 
 				deleteElement(dropdownElement);
@@ -1407,6 +1450,9 @@
 			};
 
 			_ID("modalAttributesOk").onclick = function () {
+				if (loading)
+					return;
+
 				var i, a, v, e = dropdownElement.elementIframe,
 					elementType = dropdownElement.elementType,
 					attributes = elementType.attributes;
@@ -1429,7 +1475,7 @@
 			};
 
 			function showModalAttributes() {
-				var i, j, a, c, row, v, div, input, opt,
+				var i, j, a, c, row, v, div, input, inputGroup, opt, fileInput,
 					e = dropdownElement.elementIframe,
 					elementType = dropdownElement.elementType,
 					attributes = elementType.attributes,
@@ -1463,7 +1509,37 @@
 								_SA(opt, "selected", "selected");
 						}
 					} else {
-						input = _SA(_SA(_SA(_CE("input", "form-control", div), "spellcheck", "false"), "type", a.values === valueNumber ? "number" : "text"), "autocomplete", "off");
+						if (a.values === valueImage) {
+							inputGroup = _CE("div", "input-group", div);
+							input = _SA(_SA(_SA(_CE("input", "form-control", inputGroup), "spellcheck", "false"), "type", "text"), "autocomplete", "off");
+							fileInput = _SA(_SA(_SA(_CE("input", "editor-hidden-file-input", inputGroup), "tabindex", "-1"), "type", "file"), "accept", "image/png,image/gif,image/jpeg");
+							fileInput.input = input;
+							fileInput.onchange = function () {
+								var file, input = this.input;
+								if (loading)
+									return;
+								if (!("files" in this)) {
+									Notification.error(translate("ErrorNoFile"), true);
+									return;
+								}
+								if (!this.files.length || !(file = this.files[0]))
+									return;
+								if (file.size > (1 << 20)) {
+									Notification.error(translate("ErrorFileTooLarge"), true);
+									return;
+								}
+								loadFileDataURL(file, function (dataURL) {
+									input.value = dataURL || "";
+								});
+							};
+							_BTN("btn btn-default btn-force-border", "fa-folder-open", translate("LoadImage"), _CE("span", "input-group-btn", inputGroup), function () {
+								if (loading)
+									return;
+								this.fileInput.click();
+							}).fileInput = fileInput;
+						} else {
+							input = _SA(_SA(_SA(_CE("input", "form-control", div), "spellcheck", "false"), "type", a.values === valueNumber ? "number" : "text"), "autocomplete", "off");
+						}
 						input.onkeydown = attributeInputKeyDown;
 						input.value = v;
 					}
