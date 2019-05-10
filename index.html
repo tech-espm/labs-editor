@@ -253,18 +253,18 @@
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-label="Fechar"><span aria-hidden="true">&times;</span></button>
-					<h4 class="modal-title">Editar Texto</h4>
+					<button type="button" class="close" data-dismiss="modal" data-string="aria-label|Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" data-string="text|EditText"></h4>
 				</div>
 				<div class="modal-body">
 					<div class="form-group">
-						<label for="modalTxtInput">Digite o novo text:</label>
+						<label for="modalTxtInput" data-string="text|EnterNewText"></label>
 						<input type="text" class="form-control" id="modalTxtInput" spellcheck="true" autocomplete="off" />
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-outline btn-default" data-dismiss="modal">Cancelar</button>
-					<button type="button" class="btn btn-primary" id="modalTxtOk">OK</button>
+					<button type="button" class="btn btn-outline btn-default" data-dismiss="modal" data-string="text|Cancel"></button>
+					<button type="button" class="btn btn-primary" id="modalTxtOk" data-string="text|OK"></button>
 				</div>
 			</div>
 		</div>
@@ -274,13 +274,13 @@
 		<div class="modal-dialog modal-lg" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-label="Fechar"><span aria-hidden="true">&times;</span></button>
-					<h4 class="modal-title">Editar Atributos</h4>
+					<button type="button" class="close" data-dismiss="modal" data-string="aria-label|Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" data-string="text|EditAttributes"></h4>
 				</div>
 				<div class="modal-body" id="modalAttributesBody"></div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-outline btn-default" data-dismiss="modal">Cancelar</button>
-					<button type="button" class="btn btn-primary" id="modalAttributesOk">OK</button>
+					<button type="button" class="btn btn-outline btn-default" data-dismiss="modal" data-string="text|Cancel"></button>
+					<button type="button" class="btn btn-primary" id="modalAttributesOk" data-string="text|OK"></button>
 				</div>
 			</div>
 		</div>
@@ -293,36 +293,36 @@
 		</ul>
 		<div class="tab-content">
 			<div class="tab-pane fade in active editor" id="editor" role="tabpanel"></div>
-			<div id="editorCss" role="tabpanel" class="tab-pane fade editor">Em construção</div>
+			<div id="editorCss" role="tabpanel" class="tab-pane fade editor">...</div>
 		</div>
 	</div>
 	<div class="editor-bar" id="bar"></div>
 	<iframe class="editor-iframe" id="iframe" frameborder="0"></iframe>
 	<ul class="dropdown-menu editor-menu-animated" id="dropdownType">
 		<li class="dropdown-menu-input-container">
-			<input id="dropdownTypeInput" spellcheck="false" autocomplete="off" class="dropdown-menu-input form-control input-sm" placeholder="Nome do elemento" />
+			<input id="dropdownTypeInput" spellcheck="false" autocomplete="off" class="dropdown-menu-input form-control input-sm" data-string="placeholder|ElementName" />
 		</li>
 		<li class="divider"></li>
 		<li class="dropdown-menu-container" id="dropdownTypeContainer"></li>
 	</ul>
 	<div class="editor-menu editor-menu-animated editor-menu-top" id="dropdownMenuTop">
-		<button class="btn btn-outline btn-xs btn-success" type="button" title="Criar Elemento" onclick="dropdownShowType(true, false)"><i class="fa fa-nomargin fa-code"></i></button>
-		<button class="btn btn-outline btn-xs btn-primary" type="button" title="Criar Texto" onclick="dropdownCreateText(true)"><i class="fa fa-nomargin fa-i-cursor"></i></button>
+		<button class="btn btn-outline btn-xs btn-success" type="button" data-string="title|CreateElement" onclick="dropdownShowType(true, false)"><i class="fa fa-nomargin fa-code"></i></button>
+		<button class="btn btn-outline btn-xs btn-primary" type="button" data-string="title|CreateText" onclick="dropdownCreateText(true)"><i class="fa fa-nomargin fa-i-cursor"></i></button>
 	</div>
 	<div class="editor-menu editor-menu-animated editor-menu-left" id="dropdownMenuLeft">
 		<button class="btn btn-outline btn-xs btn-default" type="button" onclick="dropdownToggleVisibility()" id="dropdownMenuLeftToggleVisibility"><i class="fa fa-nomargin fa-plus"></i></button>
 	</div>
 	<div class="editor-menu editor-menu-animated editor-menu-right" id="dropdownMenuRight">
-		<button class="btn btn-outline btn-xs btn-default" type="button" title="Mover" onclick="dropdownMove()"><i class="fa fa-nomargin fa-arrows"></i></button>
-		<button class="btn btn-outline btn-xs btn-default" type="button" title="Editar Texto" onclick="dropdownEditText()" id="dropdownMenuRightEditText"><i class="fa fa-nomargin fa-i-cursor"></i></button>
-		<button class="btn btn-outline btn-xs btn-default" type="button" title="Localizar Elemento" onclick="dropdownFind()" id="dropdownMenuRightFind"><i class="fa fa-nomargin fa-search"></i></button>
-		<button class="btn btn-outline btn-xs btn-default" type="button" title="Alterar Elemento" onclick="dropdownShowType(true, true)" id="dropdownMenuRightChangeType"><i class="fa fa-nomargin fa-code"></i></button>
-		<button class="btn btn-outline btn-xs btn-primary" type="button" title="Editar Atributos" onclick="dropdownEditAttributes()" id="dropdownMenuRightEditAttributes"><i class="fa fa-nomargin fa-info"></i></button>
-		<button class="btn btn-outline btn-xs btn-danger" type="button" title="Excluir" onclick="dropdownDelete()"><i class="fa fa-nomargin fa-times"></i></button>
+		<button class="btn btn-outline btn-xs btn-default" type="button" data-string="title|Move" onclick="dropdownMove()"><i class="fa fa-nomargin fa-arrows"></i></button>
+		<button class="btn btn-outline btn-xs btn-default" type="button" data-string="title|EditText" onclick="dropdownEditText()" id="dropdownMenuRightEditText"><i class="fa fa-nomargin fa-i-cursor"></i></button>
+		<button class="btn btn-outline btn-xs btn-default" type="button" data-string="title|FindElement" onclick="dropdownFind()" id="dropdownMenuRightFind"><i class="fa fa-nomargin fa-search"></i></button>
+		<button class="btn btn-outline btn-xs btn-default" type="button" data-string="title|ChangeElement" onclick="dropdownShowType(true, true)" id="dropdownMenuRightChangeType"><i class="fa fa-nomargin fa-code"></i></button>
+		<button class="btn btn-outline btn-xs btn-primary" type="button" data-string="title|EditAttributes" onclick="dropdownEditAttributes()" id="dropdownMenuRightEditAttributes"><i class="fa fa-nomargin fa-info"></i></button>
+		<button class="btn btn-outline btn-xs btn-danger" type="button" data-string="title|Delete" onclick="dropdownDelete()"><i class="fa fa-nomargin fa-times"></i></button>
 	</div>
 	<div class="editor-menu editor-menu-animated editor-menu-bottom" id="dropdownMenuBottom">
-		<button class="btn btn-outline btn-xs btn-success" type="button" title="Criar Elemento" onclick="dropdownShowType(false, false)"><i class="fa fa-nomargin fa-code"></i></button>
-		<button class="btn btn-outline btn-xs btn-primary" type="button" title="Criar Texto" onclick="dropdownCreateText(false)"><i class="fa fa-nomargin fa-i-cursor"></i></button>
+		<button class="btn btn-outline btn-xs btn-success" type="button" data-string="title|CreateElement" onclick="dropdownShowType(false, false)"><i class="fa fa-nomargin fa-code"></i></button>
+		<button class="btn btn-outline btn-xs btn-primary" type="button" data-string="title|CreateText" onclick="dropdownCreateText(false)"><i class="fa fa-nomargin fa-i-cursor"></i></button>
 	</div>
 
 	<script type="text/javascript" src="lib/jquery/jquery-1.0.0.min.js"></script>
@@ -466,7 +466,7 @@
 		var editorCss = _ID("editorCss");
 		var moveTargetTop = 1;
 		var moveTargetClosingTag = 2;
-		var placeholderText = "[Digite seu text aqui]";
+		var placeholderText = null;
 		var bodyElement = null;
 		var iframe = _ID("iframe");
 		var iframeWindow = null;
@@ -474,7 +474,7 @@
 		var iframeBody = null;
 		var iframeStyle = null;
 
-		function iframeCarregado(win, doc, style) {
+		function iframeLoaded(win, doc, style) {
 			iframeWindow = win;
 			iframeDocument = doc;
 			iframeBody = doc.body;
@@ -536,7 +536,7 @@
 
 			if (elementType !== elementTypeText &&
 				elementType.block && !parent.elementType.block) {
-				Notification.error("Um elemento block não pode ser filho de um elemento inline \uD83D\uDE22", true);
+				Notification.error(translate("ErrorBlockInsideInline"), true);
 				return;
 			}
 
@@ -637,20 +637,20 @@
 
 			if (newElementType.block) {
 				if (!element.elementParent.elementType.block) {
-					Notification.error("Um elemento block não pode ser filho de um elemento inline \uD83D\uDE22", true);
+					Notification.error(translate("ErrorBlockInsideInline"), true);
 					return;
 				}
 			} else if (!element.elementType.noChildren) {
 				for (i = element.elementContainer.childNodes.length - 1; i >= 0; i--) {
 					if (element.elementContainer.childNodes[i].elementType.block) {
-						Notification.error("Um elemento inline não pode ser pai de um elemento block \uD83D\uDE22", true);
+						Notification.error(translate("ErrorInlineParentBlock"), true);
 						return;
 					}
 				}
 			}
 
 			if (!newElementType.noChildren !== !element.elementType.noChildren) {
-				Notification.error(newElementType.noChildren ? "O novo elemento também deve poder ter filhos \uD83D\uDE22" : "O novo elemento também não pode ter filhos \uD83D\uDE22", true);
+				Notification.error(translate(newElementType.noChildren ? "ErrorNewElementMustHaveChildren" : "ErrorNewElementMustNotHaveChildren"), true);
 				return;
 			}
 
@@ -699,6 +699,61 @@
 				bar.style.pointerEvents = "";
 			}
 		}
+
+		(function translation() {
+			if (!window.editorStrings || (typeof window.editorStrings !== "object")) window.editorStrings = {};
+
+			function addString(key, value) { if (!window.editorStrings[key]) window.editorStrings[key] = value; }
+
+			addString("OK", "OK");
+			addString("Cancel", "Cancelar");
+			addString("Close", "Fechar");
+			addString("EditText", "Editar Texto");
+			addString("EnterNewText", "Digite o novo texto:");
+			addString("Move", "Mover");
+			addString("Delete", "Excluir");
+			addString("ElementName", "Nome do Elemento");
+			addString("FindElement", "Localizar Elemento");
+			addString("ChangeElement", "Alterar Elemento");
+			addString("EditAttributes", "Editar Atributos");
+			addString("CreateElement", "Criar Elemento");
+			addString("CreateText", "Criar Texto");
+			addString("PlaceholderText", "[Digite seu texto aqui]");
+			addString("ErrorBlockInsideInline", "Um elemento block não pode ser filho de um elemento inline \uD83D\uDE22");
+			addString("ErrorInlineParentBlock", "Um elemento inline não pode ser pai de um elemento block \uD83D\uDE22");
+			addString("ErrorNewElementMustHaveChildren", "O novo elemento também deve poder ter filhos \uD83D\uDE22");
+			addString("ErrorNewElementMustNotHaveChildren", "O novo elemento também não pode ter filhos \uD83D\uDE22");
+			addString("ConfirmQuit", "Deseja mesmo sair da página? Você perderá o documento atual.");
+			addString("MoveMessage", "Clique sobre onde deseja mover o elemento, ou tecle Esc para cancelar");
+			addString("HideChildren", "Ocultar Filhos");
+			addString("ShowChildren", "Mostrar Filhos");
+			addString("ElementHelp", "Ajuda do Elemento");
+
+			window.translate = function (key) { return (editorStrings[key] || key); };
+
+			placeholderText = translate("PlaceholderText");
+
+			function translateChildren(childNodes) {
+				var i, c, d, idx, attr, key;
+				for (i = childNodes.length - 1; i >= 0; i--) {
+					c = childNodes[i];
+					if (!c.tagName)
+						continue;
+					if (c.childNodes && c.childNodes.length)
+						translateChildren(c.childNodes);
+					if (!(d = c.getAttribute("data-string")) || (idx = d.indexOf("|")) <= 0)
+						continue;
+					attr = d.substr(0, idx);
+					key = d.substr(idx + 1);
+					if (attr === "text")
+						_TXT(translate(key), c);
+					else
+						_SA(c, attr, translate(key));
+				}
+			}
+
+			translateChildren(document.body.childNodes);
+		})();
 
 		(function initial() {
 			var i, a, e,
@@ -760,7 +815,7 @@
 			_SA(iframe, "src", "empty.html");
 
 			window.onbeforeunload = function () {
-				return null; // "Deseja mesmo sair da página? Você perderá o documento atual.";
+				return null; // translate("ConfirmQuit")
 			};
 		})();
 
@@ -1069,7 +1124,7 @@
 					document.addEventListener("keydown", keyDownMoving, true);
 					$(dropdownElement).addClass("moving");
 					$(editor).addClass("moving");
-					Notification.show("Clique sobre onde deseja mover o elemento, ou tecle Esc para cancelar", "default", -1, false);
+					Notification.show(translate("MoveMessage"), "default", -1, false);
 				} else {
 					dropdownMoving = false;
 					document.removeEventListener("click", clickMoving, true);
@@ -1115,10 +1170,10 @@
 				}
 				if (dropdownShowLeft) {
 					if (dropdownElement.elementContainerVisible) {
-						_SA(dropdownMenuLeftToggleVisibility, "title", "Ocultar Filhos");
+						_SA(dropdownMenuLeftToggleVisibility, "title", translate("HideChildren"));
 						dropdownMenuLeftToggleVisibility.firstChild.className = "fa fa-nomargin fa-minus";
 					} else {
-						_SA(dropdownMenuLeftToggleVisibility, "title", "Mostrar Filhos");
+						_SA(dropdownMenuLeftToggleVisibility, "title", translate("ShowChildren"));
 						dropdownMenuLeftToggleVisibility.firstChild.className = "fa fa-nomargin fa-plus";
 					}
 				}
@@ -1373,7 +1428,7 @@
 					a.elementType = elementTypes[i];
 					_TXT(elementTypes[i].name + " ", a);
 					floatingHelp = _CE("i", "fa fa-nomargin fa-question-circle fa-floating-help", a);
-					_SA(floatingHelp, "title", "Ajuda do elemento");
+					_SA(floatingHelp, "title", translate("ElementHelp"));
 					floatingHelp.onclick = helpClick;
 				}
 			})();
