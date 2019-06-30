@@ -74,6 +74,18 @@
 					color: #333;
 				}
 
+		.nav-tabs-menu {
+			position: absolute;
+			right: 5px;
+			top: 5px;
+		}
+
+		.nav-tabs-file-load {
+			position: absolute;
+			overflow: hidden;
+			width: 0;
+		}
+
 		.editor-container {
 			position: absolute;
 			left: 0;
@@ -295,11 +307,44 @@
 		</div>
 	</div>
 
+	<div class="modal fade" tabindex="-1" role="dialog" id="modalSave">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" data-string="aria-label|Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" data-string="text|Save"></h4>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label for="modalSaveFileName" data-string="text|FileName"></label>
+						<input type="text" class="form-control" id="modalSaveFileName" spellcheck="false" autocomplete="off" />
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-outline btn-default" data-dismiss="modal" data-string="text|Cancel"></button>
+					<button type="button" class="btn btn-primary" id="modalSaveOk" data-string="text|Save"></button>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<div class="editor-container" id="editorContainer">
 		<ul class="nav nav-tabs" role="tablist">
 			<li role="presentation" class="active"><a href="#editor" aria-controls="editor" role="tab" data-toggle="tab">HTML</a></li>
 			<li role="presentation"><a href="#editorCss" aria-controls="editorCss" role="tab" data-toggle="tab">CSS</a></li>
 		</ul>
+		<div class="nav-tabs-menu">
+			<button type="button" class="btn btn-primary btn-outline dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				<span class="fa fa-bars" data-string="aria-label|Menu"></span>
+			</button>
+			<ul class="dropdown-menu dropdown-menu-right">
+				<li><a href="#" data-string="text|New" id="editorActionNew"><i class="fa fa-file-o"></i> </a></li>
+				<li role="separator" class="divider"></li>
+				<li><a href="#" data-string="text|LoadEllipsis" id="editorActionLoad"><i class="fa fa-folder-open-o"></i> </a></li>
+				<li><a href="#" data-string="text|SaveEllipsis" id="editorActionSave"><i class="fa fa-cloud-download"></i> </a></li>
+			</ul>
+			<div class="nav-tabs-file-load"><input id="editorActionFileLoad" tabindex="-1" type="file" accept="text/html" /></div>
+		</div>
 		<div class="tab-content">
 			<div class="tab-pane fade in active editor" id="editor" role="tabpanel"></div>
 			<div id="editorCss" role="tabpanel" class="tab-pane fade editor">...</div>
@@ -344,7 +389,7 @@
 
 		Notification.wait();
 
-		// Funções para faciliar a escrita
+		// Helper functions
 		function _ID(id) { return document.getElementById(id); }
 		function _SA(parent, name, value) { parent.setAttribute(name, value); return parent; }
 		function _GA(parent, name) { return (parent.getAttribute(name) || ""); }
@@ -762,7 +807,8 @@
 			reader.readAsDataURL(file);
 		}
 
-		(function translation() {
+		// Translation
+		(function () {
 			if (!window.editorStrings || (typeof window.editorStrings !== "object")) window.editorStrings = {};
 
 			function addString(key, value) { if (!window.editorStrings[key]) window.editorStrings[key] = value; }
@@ -770,6 +816,14 @@
 			addString("OK", "OK");
 			addString("Cancel", "Cancelar");
 			addString("Close", "Fechar");
+			addString("Menu", "Menu");
+			addString("New", "Novo");
+			addString("Load", "Abrir");
+			addString("Save", "Salvar");
+			addString("FileName", "Nome do Arquivo");
+			addString("LoadEllipsis", "Abrir...");
+			addString("SaveEllipsis", "Salvar...");
+			addString("ExportHTML", "Exportar HTML...");
 			addString("EditText", "Editar Texto");
 			addString("NewText", "Novo Texto");
 			addString("Move", "Mover");
@@ -791,6 +845,7 @@
 			addString("ErrorNoFile", "Seu browser não oferece suporte a acesso avançado de arquivos \uD83D\uDE22");
 			addString("ErrorFileTooLarge", "Por favor, escolha uma imagem com tamanho de até 1 MiB \uD83D\uDE22");
 			addString("ErrorFileLoad", "Ocorreu um erro ao ler o arquivo \uD83D\uDE22");
+			addString("ErrorInvalidHTML", "O arquivo escolhido não parece ser um arquivo HTML válido \uD83D\uDE22");
 			addString("ConfirmQuit", "Deseja mesmo sair da página? Você perderá o documento atual.");
 			addString("MoveMessage", "Clique sobre onde deseja mover o elemento, ou tecle Esc para cancelar");
 			addString("HideChildren", "Ocultar Filhos");
@@ -823,7 +878,8 @@
 			translateChildren(document.body.childNodes);
 		})();
 
-		(function initial() {
+		// Initial
+		(function () {
 			var i, a, e,
 				modalTxtInput = _ID("modalTxtInput"),
 				modalTxtOk = _ID("modalTxtOk"),
@@ -895,7 +951,8 @@
 			};
 		})();
 
-		(function resize() {
+		// Resize
+		(function () {
 			var bar = _ID("bar");
 			var barDrag = false;
 			var barDragX = 0;
@@ -959,7 +1016,8 @@
 			bar.style.display = "block";
 		})();
 
-		(function dropdownMenus() {
+		// DropdownMenus
+		(function () {
 			var dropdownX = 0,
 				dropdownY = 0,
 				dropdownFading = false, dropdownMoving = false,
@@ -1114,7 +1172,7 @@
 			function mouseDown(e) {
 				if ((!dropdownVisible && !dropdownTypeVisible) || dropdownFading || e.button)
 					return;
-				// Ignora todos os cliques sobre os menus
+				// Ignore all clicks on the menus
 				var t = e.target;
 				while (t && t.parentNode && t !== document.body) {
 					if (t === dropdownMenuTop || t === dropdownMenuLeft || t === dropdownMenuRight || t === dropdownMenuBottom || t === dropdownType)
@@ -1552,7 +1610,8 @@
 				});
 			}
 
-			(function initial() {
+			// Initial
+			(function () {
 				var i, a, floatingHelp;
 
 				function aClick(e) {
@@ -1580,6 +1639,191 @@
 					floatingHelp.onclick = helpClick;
 				}
 			})();
+		})();
+
+		// Actions Menu
+		(function () {
+			var editorActionFileLoad = _ID("editorActionFileLoad"),
+				modalSaveFileName = _ID("modalSaveFileName"),
+				modalSaveOk = _ID("modalSaveOk");
+
+			$("#modalSave").on("shown.bs.modal", function () {
+				modalSaveFileName.focus();
+			});
+
+			modalSaveFileName.onkeydown = function (e) {
+				if (e.key === "Enter" || e.keyCode === 13)
+					modalSaveOk.click();
+			};
+
+			function loadFileFromInput() {
+				if (loading)
+					return;
+
+				if (!("files" in editorActionFileLoad)) {
+					Notification.error(translate("ErrorNoFile"), true);
+					return;
+				}
+
+				if (!editorActionFileLoad.files.length || !editorActionFileLoad.files[0])
+					return;
+
+				loadFileDataURL(editorActionFileLoad.files[0], function (dataURL) {
+					var parent = editorActionFileLoad.parentNode;
+					editorActionFileLoad = _SA(_SA(_SA(_CE("input", null, _RC(parent, editorActionFileLoad)), "type", "file"), "tabindex", "-1"), "accept", "text/html");
+					editorActionFileLoad.onchange = loadFileFromInput;
+
+					if (!dataURL)
+						return;
+
+					if (dataURL.indexOf("data:text/html;base64,")) {
+						Notification.error(translate("ErrorInvalidHTML"), true);
+						return;
+					}
+
+					loading = true;
+					Notification.wait();
+
+					try {
+						var xhr = new XMLHttpRequest(), done = false;
+						xhr.responseType = "document";
+						xhr.onreadystatechange = function () {
+							if (xhr.readyState === 4) {
+								if (done)
+									return;
+								done = true;
+
+								loading = false;
+								Notification.hide();
+
+								try {
+									loadDocument(xhr.responseXML);
+								} catch (ex) {
+									Notification.error(translate("ErrorFileLoad"), true);
+								}
+							}
+						};
+						xhr.onerror = function () {
+							loading = false;
+							Notification.error(translate("ErrorFileLoad"), true);
+						};
+						xhr.open("get", dataURL);
+						xhr.send();
+					} catch (ex) {
+						loading = false;
+						Notification.error(translate("ErrorFileLoad"), true);
+					}
+				});
+			}
+
+			function newDocument() {
+				if (!bodyElement)
+					return;
+
+				while (bodyElement.elementContainer.firstChild)
+					deleteElement(bodyElement.elementContainer.firstChild);
+			}
+
+			function loadDocument(doc) {
+				if (!doc || !doc.body || !doc.head)
+					return;
+
+				newDocument();
+
+				var newLine = /[\r\n]/g;
+
+				function createElementsFromDoc(srcParent, dstParent) {
+					var i, j, tag, srcElement, dstElement, emptyText, elementIframe, elementType, attributes, a, v;
+					for (i = 0; i < srcParent.childNodes.length; i++) {
+						srcElement = srcParent.childNodes[i];
+						if (!srcElement.tagName) {
+							if (srcElement.nodeType === 3) {
+								emptyText = !srcElement.nodeValue;
+								if (i === srcParent.childNodes.length - 1 && dstParent === bodyElement && !emptyText && !trim(srcElement.nodeValue))
+									continue;
+								dstElement = createElement("text", dstParent, null, true);
+								if (!emptyText)
+									setElementText(dstElement, srcElement.nodeValue.replace(newLine, " "));
+							}
+						} else if (((tag = srcElement.tagName.toLowerCase()) in elementTypesByName)) {
+							dstElement = createElement(tag, dstParent, null, true);
+
+							elementIframe = dstElement.elementIframe;
+							elementType = dstElement.elementType;
+							// Make sure to load only supported attributes
+							attributes = elementType.attributes;
+							for (j = 0; j < attributes.length; j++) {
+								a = attributes[j].name;
+								v = _GA(srcElement, a);
+								if (v)
+									_SA(elementIframe, a, v);
+							}
+
+							createElementsFromDoc(srcElement, dstElement);
+						}
+					}
+				}
+
+				createElementsFromDoc(doc.body, bodyElement);
+			}
+
+			editorActionFileLoad.onchange = loadFileFromInput;
+
+			_ID("editorActionNew").onclick = function (e) {
+				if (loading)
+					return cancelEvent(e);
+
+				newDocument();
+
+				return cancelEvent(e);
+			};
+
+			_ID("editorActionLoad").onclick = function (e) {
+				if (loading)
+					return cancelEvent(e);
+
+				editorActionFileLoad.click();
+
+				return cancelEvent(e);
+			};
+
+			_ID("editorActionSave").onclick = function (e) {
+				if (loading)
+					return cancelEvent(e);
+
+				$("#modalSave").modal({
+					keyboard: true,
+					backdrop: true
+				});
+
+				return cancelEvent(e);
+			};
+
+			modalSaveOk.onclick = function () {
+				var fileName = trim(modalSaveFileName.value);
+				if (!fileName)
+					return;
+
+				if (!BlobDownloader.supported) {
+					Notification.error(translate("ErrorNoFile"), true);
+					return;
+				}
+
+				if (fileName.toLowerCase().indexOf(".htm") < 0)
+					fileName += ".html";
+
+				$("#modalSave").modal("hide");
+
+				BlobDownloader.download(fileName, new Blob([
+					new Uint8Array([0xEF, 0xBB, 0xBF]), // UTF-8 BOM
+					'<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml" lang="pt-br">\n<head>\n	<meta charset="utf-8" />\n	<meta name="viewport" content="width=device-width, initial-scale=1" />\n	<title>HTML</title>\n	<style type="text/css" id="style">',
+					trim(iframeStyle.textContent),
+					"	</style>\n</head>\n<body>",
+					trim(iframeBody.innerHTML),
+					"</body>\n</html>\n"
+				], { type: "text/html;charset=utf-8" }));
+			};
+
 		})();
 	</script>
 </body>
