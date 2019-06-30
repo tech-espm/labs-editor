@@ -334,7 +334,7 @@
 			<li role="presentation"><a href="#editorCss" aria-controls="editorCss" role="tab" data-toggle="tab">CSS</a></li>
 		</ul>
 		<div class="nav-tabs-menu">
-			<button type="button" class="btn btn-primary btn-outline dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+			<button type="button" id="editorMenuDropdown" class="btn btn-primary btn-outline dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 				<span class="fa fa-bars" data-string="aria-label|Menu"></span>
 			</button>
 			<ul class="dropdown-menu dropdown-menu-right">
@@ -1773,6 +1773,8 @@
 				if (loading)
 					return cancelEvent(e);
 
+				$("#editorMenuDropdown").dropdown("toggle");
+
 				newDocument();
 
 				return cancelEvent(e);
@@ -1782,6 +1784,8 @@
 				if (loading)
 					return cancelEvent(e);
 
+				$("#editorMenuDropdown").dropdown("toggle");
+
 				editorActionFileLoad.click();
 
 				return cancelEvent(e);
@@ -1790,6 +1794,8 @@
 			_ID("editorActionSave").onclick = function (e) {
 				if (loading)
 					return cancelEvent(e);
+
+				$("#editorMenuDropdown").dropdown("toggle");
 
 				$("#modalSave").modal({
 					keyboard: true,
