@@ -39,6 +39,7 @@ self.addEventListener("install", (event) => {
 				// CacheStorage API ignores them.
 				"/labs-editor/",
 				"/labs-editor/?pwa",
+				"/labs-editor/empty.html",
 				"/labs-editor/favicon.ico",
 				"/labs-editor/favicon.png",
 				"/labs-editor/favicons/favicon-512x512.png",
