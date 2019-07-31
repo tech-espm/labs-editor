@@ -66,6 +66,10 @@
 			background: #fff;
 		}
 
+		.fa-margin {
+			margin-right: 0.5em;
+		}
+
 		.nav-tabs {
 			padding: 4px 0 0 4px;
 		}
@@ -114,6 +118,10 @@
 			bottom: 0;
 			font: normal 14px 'Roboto Mono', monospace;
 			overflow: auto;
+		}
+
+		.editor-css {
+			padding-left: 4ch;
 		}
 
 		.editor-bar {
@@ -292,8 +300,8 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-outline btn-default" data-dismiss="modal" data-string="text|Cancel"></button>
-					<button type="button" class="btn btn-primary" id="modalTxtOk" data-string="text|OK"></button>
+					<button type="button" class="btn btn-outline btn-default" data-dismiss="modal"><i class="fa fa-margin fa-times"></i><span data-string="text|Cancel"></span></button>
+					<button type="button" class="btn btn-primary" id="modalTxtOk"><i class="fa fa-margin fa-check"></i><span data-string="text|OK"></span></button>
 				</div>
 			</div>
 		</div>
@@ -308,8 +316,8 @@
 				</div>
 				<div class="modal-body" id="modalAttributesBody"></div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-outline btn-default" data-dismiss="modal" data-string="text|Cancel"></button>
-					<button type="button" class="btn btn-primary" id="modalAttributesOk" data-string="text|OK"></button>
+					<button type="button" class="btn btn-outline btn-default" data-dismiss="modal"><i class="fa fa-margin fa-times"></i><span data-string="text|Cancel"></span></button>
+					<button type="button" class="btn btn-primary" id="modalAttributesOk"><i class="fa fa-margin fa-check"></i><span data-string="text|OK"></span></button>
 				</div>
 			</div>
 		</div>
@@ -329,8 +337,29 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-outline btn-default" data-dismiss="modal" data-string="text|Cancel"></button>
-					<button type="button" class="btn btn-primary" id="modalSaveOk" data-string="text|Save"></button>
+					<button type="button" class="btn btn-outline btn-default" data-dismiss="modal"><i></i><span data-string="text|Cancel"></span></button>
+					<button type="button" class="btn btn-primary" id="modalSaveOk"><i></i><span data-string="text|Save"></span></button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" tabindex="-1" role="dialog" id="modalRuleSelector">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" data-string="aria-label|Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" data-string="text|EditSelector"></h4>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label for="modalRuleSelectorInput" data-string="text|NewSelector"></label>
+						<input type="text" class="form-control" id="modalRuleSelectorInput" spellcheck="false" autocomplete="off" />
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-outline btn-default" data-dismiss="modal"><i class="fa fa-margin fa-times"></i><span data-string="text|Cancel"></span></button>
+					<button type="button" class="btn btn-primary" id="modalRuleSelectorOk"><i class="fa fa-margin fa-check"></i><span data-string="text|OK"></span></button>
 				</div>
 			</div>
 		</div>
@@ -354,8 +383,8 @@
 			<div class="nav-tabs-file-load"><input id="editorActionFileLoad" tabindex="-1" type="file" accept="text/html" /></div>
 		</div>
 		<div class="tab-content">
-			<div class="tab-pane fade in active editor" id="editor" role="tabpanel"></div>
-			<div id="editorCss" role="tabpanel" class="tab-pane fade editor">...</div>
+			<div id="editor" role="tabpanel" class="tab-pane fade in active editor"></div>
+			<div id="editorCss" role="tabpanel" class="tab-pane fade editor editor-css"></div>
 		</div>
 	</div>
 	<div class="editor-bar" id="bar"></div>
@@ -368,8 +397,9 @@
 		<li class="dropdown-menu-container" id="dropdownTypeContainer"></li>
 	</ul>
 	<div class="editor-menu editor-menu-animated editor-menu-top" id="dropdownMenuTop">
-		<button class="btn btn-outline btn-xs btn-success" type="button" data-string="title|CreateElement" onclick="dropdownShowType(true, false)"><i class="fa fa-nomargin fa-code"></i></button>
-		<button class="btn btn-outline btn-xs btn-primary" type="button" data-string="title|CreateText" onclick="dropdownCreateText(true)"><i class="fa fa-nomargin fa-i-cursor"></i></button>
+		<button class="btn btn-outline btn-xs btn-success" type="button" data-string="title|CreateElement" onclick="dropdownShowType(true, false)" id="dropdownMenuTopCreateElement"><i class="fa fa-nomargin fa-code"></i></button>
+		<button class="btn btn-outline btn-xs btn-success" type="button" data-string="title|CreateRule" onclick="dropdownCreateEditRuleSelector(true, false)" id="dropdownMenuTopCreateRule"><i class="fa fa-nomargin fa-paint-brush"></i></button>
+		<button class="btn btn-outline btn-xs btn-primary" type="button" data-string="title|CreateText" onclick="dropdownCreateText(true)" id="dropdownMenuTopCreateText"><i class="fa fa-nomargin fa-i-cursor"></i></button>
 	</div>
 	<div class="editor-menu editor-menu-animated editor-menu-left" id="dropdownMenuLeft">
 		<button class="btn btn-outline btn-xs btn-default" type="button" onclick="dropdownToggleVisibility()" id="dropdownMenuLeftToggleVisibility"><i class="fa fa-nomargin fa-plus"></i></button>
@@ -380,12 +410,14 @@
 		<button class="btn btn-outline btn-xs btn-default" type="button" data-string="title|EditText" onclick="dropdownEditText()" id="dropdownMenuRightEditText"><i class="fa fa-nomargin fa-i-cursor"></i></button>
 		<button class="btn btn-outline btn-xs btn-default" type="button" data-string="title|FindElement" onclick="dropdownFind()" id="dropdownMenuRightFind"><i class="fa fa-nomargin fa-search"></i></button>
 		<button class="btn btn-outline btn-xs btn-default" type="button" data-string="title|ChangeElement" onclick="dropdownShowType(true, true)" id="dropdownMenuRightChangeType"><i class="fa fa-nomargin fa-code"></i></button>
+		<button class="btn btn-outline btn-xs btn-default" type="button" data-string="title|EditSelector" onclick="dropdownCreateEditRuleSelector(true, true)" id="dropdownMenuRightEditRuleSelector"><i class="fa fa-nomargin fa-paint-brush"></i></button>
 		<button class="btn btn-outline btn-xs btn-primary" type="button" data-string="title|EditAttributes" onclick="dropdownEditAttributes()" id="dropdownMenuRightEditAttributes"><i class="fa fa-nomargin fa-info"></i></button>
 		<button class="btn btn-outline btn-xs btn-danger" type="button" data-string="title|Delete" onclick="dropdownDelete()"><i class="fa fa-nomargin fa-times"></i></button>
 	</div>
 	<div class="editor-menu editor-menu-animated editor-menu-bottom" id="dropdownMenuBottom">
-		<button class="btn btn-outline btn-xs btn-success" type="button" data-string="title|CreateElement" onclick="dropdownShowType(false, false)"><i class="fa fa-nomargin fa-code"></i></button>
-		<button class="btn btn-outline btn-xs btn-primary" type="button" data-string="title|CreateText" onclick="dropdownCreateText(false)"><i class="fa fa-nomargin fa-i-cursor"></i></button>
+		<button class="btn btn-outline btn-xs btn-success" type="button" data-string="title|CreateElement" onclick="dropdownShowType(false, false)" id="dropdownMenuBottomCreateElement"><i class="fa fa-nomargin fa-code"></i></button>
+		<button class="btn btn-outline btn-xs btn-success" type="button" data-string="title|CreateRule" onclick="dropdownCreateEditRuleSelector(false, false)" id="dropdownMenuBottomCreateRule"><i class="fa fa-nomargin fa-paint-brush"></i></button>
+		<button class="btn btn-outline btn-xs btn-primary" type="button" data-string="title|CreateText" onclick="dropdownCreateText(false)" id="dropdownMenuBottomCreateText"><i class="fa fa-nomargin fa-i-cursor"></i></button>
 	</div>
 
 	<script type="text/javascript" src="lib/jquery/jquery-1.0.0.min.js"></script>
@@ -438,6 +470,9 @@
 			valueColor = 0,
 			valueNumber = 1,
 			valueImage = 2,
+			categoryElement = 0,
+			categoryRule = 1,
+			categoryRuleAttribute = 2,
 			htmlAttributes = [
 				{ name: "class", values: [""], common: true },
 				{ name: "id", values: valueFreeText, common: true },
@@ -566,6 +601,7 @@
 			moveTargetClosingTag = 2,
 			placeholderText = null,
 			bodyElement = null,
+			lastEditedRuleSelector = "",
 			iframe = _ID("iframe"),
 			iframeWindow = null,
 			iframeDocument = null,
@@ -582,6 +618,7 @@
 			Notification.hide();
 
 			createElement("body");
+			createRule("body");
 		}
 
 		function tagClick(e) {
@@ -601,6 +638,7 @@
 				bodyElement = _CE("div", "element");
 				// These attribute names were chosen like this in order to
 				// avoid any conflicts with existing attribute names!
+				bodyElement.elementCategory = categoryElement;
 				bodyElement.elementType = elementTypeBody;
 				bodyElement.elementParent = null;
 				bodyElement.elementIframe = iframeBody;
@@ -639,6 +677,7 @@
 			}
 
 			e = _CE("div", "element");
+			e.elementCategory = categoryElement;
 			e.elementParent = parent;
 			e.elementType = elementType;
 
@@ -783,7 +822,7 @@
 		}
 
 		function toggleVisibility(element) {
-			if (loading || !element || element.elementType.noChildren)
+			if (loading || !element || (element.elementCategory === categoryElement && element.elementType.noChildren) || element.elementCategory === categoryRuleAttribute)
 				return;
 
 			element.elementContainerVisible = !element.elementContainerVisible;
@@ -837,6 +876,88 @@
 			reader.readAsDataURL(file);
 		}
 
+		function createRule(ruleSelector, siblingBelow, hideUI) {
+			if (loading)
+				return;
+
+			// For the future... Perhaps we could use the CSSStyleSheet API?!?!
+			// https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet/insertRule
+
+			var e = _CE("div", "element");
+			// These attribute names were chosen like this in order to
+			// avoid any conflicts with existing attribute names!
+			e.elementCategory = categoryRule;
+			e.elementRuleSelector = trim(ruleSelector || lastEditedRuleSelector || "p");
+
+			e.elementTag = _CE("span", "element-tag move-target", e);
+			e.elementTag.element = e;
+			e.elementTag.onclick = tagClick;
+			e.elementTag.moveTarget = moveTargetTop;
+			_TXT(e.elementRuleSelector, _CE("span", "element-name-block", e.elementTag));
+			_TXT(" {", e.elementTag);
+
+			e.elementContainerVisible = true;
+			e.elementContainerPlaceholder = _CE("span", "hidden", e);
+			_TXT("...", e.elementContainerPlaceholder);
+			e.elementContainer = _CE("div", "element-container", e);
+			e.elementContainer.element = e;
+
+			e.elementClosingTag = _CE("span", "element-tag move-target", e);
+			e.elementClosingTag.element = e;
+			e.elementClosingTag.onclick = closingTagClick;
+			e.elementClosingTag.moveTarget = moveTargetClosingTag;
+			_TXT("}", e.elementClosingTag);
+
+			if (siblingBelow)
+				_IB(editorCss, e, siblingBelow);
+			else
+				_AC(editorCss, e);
+
+			if (!ruleSelector && !hideUI)
+				editRuleSelector(e);
+
+			return e;
+		}
+
+		function deleteRule(element) {
+			if (loading || !element || element.elementCategory !== categoryRule)
+				return;
+
+			_RC(editorCss, element);
+		}
+
+		function getRuleSelector(element) {
+			return ((element.elementCategory === categoryRule && element.elementRuleSelector) || "");
+		}
+
+		function setRuleSelector(element, newRuleSelector) {
+			if (element.elementCategory === categoryRule && newRuleSelector) {
+				element.elementRuleSelector = newRuleSelector;
+				element.elementTag.firstChild.textContent = newRuleSelector;
+			}
+		}
+
+		function editRuleSelector(element) {
+			if (loading || !element || element.elementCategory !== categoryRule)
+				return;
+
+			var modalRuleSelectorInput = _ID("modalRuleSelectorInput"),
+				modalRuleSelectorOk = _ID("modalRuleSelectorOk");
+			modalRuleSelectorInput.value = getRuleSelector(element);
+			modalRuleSelectorOk.onclick = function () {
+				var newRuleSelector = trimValue(modalRuleSelectorInput);
+				if (!newRuleSelector)
+					return;
+				lastEditedRuleSelector = newRuleSelector;
+				$("#modalRuleSelector").modal("hide");
+				setRuleSelector(element, newRuleSelector);
+			};
+			$("#modalRuleSelector").modal({
+				keyboard: true,
+				backdrop: true
+			});
+		}
+
 		// Translation
 		(function () {
 			if (!window.editorStrings || (typeof window.editorStrings !== "object")) window.editorStrings = {};
@@ -856,6 +977,8 @@
 			addString("ExportHTML", "Exportar HTML...");
 			addString("EditText", "Editar Texto");
 			addString("NewText", "Novo Texto");
+			addString("EditSelector", "Editar Seletor");
+			addString("NewSelector", "Novo Seletor");
 			addString("Move", "Mover");
 			addString("Duplicate", "Duplicar");
 			addString("Delete", "Excluir");
@@ -864,6 +987,7 @@
 			addString("ChangeElement", "Alterar Elemento");
 			addString("EditAttributes", "Editar Atributos");
 			addString("CreateElement", "Criar Elemento");
+			addString("CreateRule", "Criar Regra");
 			addString("CreateText", "Criar Texto");
 			addString("LoadImage", "Carregar Imagem");
 			addString("UseLoremIpsum", "Utilizar Parágrafo de Lorem Ipsum");
@@ -914,7 +1038,9 @@
 				modalTxtInput = _ID("modalTxtInput"),
 				modalTxtOk = _ID("modalTxtOk"),
 				modalTxtBtnLoremIpsum = _ID("modalTxtBtnLoremIpsum"),
-				modalTxtSelectLoremIpsum = _ID("modalTxtSelectLoremIpsum");
+				modalTxtSelectLoremIpsum = _ID("modalTxtSelectLoremIpsum"),
+				modalRuleSelectorInput = _ID("modalRuleSelectorInput"),
+				modalRuleSelectorOk = _ID("modalRuleSelectorOk");
 
 			$("#modalTxt").on("shown.bs.modal", function () {
 				modalTxtInput.focus();
@@ -929,6 +1055,14 @@
 			};
 			for (i = 0; i < loremIpsum.length; i++)
 				_TXT((i + 1).toString(), _SA(_CE("option", null, modalTxtSelectLoremIpsum), "value", i));
+
+			$("#modalRuleSelector").on("shown.bs.modal", function () {
+				modalRuleSelectorInput.focus();
+			});
+			modalRuleSelectorInput.onkeydown = function (e) {
+				if (e.key === "Enter" || e.keyCode === 13)
+					modalRuleSelectorOk.click();
+			};
 
 			function sortByName(a, b) {
 				return (a.name < b.name ? -1 : 1);
@@ -1052,22 +1186,29 @@
 				dropdownY = 0,
 				dropdownFading = false, dropdownMoving = false,
 				dropdownVisible = false, dropdownTypeVisible = false, dropdownHighlighting = false,
-				dropdownActionTop = false, dropdownActionClosingTag = false, dropdownActionChangeType = false,
+				dropdownActionTop = false, dropdownActionClosingTag = false, dropdownActionChangeType = false, dropdownActionEditRuleSelector = false,
 				dropdownShowTop = false, dropdownShowLeft = false, dropdownShowRight = false, dropdownShowBottom = false,
-				dropdownShowTypeOnHide = false, dropdownCreateTextOnHide = false, dropdownMoveOnHide = false, dropdownEditTextOnHide = false, dropdownEditAttributesOnHide = false,
+				dropdownShowTypeOnHide = false, dropdownCreateTextOnHide = false, dropdownMoveOnHide = false, dropdownEditTextOnHide = false, dropdownEditAttributesOnHide = false, dropdownCreateEditRuleOnHide = false,
 				dropdownElement = null,
 				dropdownType = _ID("dropdownType"),
 				dropdownTypeInput = _("dropdownTypeInput"),
 				dropdownTypeContainer = _("dropdownTypeContainer"),
 				dropdownMenuTop = _ID("dropdownMenuTop"),
+				dropdownMenuTopCreateElement = _ID("dropdownMenuTopCreateElement"),
+				dropdownMenuTopCreateRule = _ID("dropdownMenuTopCreateRule"),
+				dropdownMenuTopCreateText = _ID("dropdownMenuTopCreateText"),
 				dropdownMenuLeft = _ID("dropdownMenuLeft"),
 				dropdownMenuLeftToggleVisibility = _ID("dropdownMenuLeftToggleVisibility"),
 				dropdownMenuRight = _ID("dropdownMenuRight"),
 				dropdownMenuRightEditText = _ID("dropdownMenuRightEditText"),
 				dropdownMenuRightFind = _ID("dropdownMenuRightFind"),
 				dropdownMenuRightChangeType = _ID("dropdownMenuRightChangeType"),
+				dropdownMenuRightEditRuleSelector = _ID("dropdownMenuRightEditRuleSelector"),
 				dropdownMenuRightEditAttributes = _ID("dropdownMenuRightEditAttributes"),
-				dropdownMenuBottom = _ID("dropdownMenuBottom");
+				dropdownMenuBottom = _ID("dropdownMenuBottom"),
+				dropdownMenuBottomCreateElement = _ID("dropdownMenuBottomCreateElement"),
+				dropdownMenuBottomCreateRule = _ID("dropdownMenuBottomCreateRule"),
+				dropdownMenuBottomCreateText = _ID("dropdownMenuBottomCreateText");
 
 			dropdownTypeContainer.style.height = (300 - 59) + "px";
 
@@ -1131,6 +1272,14 @@
 				} else if (dropdownEditAttributesOnHide) {
 					dropdownEditAttributesOnHide = false;
 					showModalAttributes();
+				} else if (dropdownCreateEditRuleOnHide) {
+					dropdownCreateEditRuleOnHide = false;
+					if (dropdownActionEditRuleSelector)
+						editRuleSelector(dropdownElement);
+					else if (dropdownActionTop)
+						createRule("", dropdownElement);
+					else
+						createRule("", dropdownElement.nextSibling);
 				}
 
 				lockUI(false);
@@ -1317,20 +1466,48 @@
 				document.addEventListener("mousedown", mouseDown, true);
 				document.addEventListener("keydown", keyDown, true);
 
-				dropdownShowTop = (closingTag || element.elementType !== elementTypeBody);
-				dropdownShowLeft = (element.elementType !== elementTypeBody && !element.elementType.noChildren);
-				dropdownShowRight = (element.elementType !== elementTypeBody);
-				dropdownShowBottom = (!closingTag || element.elementType !== elementTypeBody);
-				if (element.elementType === elementTypeText) {
-					dropdownMenuRightEditText.style.display = "";
-					dropdownMenuRightFind.style.display = "none";
-					dropdownMenuRightChangeType.style.display = "none";
-					dropdownMenuRightEditAttributes.style.display = "none";
-				} else {
-					dropdownMenuRightEditText.style.display = "none";
-					dropdownMenuRightFind.style.display = "";
-					dropdownMenuRightChangeType.style.display = "";
-					dropdownMenuRightEditAttributes.style.display = "";
+				switch (element.elementCategory) {
+					case categoryElement:
+						dropdownShowTop = (closingTag || element.elementType !== elementTypeBody);
+						dropdownShowLeft = (element.elementType !== elementTypeBody && !element.elementType.noChildren);
+						dropdownShowRight = (element.elementType !== elementTypeBody);
+						dropdownShowBottom = (!closingTag || element.elementType !== elementTypeBody);
+						dropdownMenuTopCreateElement.style.display = "";
+						dropdownMenuTopCreateRule.style.display = "none";
+						dropdownMenuTopCreateText.style.display = "";
+						dropdownMenuBottomCreateElement.style.display = "";
+						dropdownMenuBottomCreateRule.style.display = "none";
+						dropdownMenuBottomCreateText.style.display = "";
+						dropdownMenuRightEditRuleSelector.style.display = "none";
+						if (element.elementType === elementTypeText) {
+							dropdownMenuRightEditText.style.display = "";
+							dropdownMenuRightFind.style.display = "none";
+							dropdownMenuRightChangeType.style.display = "none";
+							dropdownMenuRightEditAttributes.style.display = "none";
+						} else {
+							dropdownMenuRightEditText.style.display = "none";
+							dropdownMenuRightFind.style.display = "";
+							dropdownMenuRightChangeType.style.display = "";
+							dropdownMenuRightEditAttributes.style.display = "";
+						}
+						break;
+					case categoryRule:
+						dropdownShowTop = true;
+						dropdownShowLeft = true;
+						dropdownShowRight = true;
+						dropdownShowBottom = true;
+						dropdownMenuTopCreateElement.style.display = "none";
+						dropdownMenuTopCreateRule.style.display = (closingTag ? "none" : "");
+						dropdownMenuTopCreateText.style.display = "none";
+						dropdownMenuBottomCreateElement.style.display = "none";
+						dropdownMenuBottomCreateRule.style.display = (closingTag ? "" : "none");
+						dropdownMenuBottomCreateText.style.display = "none";
+						dropdownMenuRightEditRuleSelector.style.display = "";
+						dropdownMenuRightEditText.style.display = "none";
+						dropdownMenuRightFind.style.display = "none";
+						dropdownMenuRightChangeType.style.display = "none";
+						dropdownMenuRightEditAttributes.style.display = "none";
+						break;
 				}
 				if (dropdownShowLeft) {
 					if (dropdownElement.elementContainerVisible) {
@@ -1346,6 +1523,7 @@
 				dropdownMoveOnHide = false;
 				dropdownEditTextOnHide = false;
 				dropdownEditAttributesOnHide = false;
+				dropdownCreateEditRuleOnHide = false;
 
 				if (dropdownShowTop) {
 					dropdownMenuTop.style.display = "block";
@@ -1394,6 +1572,16 @@
 					return;
 
 				dropdownEditTextOnHide = true;
+				hide();
+			};
+
+			window.dropdownCreateEditRuleSelector = function (top, editRuleSelector) {
+				if (loading || dropdownFading || dropdownMoving || !dropdownVisible || dropdownTypeVisible)
+					return;
+
+				dropdownActionTop = top;
+				dropdownActionEditRuleSelector = editRuleSelector;
+				dropdownCreateEditRuleOnHide = true;
 				hide();
 			};
 
@@ -1506,7 +1694,14 @@
 				if (loading || dropdownFading || dropdownMoving || !dropdownVisible || dropdownTypeVisible)
 					return;
 
-				deleteElement(dropdownElement);
+				switch (dropdownElement.elementCategory) {
+					case categoryElement:
+						deleteElement(dropdownElement);
+						break;
+					case categoryRule:
+						deleteRule(dropdownElement);
+						break;
+				}
 				hide();
 			};
 
