@@ -284,7 +284,7 @@
 		}
 	</style>
 </head>
-<body>
+<body style="visibility: hidden">
 
 	<div class="modal fade" tabindex="-1" role="dialog" id="modalTxt">
 		<div class="modal-dialog" role="document">
@@ -453,8 +453,6 @@
 			navigator.serviceWorker.register("service-worker.js");
 		}
 
-		Notification.wait();
-
 		// Helper functions
 		function _ID(id) { return document.getElementById(id); }
 		function _SA(parent, name, value) { parent.setAttribute(name, value); return parent; }
@@ -469,7 +467,7 @@
 		function _BTN(className, icon, title, parent, clickHandler) { var btn = _CE("button", className, parent); _CE("i", "fa fa-nomargin " + icon, btn); _SA(btn, "type", "button"); btn.onclick = clickHandler; if (title) _SA(btn, "title", title); return btn; }
 		function _RC(parent, oldChild) { parent.removeChild(oldChild); return parent; }
 
-		var loading = false,
+		var loading = true,
 			valueFreeText = null,
 			valueColor = 0,
 			valueNumber = 1,
@@ -628,7 +626,6 @@
 			iframeStyle = style;
 
 			loading = false;
-			Notification.hide();
 
 			createElement("body");
 			createRule("body");
@@ -1120,12 +1117,13 @@
 			};
 			elementTypesByName["text"] = elementTypeText;
 
-			loading = true;
 			_SA(iframe, "src", "empty.html");
 
 			window.onbeforeunload = function () {
 				return null; // translate("ConfirmQuit")
 			};
+
+			setTimeout(function () { document.body.style.visibility = ""; }, 250);
 		})();
 
 		// Resize
