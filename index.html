@@ -75,7 +75,7 @@
 		}
 
 		.nav-tabs {
-			padding: 4px 0 0 4px;
+			padding: 4px 0 0 91px;
 		}
 
 			.nav-tabs > li > a {
@@ -94,6 +94,12 @@
 			position: absolute;
 			right: 5px;
 			top: 5px;
+		}
+
+		.nav-tabs-logo {
+			position: absolute;
+			left: 8px;
+			top: 10px;
 		}
 
 		.nav-tabs-file-load {
@@ -346,8 +352,8 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-outline btn-default" data-dismiss="modal"><i></i><span data-string="text|Cancel"></span></button>
-					<button type="button" class="btn btn-primary" id="modalSaveOk"><i></i><span data-string="text|Save"></span></button>
+					<button type="button" class="btn btn-outline btn-default" data-dismiss="modal"><i class="fa fa-margin fa-times"></i><span data-string="text|Cancel"></span></button>
+					<button type="button" class="btn btn-primary" id="modalSaveOk"><i class="fa fa-margin fa-check"></i><span data-string="text|Save"></span></button>
 				</div>
 			</div>
 		</div>
@@ -379,6 +385,7 @@
 			<li role="presentation" class="active"><a href="#editor" aria-controls="editor" role="tab" data-toggle="tab">HTML</a></li>
 			<li role="presentation"><a href="#editorCss" aria-controls="editorCss" role="tab" data-toggle="tab">CSS</a></li>
 		</ul>
+		<img class="nav-tabs-logo" width="75" src="images/logo.png" />
 		<div class="nav-tabs-menu">
 			<button type="button" id="editorMenuDropdown" class="btn btn-primary btn-outline dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 				<span class="fa fa-bars" data-string="aria-label|Menu"></span>
@@ -1171,8 +1178,8 @@
 					iframeWidth = 150;
 					editorWidth = width - iframeWidth - 8;
 				}
-				if (editorWidth < 150) {
-					editorWidth = 150;
+				if (editorWidth < 230) {
+					editorWidth = 230;
 					iframeWidth = width - editorWidth - 8;
 				}
 				editorContainer.style.width = editorWidth + "px";

@@ -44,7 +44,8 @@ self.addEventListener("install", (event) => {
 				"/labs-editor/favicon.png",
 				"/labs-editor/favicons/favicon-512x512.png",
 				"/labs-editor/manifest.json",
-				"/labs-editor/images/loading-grey-t.gif"
+				"/labs-editor/images/loading-grey-t.gif",
+				"/labs-editor/images/logo.png",
 			]);
 		});
 	}));
