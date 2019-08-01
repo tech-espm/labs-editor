@@ -66,6 +66,10 @@
 			background: #fff;
 		}
 
+		textarea {
+			resize: vertical;
+		}
+
 		.fa-margin {
 			margin-right: 0.5em;
 		}
@@ -292,7 +296,7 @@
 				<div class="modal-body">
 					<div class="form-group">
 						<label for="modalTxtInput" data-string="text|NewText"></label>
-						<input type="text" class="form-control" id="modalTxtInput" spellcheck="true" autocomplete="off" />
+						<textarea class="form-control" id="modalTxtInput" spellcheck="true" autocomplete="off" rows="3"></textarea>
 					</div>
 					<div class="form-group no-margin-bottom">
 						<button type="button" class="btn btn-outline btn-primary" id="modalTxtBtnLoremIpsum" data-string="text|UseLoremIpsum"></button>
@@ -512,6 +516,15 @@
 				{ name: "h4", block: true, attributes: null },
 				{ name: "h5", block: true, attributes: null },
 				{ name: "h6", block: true, attributes: null },
+				{ name: "table", block: true, attributes: null },
+				{ name: "thead", block: true, attributes: null },
+				{ name: "tbody", block: true, attributes: null },
+				{ name: "tfoot", block: true, attributes: null },
+				{ name: "tr", block: true, attributes: null },
+				{ name: "th", attributes: [{ name: "colspan", values: valueNumber }, { name: "rowspan", values: valueNumber }] },
+				{ name: "td", attributes: [{ name: "colspan", values: valueNumber }, { name: "rowspan", values: valueNumber }] },
+				{ name: "colgroup", attributes: [{ name: "span", values: valueNumber }] },
+				{ name: "col", attributes: [{ name: "span", values: valueNumber }] },
 			],
 			elementTypesByName = {},
 			elementTypeBody = null,
@@ -1045,10 +1058,10 @@
 			$("#modalTxt").on("shown.bs.modal", function () {
 				modalTxtInput.focus();
 			});
-			modalTxtInput.onkeydown = function (e) {
-				if (e.key === "Enter" || e.keyCode === 13)
-					modalTxtOk.click();
-			};
+			//modalTxtInput.onkeydown = function (e) {
+			//	if (e.key === "Enter" || e.keyCode === 13)
+			//		modalTxtOk.click();
+			//};
 			modalTxtBtnLoremIpsum.onclick = function () {
 				modalTxtInput.value = loremIpsum[parseInt(modalTxtSelectLoremIpsum.value)];
 				modalTxtOk.click();
