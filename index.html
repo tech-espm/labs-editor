@@ -206,6 +206,11 @@
 			font-weight: normal;
 		}
 
+		.element-comment {
+			color: #080;
+			font-weight: normal;
+		}
+
 		.element-container {
 			padding-left: 4ch;
 		}
@@ -404,6 +409,7 @@
 		<button class="btn btn-outline btn-xs btn-success" type="button" data-string="title|CreateElement" onclick="dropdownShowType(true, false)" id="dropdownMenuTopCreateElement"><i class="fa fa-nomargin fa-code"></i></button>
 		<button class="btn btn-outline btn-xs btn-success" type="button" data-string="title|CreateRule" onclick="dropdownCreateEditRuleSelector(true, false)" id="dropdownMenuTopCreateRule"><i class="fa fa-nomargin fa-paint-brush"></i></button>
 		<button class="btn btn-outline btn-xs btn-primary" type="button" data-string="title|CreateText" onclick="dropdownCreateText(true)" id="dropdownMenuTopCreateText"><i class="fa fa-nomargin fa-i-cursor"></i></button>
+		<button class="btn btn-outline btn-xs btn-primary" type="button" data-string="title|CreateComment" onclick="dropdownCreateComment(true)" id="dropdownMenuTopCreateComment"><i class="fa fa-nomargin fa-comment"></i></button>
 	</div>
 	<div class="editor-menu editor-menu-animated editor-menu-left" id="dropdownMenuLeft">
 		<button class="btn btn-outline btn-xs btn-default" type="button" onclick="dropdownToggleVisibility()" id="dropdownMenuLeftToggleVisibility"><i class="fa fa-nomargin fa-plus"></i></button>
@@ -422,6 +428,7 @@
 		<button class="btn btn-outline btn-xs btn-success" type="button" data-string="title|CreateElement" onclick="dropdownShowType(false, false)" id="dropdownMenuBottomCreateElement"><i class="fa fa-nomargin fa-code"></i></button>
 		<button class="btn btn-outline btn-xs btn-success" type="button" data-string="title|CreateRule" onclick="dropdownCreateEditRuleSelector(false, false)" id="dropdownMenuBottomCreateRule"><i class="fa fa-nomargin fa-paint-brush"></i></button>
 		<button class="btn btn-outline btn-xs btn-primary" type="button" data-string="title|CreateText" onclick="dropdownCreateText(false)" id="dropdownMenuBottomCreateText"><i class="fa fa-nomargin fa-i-cursor"></i></button>
+		<button class="btn btn-outline btn-xs btn-primary" type="button" data-string="title|CreateComment" onclick="dropdownCreateComment(false)" id="dropdownMenuBottomCreateComment"><i class="fa fa-nomargin fa-comment"></i></button>
 	</div>
 
 	<script type="text/javascript" src="lib/jquery/jquery-1.0.0.min.js"></script>
@@ -434,7 +441,7 @@
 		var queryString = "", isPWA = false, installationPrompt = null;
 
 		(function () {
-			var i, pair, assoc = {}, keyValues = location.search.substring(1).split("&");
+			var i, pair, assoc = {}, keyValues = location.search.substr(1).split("&");
 			for (i = keyValues.length - 1; i >= 0; i--) {
 				pair = keyValues[i].split("=");
 				assoc[decodeURIComponent(pair[0].replace(/\+/g, " "))] = (pair.length === 1 ? "" : decodeURIComponent(pair[1].replace(/\+/g, " ")));
@@ -462,6 +469,7 @@
 		function _ICE(tagName, className, parent) { var e = iframeDocument.createElement(tagName); if (className) e.className = className; if (parent) _AC(parent, e); return e; }
 		function _TXT(text, parent) { var e = document.createTextNode(text); if (parent) _AC(parent, e); return e; }
 		function _ITXT(text, parent) { var e = iframeDocument.createTextNode(text); if (parent) _AC(parent, e); return e; }
+		function _ICMT(text, parent) { var e = iframeDocument.createComment(text); if (parent) _AC(parent, e); return e; }
 		function _AC(parent, newChild) { parent.appendChild(newChild); return parent; }
 		function _IB(parent, newChild, refChild) { parent.insertBefore(newChild, refChild); return parent; }
 		function _BTN(className, icon, title, parent, clickHandler) { var btn = _CE("button", className, parent); _CE("i", "fa fa-nomargin " + icon, btn); _SA(btn, "type", "button"); btn.onclick = clickHandler; if (title) _SA(btn, "title", title); return btn; }
@@ -527,6 +535,7 @@
 			elementTypesByName = {},
 			elementTypeBody = null,
 			elementTypeText = null,
+			elementTypeComment = null,
 			cssAttributes = [
 				{ name: "margin", values: valueFreeText },
 				{ name: "margin-top", values: valueFreeText },
@@ -681,6 +690,7 @@
 				return;
 
 			if (elementType !== elementTypeText &&
+				elementType !== elementTypeComment &&
 				elementType.block && !parent.elementType.block) {
 				Notification.error(translate("ErrorBlockInsideInline"), true);
 				return;
@@ -692,13 +702,22 @@
 			e.elementType = elementType;
 
 			if (elementType === elementTypeText) {
-				e.elementTag = _CE("span", "element-tag element-text move-target", e);
+				e.elementTag = _CE("div", "element-tag element-text move-target", e);
 				e.elementTag.element = e;
 				e.elementTag.onclick = tagClick;
 				e.elementTag.moveTarget = moveTargetTop;
 				e.elementTag.empty = true;
 				_TXT(placeholderText, e.elementTag);
 				e.elementIframe = _ITXT("");
+			} else if (elementType === elementTypeComment) {
+				e.elementTag = _CE("div", "element-tag element-comment move-target", e);
+				e.elementTag.element = e;
+				e.elementTag.onclick = tagClick;
+				e.elementTag.moveTarget = moveTargetTop;
+				_TXT("<!--\n", e.elementTag);
+				_TXT("", e.elementComment = _CE("span", "", e.elementTag));
+				_TXT("\n-->", e.elementTag);
+				e.elementIframe = _ICMT("");
 			} else {
 				e.elementTag = _CE("span", "element-tag move-target", e);
 				e.elementTag.element = e;
@@ -734,7 +753,7 @@
 				_AC(parent.elementIframe, e.elementIframe);
 			}
 
-			if (elementType === elementTypeText && !hideUI)
+			if ((elementType === elementTypeText || elementType === elementTypeComment) && !hideUI)
 				editText(e);
 
 			return e;
@@ -749,7 +768,7 @@
 		}
 
 		function getElementText(element) {
-			return (element.elementType === elementTypeText && !element.elementTag.empty ? element.elementTag.firstChild.nodeValue : "");
+			return (element.elementType === elementTypeComment ? element.elementComment.textContent : (element.elementType === elementTypeText && !element.elementTag.empty ? element.elementTag.firstChild.nodeValue : ""));
 		}
 
 		function setElementText(element, text) {
@@ -764,11 +783,14 @@
 					elementTag.firstChild.nodeValue = text;
 					element.elementIframe.nodeValue = text;
 				}
+			} else if (element.elementType === elementTypeComment) {
+				element.elementComment.textContent = text;
+				element.elementIframe.nodeValue = "\n" + text + "\n";
 			}
 		}
 
 		function editText(element) {
-			if (loading || !element || element.elementType !== elementTypeText)
+			if (loading || !element || (element.elementType !== elementTypeText && element.elementType !== elementTypeComment))
 				return;
 
 			var modalTxtInput = _ID("modalTxtInput"),
@@ -987,6 +1009,8 @@
 			addString("ExportHTML", "Exportar HTML...");
 			addString("EditText", "Editar Texto");
 			addString("NewText", "Novo Texto");
+			addString("EditComment", "Editar Comment");
+			addString("NewComment", "Novo Comment");
 			addString("EditSelector", "Editar Seletor");
 			addString("NewSelector", "Novo Seletor");
 			addString("Move", "Mover");
@@ -999,6 +1023,7 @@
 			addString("CreateElement", "Criar Elemento");
 			addString("CreateRule", "Criar Regra");
 			addString("CreateText", "Criar Texto");
+			addString("CreateComment", "Criar Comentário");
 			addString("LoadImage", "Carregar Imagem");
 			addString("UseLoremIpsum", "Utilizar Parágrafo de Lorem Ipsum");
 			addString("PlaceholderText", "[Digite seu texto aqui]");
@@ -1115,7 +1140,13 @@
 				attributes: null,
 				noChildren: true
 			};
+			elementTypeComment = {
+				name: "comment",
+				attributes: null,
+				noChildren: true
+			};
 			elementTypesByName["text"] = elementTypeText;
+			elementTypesByName["comment"] = elementTypeComment;
 
 			_SA(iframe, "src", "empty.html");
 
@@ -1199,7 +1230,7 @@
 				dropdownVisible = false, dropdownTypeVisible = false, dropdownHighlighting = false,
 				dropdownActionTop = false, dropdownActionClosingTag = false, dropdownActionChangeType = false, dropdownActionEditRuleSelector = false,
 				dropdownShowTop = false, dropdownShowLeft = false, dropdownShowRight = false, dropdownShowBottom = false,
-				dropdownShowTypeOnHide = false, dropdownCreateTextOnHide = false, dropdownMoveOnHide = false, dropdownEditTextOnHide = false, dropdownEditAttributesOnHide = false, dropdownCreateEditRuleOnHide = false,
+				dropdownShowTypeOnHide = false, dropdownCreateTextOnHide = false, dropdownCreateCommentOnHide = false, dropdownMoveOnHide = false, dropdownEditTextOnHide = false, dropdownEditAttributesOnHide = false, dropdownCreateEditRuleOnHide = false,
 				dropdownElement = null,
 				dropdownType = _ID("dropdownType"),
 				dropdownTypeInput = _("dropdownTypeInput"),
@@ -1208,6 +1239,7 @@
 				dropdownMenuTopCreateElement = _ID("dropdownMenuTopCreateElement"),
 				dropdownMenuTopCreateRule = _ID("dropdownMenuTopCreateRule"),
 				dropdownMenuTopCreateText = _ID("dropdownMenuTopCreateText"),
+				dropdownMenuTopCreateComment = _ID("dropdownMenuTopCreateComment"),
 				dropdownMenuLeft = _ID("dropdownMenuLeft"),
 				dropdownMenuLeftToggleVisibility = _ID("dropdownMenuLeftToggleVisibility"),
 				dropdownMenuRight = _ID("dropdownMenuRight"),
@@ -1219,7 +1251,8 @@
 				dropdownMenuBottom = _ID("dropdownMenuBottom"),
 				dropdownMenuBottomCreateElement = _ID("dropdownMenuBottomCreateElement"),
 				dropdownMenuBottomCreateRule = _ID("dropdownMenuBottomCreateRule"),
-				dropdownMenuBottomCreateText = _ID("dropdownMenuBottomCreateText");
+				dropdownMenuBottomCreateText = _ID("dropdownMenuBottomCreateText"),
+				dropdownMenuBottomCreateComment = _ID("dropdownMenuBottomCreateComment");
 
 			dropdownTypeContainer.style.height = (300 - 59) + "px";
 
@@ -1273,6 +1306,9 @@
 				} else if (dropdownCreateTextOnHide) {
 					dropdownCreateTextOnHide = false;
 					dropdownCreateElement("text");
+				} else if (dropdownCreateCommentOnHide) {
+					dropdownCreateCommentOnHide = false;
+					dropdownCreateElement("comment");
 				} else if (dropdownMoveOnHide) {
 					lockUI(false);
 					dropdownMoveOnHide = false;
@@ -1490,7 +1526,7 @@
 						dropdownMenuBottomCreateRule.style.display = "none";
 						dropdownMenuBottomCreateText.style.display = "";
 						dropdownMenuRightEditRuleSelector.style.display = "none";
-						if (element.elementType === elementTypeText) {
+						if (element.elementType === elementTypeText || element.elementType === elementTypeComment) {
 							dropdownMenuRightEditText.style.display = "";
 							dropdownMenuRightFind.style.display = "none";
 							dropdownMenuRightChangeType.style.display = "none";
@@ -1531,6 +1567,7 @@
 				}
 				dropdownShowTypeOnHide = false;
 				dropdownCreateTextOnHide = false;
+				dropdownCreateCommentOnHide = false;
 				dropdownMoveOnHide = false;
 				dropdownEditTextOnHide = false;
 				dropdownEditAttributesOnHide = false;
@@ -1586,6 +1623,15 @@
 				hide();
 			};
 
+			window.dropdownCreateComment = function (top) {
+				if (loading || dropdownFading || dropdownMoving || !dropdownVisible || dropdownTypeVisible)
+					return;
+
+				dropdownActionTop = top;
+				dropdownCreateCommentOnHide = true;
+				hide();
+			};
+
 			window.dropdownCreateEditRuleSelector = function (top, editRuleSelector) {
 				if (loading || dropdownFading || dropdownMoving || !dropdownVisible || dropdownTypeVisible)
 					return;
@@ -1612,7 +1658,7 @@
 					var elementType = element.elementType,
 						newElement = createElement(elementType.name, parent, siblingBelow, true);
 
-					if (elementType === elementTypeText) {
+					if (elementType === elementTypeText || elementType === elementTypeComment) {
 						setElementText(newElement, getElementText(element));
 					} else {
 						var i, a, v;
@@ -1966,8 +2012,6 @@
 
 				newDocument();
 
-				var newLine = /[\r\n]/g;
-
 				function createElementsFromDoc(srcParent, dstParent) {
 					var i, j, tag, srcElement, dstElement, emptyText, elementIframe, elementType, attributes, a, v;
 					for (i = 0; i < srcParent.childNodes.length; i++) {
@@ -1979,7 +2023,18 @@
 									continue;
 								dstElement = createElement("text", dstParent, null, true);
 								if (!emptyText)
-									setElementText(dstElement, srcElement.nodeValue.replace(newLine, " "));
+									setElementText(dstElement, srcElement.nodeValue);
+							} else if (srcElement.nodeType === 8) {
+								v = srcElement.nodeValue;
+								if (v.length >= 2 && v.charAt(0) === "\r" && v.charAt(1) == "\n")
+									v = v.substr(2);
+								else if (v.length && v.charAt(0) === "\n")
+									v = v.substr(1);
+								if (v.length >= 2 && v.charAt(v.length - 2) === "\r" && v.charAt(v.length - 1) == "\n")
+									v = v.substr(0, v.length - 2);
+								else if (v.length && v.charAt(v.length - 1) === "\n")
+									v = v.substr(0, v.length - 1);
+								setElementText(createElement("comment", dstParent, null, true), v);
 							}
 						} else if (((tag = srcElement.tagName.toLowerCase()) in elementTypesByName)) {
 							dstElement = createElement(tag, dstParent, null, true);
