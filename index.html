@@ -74,6 +74,12 @@
 			margin-right: 0.5em;
 		}
 
+		.btn-fa {
+			padding: 0 4px;
+			font-size: 14px;
+			min-width: 25px;
+		}
+
 		.nav-tabs {
 			padding: 4px 0 0 91px;
 		}
@@ -159,7 +165,7 @@
 			height: 100%;
 		}
 
-		.move-target {
+		.move-target, .move-target-top {
 			border-top: 2px solid transparent;
 			-webkit-transition: border-color ease-in-out .2s;
 			-o-transition: border-color ease-in-out .2s;
@@ -171,6 +177,14 @@
 		}
 
 			.editor.moving .move-target:hover {
+				border-top-color: #00f;
+			}
+
+		.editor.moving-top .move-target-top {
+			border-top-color: #ddd;
+		}
+
+			.editor.moving-top .move-target-top:hover {
 				border-top-color: #00f;
 			}
 
@@ -186,7 +200,7 @@
 				background-color: #eee;
 			}
 
-				.element.moving .move-target, .element.moving .move-target:hover {
+				.element.moving .move-target, .element.moving .move-target:hover, .element.moving .move-target-top, .element.moving .move-target-top:hover {
 					border-top-color: transparent;
 				}
 
@@ -195,6 +209,18 @@
 			color: #00f;
 			white-space: pre;
 			font-weight: bold;
+		}
+
+		.element.collapsed > .element-tag {
+			display: inline-block;
+		}
+
+		.element-placeholder {
+			display: none;
+		}
+
+		.element.collapsed > .element-placeholder {
+			display: inline;
 		}
 
 		.element-name {
@@ -219,6 +245,20 @@
 
 		.element-container {
 			padding-left: 4ch;
+		}
+
+		.element.collapsed > .element-container {
+			display: none;
+		}
+
+		.attribute-name {
+			color: #f0f;
+			font-weight: normal;
+		}
+
+		.attribute-value {
+			color: #000;
+			font-weight: normal;
 		}
 
 		.fa-floating-help {
@@ -306,8 +346,8 @@
 				</div>
 				<div class="modal-body">
 					<div class="form-group">
-						<label for="modalTxtInput" data-string="text|NewText"></label>
-						<textarea class="form-control" id="modalTxtInput" spellcheck="true" autocomplete="off" rows="3"></textarea>
+						<label for="modalTxtInput" data-string="text|Text"></label>
+						<textarea class="form-control" id="modalTxtInput" spellcheck="true" autocomplete="off" rows="5"></textarea>
 					</div>
 					<div class="form-group no-margin-bottom">
 						<button type="button" class="btn btn-outline btn-primary" id="modalTxtBtnLoremIpsum" data-string="text|UseLoremIpsum"></button>
@@ -368,13 +408,50 @@
 				</div>
 				<div class="modal-body">
 					<div class="form-group">
-						<label for="modalRuleSelectorInput" data-string="text|NewSelector"></label>
+						<label for="modalRuleSelectorInput" data-string="text|Selector"></label>
 						<input type="text" class="form-control" id="modalRuleSelectorInput" spellcheck="false" autocomplete="off" />
 					</div>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-outline btn-default" data-dismiss="modal"><i class="fa fa-margin fa-times"></i><span data-string="text|Cancel"></span></button>
 					<button type="button" class="btn btn-primary" id="modalRuleSelectorOk"><i class="fa fa-margin fa-check"></i><span data-string="text|OK"></span></button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" tabindex="-1" role="dialog" id="modalRuleAttribute">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" data-string="aria-label|Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" data-string="text|EditAttribute"></h4>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label for="modalRuleAttributeName" data-string="text|Name"></label>
+						<a target="_blank" href="#" class="btn btn-xs btn-outline btn-primary" id="modalRuleAttributeHelp"><i class="fa fa-margin fa-question-circle"></i><span data-string="text|AttributeHelp"></span></a>
+						<select size="1" class="form-control" id="modalRuleAttributeName"></select>
+					</div>
+					<div class="form-group">
+						<label id="modalRuleAttributeValueLabel" for="modalRuleAttributeValueInput" data-string="text|Value"></label>
+						<input type="text" class="form-control" id="modalRuleAttributeValueInput" spellcheck="false" autocomplete="off" style="display: none" />
+						<select size="1" class="form-control" id="modalRuleAttributeValueSelect" style="display: none"></select>
+					</div>
+					<div class="form-group no-margin-bottom">
+						<label data-string="text|MoreHelpLinks"></label>
+						<div>
+							<a target="_blank" href="https://color.adobe.com/create/color-wheel/" class="btn btn-outline btn-primary"><i class="fa fa-margin fa-external-link"></i>Adobe Color</a>
+							<br />
+							<a target="_blank" href="https://htmlcolorcodes.com/color-names/" class="btn btn-outline btn-primary"><i class="fa fa-margin fa-external-link"></i>HTML Color Codes</a>
+							<br />
+							<a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/CSS/url" class="btn btn-outline btn-primary"><i class="fa fa-margin fa-external-link"></i>CSS URL</a>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-outline btn-default" data-dismiss="modal"><i class="fa fa-margin fa-times"></i><span data-string="text|Cancel"></span></button>
+					<button type="button" class="btn btn-primary" id="modalRuleAttributeOk"><i class="fa fa-margin fa-check"></i><span data-string="text|OK"></span></button>
 				</div>
 			</div>
 		</div>
@@ -413,29 +490,32 @@
 		<li class="dropdown-menu-container" id="dropdownTypeContainer"></li>
 	</ul>
 	<div class="editor-menu editor-menu-animated editor-menu-top" id="dropdownMenuTop">
-		<button class="btn btn-outline btn-xs btn-success" type="button" data-string="title|CreateElement" onclick="dropdownShowType(true, false)" id="dropdownMenuTopCreateElement"><i class="fa fa-nomargin fa-code"></i></button>
-		<button class="btn btn-outline btn-xs btn-success" type="button" data-string="title|CreateRule" onclick="dropdownCreateEditRuleSelector(true, false)" id="dropdownMenuTopCreateRule"><i class="fa fa-nomargin fa-paint-brush"></i></button>
-		<button class="btn btn-outline btn-xs btn-primary" type="button" data-string="title|CreateText" onclick="dropdownCreateText(true)" id="dropdownMenuTopCreateText"><i class="fa fa-nomargin fa-i-cursor"></i></button>
-		<button class="btn btn-outline btn-xs btn-primary" type="button" data-string="title|CreateComment" onclick="dropdownCreateComment(true)" id="dropdownMenuTopCreateComment"><i class="fa fa-nomargin fa-comment"></i></button>
+		<button class="btn btn-outline btn-xs btn-fa btn-success" type="button" data-string="title|CreateElement" onclick="dropdownShowType(true, false)" id="dropdownMenuTopCreateElement"><i class="fa fa-nomargin fa-code"></i></button>
+		<button class="btn btn-outline btn-xs btn-fa btn-success" type="button" data-string="title|CreateRule" onclick="dropdownCreateEditRuleSelector(true, false)" id="dropdownMenuTopCreateRule"><i class="fa fa-nomargin fa-object-group"></i></button>
+		<button class="btn btn-outline btn-xs btn-fa btn-success" type="button" data-string="title|CreateAttribute" onclick="dropdownCreateEditRuleAttribute(true, false)" id="dropdownMenuTopCreateRuleAttribute"><i class="fa fa-nomargin fa-paint-brush"></i></button>
+		<button class="btn btn-outline btn-xs btn-fa btn-primary" type="button" data-string="title|CreateText" onclick="dropdownCreateText(true)" id="dropdownMenuTopCreateText"><i class="fa fa-nomargin fa-i-cursor"></i></button>
+		<button class="btn btn-outline btn-xs btn-fa btn-primary" type="button" data-string="title|CreateComment" onclick="dropdownCreateComment(true)" id="dropdownMenuTopCreateComment"><i class="fa fa-nomargin fa-comment"></i></button>
 	</div>
 	<div class="editor-menu editor-menu-animated editor-menu-left" id="dropdownMenuLeft">
-		<button class="btn btn-outline btn-xs btn-default" type="button" onclick="dropdownToggleVisibility()" id="dropdownMenuLeftToggleVisibility"><i class="fa fa-nomargin fa-plus"></i></button>
+		<button class="btn btn-outline btn-xs btn-fa btn-default" type="button" onclick="dropdownToggleVisibility()" id="dropdownMenuLeftToggleVisibility"><i class="fa fa-nomargin fa-plus"></i></button>
 	</div>
 	<div class="editor-menu editor-menu-animated editor-menu-right" id="dropdownMenuRight">
-		<button class="btn btn-outline btn-xs btn-default" type="button" data-string="title|Move" onclick="dropdownMove()"><i class="fa fa-nomargin fa-arrows"></i></button>
-		<button class="btn btn-outline btn-xs btn-default" type="button" data-string="title|Duplicate" onclick="dropdownDuplicate()"><i class="fa fa-nomargin fa-copy"></i></button>
-		<button class="btn btn-outline btn-xs btn-default" type="button" data-string="title|EditText" onclick="dropdownEditText()" id="dropdownMenuRightEditText"><i class="fa fa-nomargin fa-i-cursor"></i></button>
-		<button class="btn btn-outline btn-xs btn-default" type="button" data-string="title|FindElement" onclick="dropdownFind()" id="dropdownMenuRightFind"><i class="fa fa-nomargin fa-search"></i></button>
-		<button class="btn btn-outline btn-xs btn-default" type="button" data-string="title|ChangeElement" onclick="dropdownShowType(true, true)" id="dropdownMenuRightChangeType"><i class="fa fa-nomargin fa-code"></i></button>
-		<button class="btn btn-outline btn-xs btn-default" type="button" data-string="title|EditSelector" onclick="dropdownCreateEditRuleSelector(true, true)" id="dropdownMenuRightEditRuleSelector"><i class="fa fa-nomargin fa-paint-brush"></i></button>
-		<button class="btn btn-outline btn-xs btn-primary" type="button" data-string="title|EditAttributes" onclick="dropdownEditAttributes()" id="dropdownMenuRightEditAttributes"><i class="fa fa-nomargin fa-info"></i></button>
-		<button class="btn btn-outline btn-xs btn-danger" type="button" data-string="title|Delete" onclick="dropdownDelete()"><i class="fa fa-nomargin fa-times"></i></button>
+		<button class="btn btn-outline btn-xs btn-fa btn-default" type="button" data-string="title|Move" onclick="dropdownMove()"><i class="fa fa-nomargin fa-arrows"></i></button>
+		<button class="btn btn-outline btn-xs btn-fa btn-default" type="button" data-string="title|Duplicate" onclick="dropdownDuplicate()"><i class="fa fa-nomargin fa-copy"></i></button>
+		<button class="btn btn-outline btn-xs btn-fa btn-default" type="button" data-string="title|EditText" onclick="dropdownEditText()" id="dropdownMenuRightEditText"><i class="fa fa-nomargin fa-i-cursor"></i></button>
+		<button class="btn btn-outline btn-xs btn-fa btn-default" type="button" data-string="title|FindElement" onclick="dropdownFind()" id="dropdownMenuRightFind"><i class="fa fa-nomargin fa-search"></i></button>
+		<button class="btn btn-outline btn-xs btn-fa btn-default" type="button" data-string="title|ChangeElement" onclick="dropdownShowType(true, true)" id="dropdownMenuRightChangeType"><i class="fa fa-nomargin fa-code"></i></button>
+		<button class="btn btn-outline btn-xs btn-fa btn-default" type="button" data-string="title|EditSelector" onclick="dropdownCreateEditRuleSelector(true, true)" id="dropdownMenuRightEditRuleSelector"><i class="fa fa-nomargin fa-object-group"></i></button>
+		<button class="btn btn-outline btn-xs btn-fa btn-default" type="button" data-string="title|EditAttribute" onclick="dropdownCreateEditRuleAttribute(true, true)" id="dropdownMenuRightEditRuleAttribute"><i class="fa fa-nomargin fa-paint-brush"></i></button>
+		<button class="btn btn-outline btn-xs btn-fa btn-primary" type="button" data-string="title|EditAttributes" onclick="dropdownEditAttributes()" id="dropdownMenuRightEditAttributes"><i class="fa fa-nomargin fa-wrench"></i></button>
+		<button class="btn btn-outline btn-xs btn-fa btn-danger" type="button" data-string="title|Delete" onclick="dropdownDelete()"><i class="fa fa-nomargin fa-times"></i></button>
 	</div>
 	<div class="editor-menu editor-menu-animated editor-menu-bottom" id="dropdownMenuBottom">
-		<button class="btn btn-outline btn-xs btn-success" type="button" data-string="title|CreateElement" onclick="dropdownShowType(false, false)" id="dropdownMenuBottomCreateElement"><i class="fa fa-nomargin fa-code"></i></button>
-		<button class="btn btn-outline btn-xs btn-success" type="button" data-string="title|CreateRule" onclick="dropdownCreateEditRuleSelector(false, false)" id="dropdownMenuBottomCreateRule"><i class="fa fa-nomargin fa-paint-brush"></i></button>
-		<button class="btn btn-outline btn-xs btn-primary" type="button" data-string="title|CreateText" onclick="dropdownCreateText(false)" id="dropdownMenuBottomCreateText"><i class="fa fa-nomargin fa-i-cursor"></i></button>
-		<button class="btn btn-outline btn-xs btn-primary" type="button" data-string="title|CreateComment" onclick="dropdownCreateComment(false)" id="dropdownMenuBottomCreateComment"><i class="fa fa-nomargin fa-comment"></i></button>
+		<button class="btn btn-outline btn-xs btn-fa btn-success" type="button" data-string="title|CreateElement" onclick="dropdownShowType(false, false)" id="dropdownMenuBottomCreateElement"><i class="fa fa-nomargin fa-code"></i></button>
+		<button class="btn btn-outline btn-xs btn-fa btn-success" type="button" data-string="title|CreateRule" onclick="dropdownCreateEditRuleSelector(false, false)" id="dropdownMenuBottomCreateRule"><i class="fa fa-nomargin fa-object-group"></i></button>
+		<button class="btn btn-outline btn-xs btn-fa btn-success" type="button" data-string="title|CreateAttribute" onclick="dropdownCreateEditRuleAttribute(false, false)" id="dropdownMenuBottomCreateRuleAttribute"><i class="fa fa-nomargin fa-paint-brush"></i></button>
+		<button class="btn btn-outline btn-xs btn-fa btn-primary" type="button" data-string="title|CreateText" onclick="dropdownCreateText(false)" id="dropdownMenuBottomCreateText"><i class="fa fa-nomargin fa-i-cursor"></i></button>
+		<button class="btn btn-outline btn-xs btn-fa btn-primary" type="button" data-string="title|CreateComment" onclick="dropdownCreateComment(false)" id="dropdownMenuBottomCreateComment"><i class="fa fa-nomargin fa-comment"></i></button>
 	</div>
 
 	<script type="text/javascript" src="lib/jquery/jquery-1.0.0.min.js"></script>
@@ -534,10 +614,10 @@
 				{ name: "tbody", block: true, attributes: null },
 				{ name: "tfoot", block: true, attributes: null },
 				{ name: "tr", block: true, attributes: null },
-				{ name: "th", attributes: [{ name: "colspan", values: valueNumber }, { name: "rowspan", values: valueNumber }] },
-				{ name: "td", attributes: [{ name: "colspan", values: valueNumber }, { name: "rowspan", values: valueNumber }] },
-				{ name: "colgroup", attributes: [{ name: "span", values: valueNumber }] },
-				{ name: "col", attributes: [{ name: "span", values: valueNumber }] },
+				{ name: "th", block: true, attributes: [{ name: "colspan", values: valueNumber }, { name: "rowspan", values: valueNumber }] },
+				{ name: "td", block: true, attributes: [{ name: "colspan", values: valueNumber }, { name: "rowspan", values: valueNumber }] },
+				{ name: "colgroup", block: true, attributes: [{ name: "span", values: valueNumber }] },
+				{ name: "col", block: true, attributes: [{ name: "span", values: valueNumber }] },
 			],
 			elementTypesByName = {},
 			elementTypeBody = null,
@@ -613,22 +693,24 @@
 			editor = _ID("editor"),
 			editorCss = _ID("editorCss"),
 			loremIpsum = [
-				"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse erat nulla, mattis et maximus in, molestie at felis. Vestibulum ac eros vel est commodo egestas. Fusce blandit, purus sit amet aliquam tincidunt, nisl mauris euismod nisi, euismod pulvinar dolor metus sit amet orci. Praesent lectus magna, porta a volutpat ac, egestas a dui. Quisque semper, ex eget pretium faucibus, ante ipsum dictum nisl, sed iaculis ante nisi vehicula arcu. Praesent at feugiat dolor, placerat auctor ligula. Cras venenatis viverra nisi eu volutpat.",
-				"Morbi sed tortor ac lectus porta vehicula. Nullam venenatis magna in accumsan sodales. Donec massa orci, egestas vel tincidunt eu, laoreet et enim. Curabitur fermentum tempor felis, ac condimentum urna dictum sed. Maecenas at purus finibus, pellentesque sem at, scelerisque lorem. Nam pretium vitae lorem ac volutpat. Integer ligula turpis, lobortis quis congue ut, suscipit semper velit. Integer scelerisque quis lacus eu imperdiet. Integer ex tortor, finibus nec ultrices quis, pretium vel elit. Phasellus tincidunt hendrerit purus, in cursus erat euismod vitae.",
-				"In laoreet iaculis nibh, ut varius massa consectetur sit amet. Pellentesque auctor purus id sem posuere porta. Praesent vitae massa mi. Donec eget tellus egestas, aliquet justo vitae, vulputate lacus. Praesent eu tempor eros. Proin risus tellus, accumsan quis magna eget, viverra rutrum nunc. Nullam id placerat nisl, vel tempor augue. Phasellus dignissim dapibus dui a sollicitudin. Nam vulputate accumsan suscipit. Ut rhoncus risus a volutpat porta. Praesent eros ipsum, molestie eget dictum nec, malesuada vitae lectus. Aliquam pretium fermentum arcu, ultricies varius magna lobortis sit amet. Aenean tristique nisl sit amet turpis fringilla suscipit. Maecenas tincidunt, orci eget tincidunt suscipit, lectus nibh condimentum odio, non fermentum purus libero sagittis nibh. Nulla finibus, nulla ut gravida gravida, massa ipsum auctor lectus, et aliquam ligula sapien id felis.",
-				"Donec quis iaculis lorem. Vestibulum sollicitudin felis massa, et commodo neque sagittis sed. Phasellus et laoreet ligula, id lacinia orci. Suspendisse luctus eget odio et fringilla. Phasellus vel velit at ligula ullamcorper sollicitudin. Ut efficitur varius diam, fringilla accumsan nisi mattis vitae. Cras dapibus nec augue posuere rhoncus. Mauris dolor felis, malesuada et risus eu, tempus rhoncus libero. Quisque iaculis volutpat nunc, lacinia aliquet libero viverra in. Etiam sit amet lectus ut ante gravida malesuada sed a massa. Nulla a blandit lacus. Ut eleifend convallis libero a posuere. Fusce a tempus urna, eu molestie enim.",
-				"Cras fringilla, leo eu dignissim placerat, ligula lacus efficitur enim, eu congue arcu ante eu odio. Donec egestas bibendum est. Etiam non dolor pharetra, scelerisque tortor a, pulvinar diam. Suspendisse euismod elit lacus, ac gravida ligula malesuada nec. Etiam fringilla nisl odio, et luctus lorem posuere at. Nam justo enim, blandit ac lorem vitae, vestibulum scelerisque leo. Pellentesque molestie mattis neque non imperdiet. Nulla commodo orci risus, id molestie ex efficitur non. Sed quis elit non ante aliquet pharetra. Morbi lacinia mi metus, gravida accumsan ante cursus et. Morbi sed ipsum augue.",
-				"Curabitur vel turpis maximus, rhoncus metus at, fringilla massa. Nunc bibendum eros eget nunc scelerisque dictum. In dignissim imperdiet dolor, non ornare metus iaculis nec. Fusce nec rhoncus lectus, id rutrum odio. Nam varius ornare elit. Duis eget cursus diam. Proin fringilla ex libero, at consequat risus vulputate in. Proin nec magna ut tortor placerat commodo ut id metus. Praesent mollis quam id purus vulputate consectetur. Nam at tortor sit amet tellus vestibulum tempus. Pellentesque ante ipsum, viverra ut imperdiet sed, commodo mollis nibh.",
-				"Curabitur cursus lacus at commodo dictum. Sed sed pharetra purus. Quisque pharetra neque dolor, a interdum arcu eleifend quis. Donec feugiat mollis justo ut molestie. Donec sit amet eros eu sapien cursus sollicitudin at ac dolor. Duis in interdum eros, vitae rutrum lacus. Sed placerat ac arcu sit amet fringilla. Suspendisse et tincidunt augue. Duis mattis ex leo, nec iaculis orci porta in. Donec ultrices risus tempus est dignissim laoreet. Sed justo dolor, mattis ut dolor et, interdum pharetra neque. Aenean congue enim ligula, vitae interdum metus consectetur at.",
-				"Sed ullamcorper gravida odio vel auctor. Proin in velit pulvinar, consequat arcu non, congue arcu. Morbi ut egestas magna. Integer mattis lectus nec magna fringilla, vel gravida nisl eleifend. Quisque condimentum commodo mollis. Mauris convallis massa nec tincidunt porta. Fusce faucibus eros quis ante dignissim, maximus auctor justo posuere.",
-				"Integer nibh orci, finibus eu cursus nec, aliquam vitae augue. Sed lectus lectus, venenatis et venenatis eget, efficitur et turpis. Fusce enim nibh, imperdiet sit amet condimentum vel, suscipit et ex. Nullam elementum consequat elementum. Ut tempor, ante sed posuere vehicula, sapien est commodo sapien, ultrices porttitor magna felis at felis. Maecenas rutrum vehicula nisl, quis semper ex blandit quis. Aenean neque nunc, hendrerit sed feugiat sit amet, aliquet sed sapien. Ut varius lobortis nisi.",
-				"Donec urna dolor, congue ac dolor at, consequat laoreet mi. Vivamus a turpis lacus. Morbi diam velit, vestibulum sit amet feugiat vitae, laoreet at enim. Praesent facilisis convallis condimentum. Fusce ac mi risus. Donec pharetra augue nec pharetra tincidunt. Fusce vestibulum eros leo, sed bibendum felis vehicula non. Integer quis arcu arcu. Nam molestie nunc ac lorem consequat efficitur. Vestibulum et egestas mauris. Suspendisse vehicula tincidunt justo. Nunc vitae malesuada erat, in gravida arcu. Curabitur placerat, ex quis egestas placerat, erat urna bibendum mauris, at finibus nisi tortor in eros."
+				"Lorem ipsum dolor sit amet, consectetur adipiscing elit.\nSuspendisse erat nulla, mattis et maximus in, molestie at felis.\nVestibulum ac eros vel est commodo egestas.\nFusce blandit, purus sit amet aliquam tincidunt, nisl mauris euismod nisi, euismod pulvinar dolor metus sit amet orci.\nPraesent lectus magna, porta a volutpat ac, egestas a dui.\nQuisque semper, ex eget pretium faucibus, ante ipsum dictum nisl, sed iaculis ante nisi vehicula arcu.\nPraesent at feugiat dolor, placerat auctor ligula.\nCras venenatis viverra nisi eu volutpat.",
+				"Morbi sed tortor ac lectus porta vehicula.\nNullam venenatis magna in accumsan sodales.\nDonec massa orci, egestas vel tincidunt eu, laoreet et enim.\nCurabitur fermentum tempor felis, ac condimentum urna dictum sed.\nMaecenas at purus finibus, pellentesque sem at, scelerisque lorem.\nNam pretium vitae lorem ac volutpat.\nInteger ligula turpis, lobortis quis congue ut, suscipit semper velit.\nInteger scelerisque quis lacus eu imperdiet.\nInteger ex tortor, finibus nec ultrices quis, pretium vel elit.\nPhasellus tincidunt hendrerit purus, in cursus erat euismod vitae.",
+				"In laoreet iaculis nibh, ut varius massa consectetur sit amet.\nPellentesque auctor purus id sem posuere porta.\nPraesent vitae massa mi.\nDonec eget tellus egestas, aliquet justo vitae, vulputate lacus.\nPraesent eu tempor eros.\nProin risus tellus, accumsan quis magna eget, viverra rutrum nunc.\nNullam id placerat nisl, vel tempor augue.\nPhasellus dignissim dapibus dui a sollicitudin.\nNam vulputate accumsan suscipit.\nUt rhoncus risus a volutpat porta.\nPraesent eros ipsum, molestie eget dictum nec, malesuada vitae lectus.\nAliquam pretium fermentum arcu, ultricies varius magna lobortis sit amet.\nAenean tristique nisl sit amet turpis fringilla suscipit.\nMaecenas tincidunt, orci eget tincidunt suscipit, lectus nibh condimentum odio, non fermentum purus libero sagittis nibh.\nNulla finibus, nulla ut gravida gravida, massa ipsum auctor lectus, et aliquam ligula sapien id felis.",
+				"Donec quis iaculis lorem.\nVestibulum sollicitudin felis massa, et commodo neque sagittis sed.\nPhasellus et laoreet ligula, id lacinia orci.\nSuspendisse luctus eget odio et fringilla.\nPhasellus vel velit at ligula ullamcorper sollicitudin.\nUt efficitur varius diam, fringilla accumsan nisi mattis vitae.\nCras dapibus nec augue posuere rhoncus.\nMauris dolor felis, malesuada et risus eu, tempus rhoncus libero.\nQuisque iaculis volutpat nunc, lacinia aliquet libero viverra in.\nEtiam sit amet lectus ut ante gravida malesuada sed a massa.\nNulla a blandit lacus.\nUt eleifend convallis libero a posuere.\nFusce a tempus urna, eu molestie enim.",
+				"Cras fringilla, leo eu dignissim placerat, ligula lacus efficitur enim, eu congue arcu ante eu odio.\nDonec egestas bibendum est.\nEtiam non dolor pharetra, scelerisque tortor a, pulvinar diam.\nSuspendisse euismod elit lacus, ac gravida ligula malesuada nec.\nEtiam fringilla nisl odio, et luctus lorem posuere at.\nNam justo enim, blandit ac lorem vitae, vestibulum scelerisque leo.\nPellentesque molestie mattis neque non imperdiet.\nNulla commodo orci risus, id molestie ex efficitur non.\nSed quis elit non ante aliquet pharetra.\nMorbi lacinia mi metus, gravida accumsan ante cursus et.\nMorbi sed ipsum augue.",
+				"Curabitur vel turpis maximus, rhoncus metus at, fringilla massa.\nNunc bibendum eros eget nunc scelerisque dictum.\nIn dignissim imperdiet dolor, non ornare metus iaculis nec.\nFusce nec rhoncus lectus, id rutrum odio.\nNam varius ornare elit.\nDuis eget cursus diam.\nProin fringilla ex libero, at consequat risus vulputate in.\nProin nec magna ut tortor placerat commodo ut id metus.\nPraesent mollis quam id purus vulputate consectetur.\nNam at tortor sit amet tellus vestibulum tempus.\nPellentesque ante ipsum, viverra ut imperdiet sed, commodo mollis nibh.",
+				"Curabitur cursus lacus at commodo dictum.\nSed sed pharetra purus.\nQuisque pharetra neque dolor, a interdum arcu eleifend quis.\nDonec feugiat mollis justo ut molestie.\nDonec sit amet eros eu sapien cursus sollicitudin at ac dolor.\nDuis in interdum eros, vitae rutrum lacus.\nSed placerat ac arcu sit amet fringilla.\nSuspendisse et tincidunt augue.\nDuis mattis ex leo, nec iaculis orci porta in.\nDonec ultrices risus tempus est dignissim laoreet.\nSed justo dolor, mattis ut dolor et, interdum pharetra neque.\nAenean congue enim ligula, vitae interdum metus consectetur at.",
+				"Sed ullamcorper gravida odio vel auctor.\nProin in velit pulvinar, consequat arcu non, congue arcu.\nMorbi ut egestas magna.\nInteger mattis lectus nec magna fringilla, vel gravida nisl eleifend.\nQuisque condimentum commodo mollis.\nMauris convallis massa nec tincidunt porta.\nFusce faucibus eros quis ante dignissim, maximus auctor justo posuere.",
+				"Integer nibh orci, finibus eu cursus nec, aliquam vitae augue.\nSed lectus lectus, venenatis et venenatis eget, efficitur et turpis.\nFusce enim nibh, imperdiet sit amet condimentum vel, suscipit et ex.\nNullam elementum consequat elementum.\nUt tempor, ante sed posuere vehicula, sapien est commodo sapien, ultrices porttitor magna felis at felis.\nMaecenas rutrum vehicula nisl, quis semper ex blandit quis.\nAenean neque nunc, hendrerit sed feugiat sit amet, aliquet sed sapien.\nUt varius lobortis nisi.",
+				"Donec urna dolor, congue ac dolor at, consequat laoreet mi.\nVivamus a turpis lacus.\nMorbi diam velit, vestibulum sit amet feugiat vitae, laoreet at enim.\nPraesent facilisis convallis condimentum.\nFusce ac mi risus.\nDonec pharetra augue nec pharetra tincidunt.\nFusce vestibulum eros leo, sed bibendum felis vehicula non.\nInteger quis arcu arcu.\nNam molestie nunc ac lorem consequat efficitur.\nVestibulum et egestas mauris.\nSuspendisse vehicula tincidunt justo.\nNunc vitae malesuada erat, in gravida arcu.\nCurabitur placerat, ex quis egestas placerat, erat urna bibendum mauris, at finibus nisi tortor in eros."
 			],
 			moveTargetTop = 1,
 			moveTargetClosingTag = 2,
 			placeholderText = null,
 			bodyElement = null,
-			lastEditedRuleSelector = "",
+			lastEditedRuleSelector = "p",
+			lastEditedRuleAttributeName = "color",
+			lastEditedRuleAttributeValue = "black",
 			iframe = _ID("iframe"),
 			iframeWindow = null,
 			iframeDocument = null,
@@ -669,7 +751,7 @@
 				bodyElement.elementParent = null;
 				bodyElement.elementIframe = iframeBody;
 
-				bodyElement.elementTag = _CE("span", "element-tag", bodyElement);
+				bodyElement.elementTag = _CE("div", "element-tag", bodyElement);
 				bodyElement.elementTag.element = bodyElement;
 				bodyElement.elementTag.onclick = tagClick;
 				_TXT("<", bodyElement.elementTag);
@@ -679,7 +761,7 @@
 				bodyElement.elementContainer = _CE("div", "element-container", bodyElement);
 				bodyElement.elementContainer.element = bodyElement;
 
-				bodyElement.elementClosingTag = _CE("span", "element-tag move-target", bodyElement);
+				bodyElement.elementClosingTag = _CE("div", "element-tag move-target", bodyElement);
 				bodyElement.elementClosingTag.element = bodyElement;
 				bodyElement.elementClosingTag.onclick = closingTagClick;
 				bodyElement.elementClosingTag.moveTarget = moveTargetClosingTag;
@@ -726,7 +808,7 @@
 				_TXT("\n-->", e.elementTag);
 				e.elementIframe = _ICMT("");
 			} else {
-				e.elementTag = _CE("span", "element-tag move-target", e);
+				e.elementTag = _CE("div", "element-tag move-target", e);
 				e.elementTag.element = e;
 				e.elementTag.onclick = tagClick;
 				e.elementTag.moveTarget = moveTargetTop;
@@ -737,12 +819,12 @@
 
 				if (!elementType.noChildren) {
 					e.elementContainerVisible = true;
-					e.elementContainerPlaceholder = _CE("span", "hidden", e);
+					e.elementContainerPlaceholder = _CE("span", "element-placeholder", e);
 					_TXT("...", e.elementContainerPlaceholder);
 					e.elementContainer = _CE("div", "element-container", e);
 					e.elementContainer.element = e;
 
-					e.elementClosingTag = _CE("span", "element-tag move-target", e);
+					e.elementClosingTag = _CE("div", "element-tag move-target", e);
 					e.elementClosingTag.element = e;
 					e.elementClosingTag.onclick = closingTagClick;
 					e.elementClosingTag.moveTarget = moveTargetClosingTag;
@@ -865,13 +947,7 @@
 				return;
 
 			element.elementContainerVisible = !element.elementContainerVisible;
-			if (element.elementContainerVisible) {
-				element.elementContainerPlaceholder.className = "hidden";
-				element.elementContainer.className = "element-container";
-			} else {
-				element.elementContainer.className = "hidden";
-				element.elementContainerPlaceholder.className = "";
-			}
+			element.className = (element.elementContainerVisible ? "element" : "element collapsed");
 		}
 
 		function lockUI(lock) {
@@ -915,6 +991,38 @@
 			reader.readAsDataURL(file);
 		}
 
+		function createImageInput(parent, addAsUrl) {
+			var inputGroup = _CE("div", "input-group", parent),
+				input = _SA(_SA(_SA(_CE("input", "form-control", inputGroup), "spellcheck", "false"), "type", "text"), "autocomplete", "off"),
+				fileInput = _SA(_SA(_SA(_CE("input", "editor-hidden-file-input", inputGroup), "tabindex", "-1"), "type", "file"), "accept", "image/png,image/gif,image/jpeg");
+
+			fileInput.onchange = function () {
+				var file;
+				if (loading)
+					return;
+				if (!("files" in this)) {
+					Notification.error(translate("ErrorNoFile"), true);
+					return;
+				}
+				if (!this.files.length || !(file = this.files[0]))
+					return;
+				if (file.size > (1 << 20)) {
+					Notification.error(translate("ErrorFileTooLarge"), true);
+					return;
+				}
+				loadFileDataURL(file, function (dataURL) {
+					input.value = ((addAsUrl && dataURL) ? ("url(" + dataURL + ")") : (dataURL || ""));
+				});
+			};
+			_BTN("btn btn-default btn-force-border", "fa-folder-open", translate("LoadImage"), _CE("span", "input-group-btn", inputGroup), function () {
+				if (loading)
+					return;
+				fileInput.click();
+			});
+
+			return input;
+		}
+
 		function createRule(ruleSelector, siblingBelow, hideUI) {
 			if (loading)
 				return;
@@ -926,22 +1034,21 @@
 			// These attribute names were chosen like this in order to
 			// avoid any conflicts with existing attribute names!
 			e.elementCategory = categoryRule;
-			e.elementRuleSelector = trim(ruleSelector || lastEditedRuleSelector || "p");
 
-			e.elementTag = _CE("span", "element-tag move-target", e);
+			e.elementTag = _CE("div", "element-tag move-target-top", e);
 			e.elementTag.element = e;
 			e.elementTag.onclick = tagClick;
 			e.elementTag.moveTarget = moveTargetTop;
-			_TXT(e.elementRuleSelector, _CE("span", "element-name-block", e.elementTag));
+			_TXT(trim(ruleSelector || lastEditedRuleSelector || "p"), _CE("span", "element-name-block", e.elementTag));
 			_TXT(" {", e.elementTag);
 
 			e.elementContainerVisible = true;
-			e.elementContainerPlaceholder = _CE("span", "hidden", e);
+			e.elementContainerPlaceholder = _CE("span", "element-placeholder", e);
 			_TXT("...", e.elementContainerPlaceholder);
 			e.elementContainer = _CE("div", "element-container", e);
 			e.elementContainer.element = e;
 
-			e.elementClosingTag = _CE("span", "element-tag move-target", e);
+			e.elementClosingTag = _CE("div", "element-tag move-target", e);
 			e.elementClosingTag.element = e;
 			e.elementClosingTag.onclick = closingTagClick;
 			e.elementClosingTag.moveTarget = moveTargetClosingTag;
@@ -963,17 +1070,18 @@
 				return;
 
 			_RC(editorCss, element);
+
+			if (!editorCss.childNodes.length)
+				createRule("body");
 		}
 
 		function getRuleSelector(element) {
-			return ((element.elementCategory === categoryRule && element.elementRuleSelector) || "");
+			return ((element.elementCategory === categoryRule && element.elementTag.firstChild.firstChild.nodeValue) || "");
 		}
 
 		function setRuleSelector(element, newRuleSelector) {
-			if (element.elementCategory === categoryRule && newRuleSelector) {
-				element.elementRuleSelector = newRuleSelector;
-				element.elementTag.firstChild.textContent = newRuleSelector;
-			}
+			if (element.elementCategory === categoryRule && newRuleSelector)
+				element.elementTag.firstChild.firstChild.nodeValue = newRuleSelector;
 		}
 
 		function editRuleSelector(element) {
@@ -997,56 +1105,261 @@
 			});
 		}
 
+		function createRuleAttribute(name, value, parent, siblingBelow, hideUI) {
+			if (loading)
+				return;
+
+			// For the future... Perhaps we could use the CSSStyleSheet API?!?!
+			// https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet/insertRule
+
+			if (!name && !value) {
+				name = lastEditedRuleAttributeName;
+				value = lastEditedRuleAttributeValue;
+			}
+
+			var e, elementAttribute = cssAttributesByName[name];
+			if (!elementAttribute)
+				return;
+
+			e = _CE("div", "element");
+			// These attribute names were chosen like this in order to
+			// avoid any conflicts with existing attribute names!
+			e.elementCategory = categoryRuleAttribute;
+			e.elementParent = parent;
+
+			e.elementTag = _CE("div", "element-tag move-target", e);
+			e.elementTag.element = e;
+			e.elementTag.onclick = tagClick;
+			e.elementTag.moveTarget = moveTargetTop;
+			_TXT(name, e.elementAttributeName = _CE("span", "attribute-name", e.elementTag));
+			_TXT(": ", e.elementTag);
+			_TXT(" ", e.elementAttributeValue = _CE("span", "attribute-value", e.elementTag));
+			_TXT(";", e.elementTag);
+
+			if (siblingBelow)
+				_IB(parent.elementContainer, e, siblingBelow);
+			else
+				_AC(parent.elementContainer, e);
+
+			setRuleAttribute(e, name, value);
+
+			if (!hideUI)
+				editRuleAttribute(e);
+
+			return e;
+		}
+
+		function deleteRuleAttribute(element) {
+			if (loading || !element || element.elementCategory !== categoryRuleAttribute)
+				return;
+
+			_RC(element.elementParent.elementContainer, element);
+		}
+
+		function getRuleAttributeName(element) {
+			return ((element.elementCategory === categoryRuleAttribute && element.elementAttributeName.firstChild.nodeValue) || "");
+		}
+
+		function getRuleAttributeValue(element) {
+			return ((element.elementCategory === categoryRuleAttribute && element.elementAttributeValue.elementActualAttributeValue) || "");
+		}
+
+		function setRuleAttribute(element, newRuleAttributeName, newRuleAttributeValue) {
+			if (element.elementCategory === categoryRuleAttribute && newRuleAttributeName && newRuleAttributeValue) {
+				element.elementAttributeName.firstChild.nodeValue = newRuleAttributeName;
+				element.elementAttributeValue.elementActualAttributeValue = newRuleAttributeValue;
+				if (newRuleAttributeValue.length > 50)
+					element.elementAttributeValue.firstChild.nodeValue = newRuleAttributeValue.substr(0, 49) + "\u2026";
+				else
+					element.elementAttributeValue.firstChild.nodeValue = newRuleAttributeValue;
+			}
+		}
+
+		function updateRuleAttributeValueSelect() {
+			var modalRuleAttributeName = _ID("modalRuleAttributeName"),
+				modalRuleAttributeValueLabel = _ID("modalRuleAttributeValueLabel"),
+				modalRuleAttributeValueInput = _ID("modalRuleAttributeValueInput"),
+				modalRuleAttributeValueSelect = _ID("modalRuleAttributeValueSelect"),
+				modalRuleAttributeValueImageInputGroup = _ID("modalRuleAttributeValueImageInputGroup"),
+				modalRuleAttributeHelp = _ID("modalRuleAttributeHelp"),
+				i, v, a = cssAttributesByName[modalRuleAttributeName.value];
+
+			_SA(modalRuleAttributeHelp, "href", a ? a.urlHelp : "");
+
+			while (modalRuleAttributeValueSelect.firstChild)
+				_RC(modalRuleAttributeValueSelect, modalRuleAttributeValueSelect.firstChild);
+
+			if (a && a.values && a.values.length) {
+				modalRuleAttributeValueInput.style.display = "none";
+				modalRuleAttributeValueImageInputGroup.style.display = "none";
+
+				for (i = 0; i < a.values.length; i++)
+					_TXT(v = a.values[i], _SA(_CE("option", null, modalRuleAttributeValueSelect), "value", v));
+
+				modalRuleAttributeValueSelect.style.display = "";
+				_SA(modalRuleAttributeValueLabel, "for", "modalRuleAttributeValueSelect");
+			} else if (a && a.values === valueImage) {
+				modalRuleAttributeValueInput.style.display = "none";
+				modalRuleAttributeValueSelect.style.display = "none";
+				modalRuleAttributeValueImageInputGroup.style.display = "";
+				_SA(modalRuleAttributeValueLabel, "for", "modalRuleAttributeValueImageInput");
+			} else {
+				modalRuleAttributeValueSelect.style.display = "none";
+				modalRuleAttributeValueImageInputGroup.style.display = "none";
+				modalRuleAttributeValueInput.style.display = "";
+				_SA(modalRuleAttributeValueLabel, "for", "modalRuleAttributeValueInput");
+			}
+		}
+
+		function editRuleAttribute(element) {
+			if (loading || !element || element.elementCategory !== categoryRuleAttribute)
+				return;
+
+			var modalRuleAttributeName = _ID("modalRuleAttributeName"),
+				modalRuleAttributeValueInput = _ID("modalRuleAttributeValueInput"),
+				modalRuleAttributeValueSelect = _ID("modalRuleAttributeValueSelect"),
+				modalRuleAttributeValueImageInput = _ID("modalRuleAttributeValueImageInput"),
+				modalRuleAttributeOk = _ID("modalRuleAttributeOk");
+			modalRuleAttributeName.value = getRuleAttributeName(element);
+			updateRuleAttributeValueSelect();
+			if (modalRuleAttributeValueInput.style.display !== "none") {
+				modalRuleAttributeValueImageInput.value = "";
+				modalRuleAttributeValueInput.value = getRuleAttributeValue(element);
+			} else if (modalRuleAttributeValueSelect.style.display !== "none") {
+				modalRuleAttributeValueInput.value = "";
+				modalRuleAttributeValueImageInput.value = "";
+				modalRuleAttributeValueSelect.value = getRuleAttributeValue(element);
+			} else {
+				modalRuleAttributeValueInput.value = "";
+				modalRuleAttributeValueImageInput.value = getRuleAttributeValue(element);
+			}
+			modalRuleAttributeOk.onclick = function () {
+				var newRuleAttributeName = modalRuleAttributeName.value,
+					newRuleAttributeValue = (modalRuleAttributeValueSelect.style.display !== "none" ? modalRuleAttributeValueSelect.value :
+						trimValue(modalRuleAttributeValueInput.style.display !== "none" ? modalRuleAttributeValueInput : modalRuleAttributeValueImageInput));
+				if (!newRuleAttributeName || !newRuleAttributeValue)
+					return;
+				lastEditedRuleAttributeName = newRuleAttributeName;
+				lastEditedRuleAttributeValue = newRuleAttributeValue;
+				$("#modalRuleAttribute").modal("hide");
+				setRuleAttribute(element, newRuleAttributeName, newRuleAttributeValue);
+			};
+			$("#modalRuleAttribute").modal({
+				keyboard: true,
+				backdrop: true
+			});
+		}
+
 		// Translation
 		(function () {
 			if (!window.editorStrings || (typeof window.editorStrings !== "object")) window.editorStrings = {};
 
 			function addString(key, value) { if (!window.editorStrings[key]) window.editorStrings[key] = value; }
 
-			addString("OK", "OK");
-			addString("Cancel", "Cancelar");
-			addString("Close", "Fechar");
-			addString("Menu", "Menu");
-			addString("New", "Novo");
-			addString("Load", "Abrir");
-			addString("Save", "Salvar");
-			addString("FileName", "Nome do Arquivo");
-			addString("LoadEllipsis", "Abrir...");
-			addString("SaveEllipsis", "Salvar...");
-			addString("ExportHTML", "Exportar HTML...");
-			addString("EditText", "Editar Texto");
-			addString("NewText", "Novo Texto");
-			addString("EditComment", "Editar Comment");
-			addString("NewComment", "Novo Comment");
-			addString("EditSelector", "Editar Seletor");
-			addString("NewSelector", "Novo Seletor");
-			addString("Move", "Mover");
-			addString("Duplicate", "Duplicar");
-			addString("Delete", "Excluir");
-			addString("ElementName", "Nome do Elemento");
-			addString("FindElement", "Localizar Elemento");
-			addString("ChangeElement", "Alterar Elemento");
-			addString("EditAttributes", "Editar Atributos");
-			addString("CreateElement", "Criar Elemento");
-			addString("CreateRule", "Criar Regra");
-			addString("CreateText", "Criar Texto");
-			addString("CreateComment", "Criar Comentário");
-			addString("LoadImage", "Carregar Imagem");
-			addString("UseLoremIpsum", "Utilizar Parágrafo de Lorem Ipsum");
-			addString("PlaceholderText", "[Digite seu texto aqui]");
-			addString("ErrorBlockInsideInline", "Um elemento block não pode ser filho de um elemento inline \uD83D\uDE22");
-			addString("ErrorInlineParentBlock", "Um elemento inline não pode ser pai de um elemento block \uD83D\uDE22");
-			addString("ErrorNewElementMustHaveChildren", "O novo elemento também deve poder ter filhos \uD83D\uDE22");
-			addString("ErrorNewElementMustNotHaveChildren", "O novo elemento também não pode ter filhos \uD83D\uDE22");
-			addString("ErrorNoFile", "Seu browser não oferece suporte a acesso avançado de arquivos \uD83D\uDE22");
-			addString("ErrorFileTooLarge", "Por favor, escolha uma imagem com tamanho de até 1 MiB \uD83D\uDE22");
-			addString("ErrorFileLoad", "Ocorreu um erro ao ler o arquivo \uD83D\uDE22");
-			addString("ErrorInvalidHTML", "O arquivo escolhido não parece ser um arquivo HTML válido \uD83D\uDE22");
-			addString("ConfirmQuit", "Deseja mesmo sair da página? Você perderá o documento atual.");
-			addString("MoveMessage", "Clique sobre onde deseja mover o elemento, ou tecle Esc para cancelar");
-			addString("HideChildren", "Ocultar Filhos");
-			addString("ShowChildren", "Mostrar Filhos");
-			addString("ElementHelp", "Ajuda do Elemento");
+			var language = (navigator.userLanguage || navigator.language);
+			if (!language || language.indexOf("pt") === 0) {
+				addString("OK", "OK");
+				addString("Cancel", "Cancelar");
+				addString("Close", "Fechar");
+				addString("Menu", "Menu");
+				addString("New", "Novo");
+				addString("Load", "Abrir");
+				addString("Save", "Salvar");
+				addString("FileName", "Nome do Arquivo");
+				addString("LoadEllipsis", "Abrir...");
+				addString("SaveEllipsis", "Salvar...");
+				addString("ExportHTML", "Exportar HTML...");
+				addString("EditText", "Editar Texto");
+				addString("Text", "Texto");
+				addString("EditComment", "Editar Comentário");
+				addString("Comment", "Comentário");
+				addString("EditSelector", "Editar Seletor");
+				addString("Selector", "Seletor");
+				addString("Name", "Nome");
+				addString("Value", "Valor");
+				addString("EditAttribute", "Editar Atributo");
+				addString("AttributeHelp", "Ajuda do Atributo");
+				addString("Move", "Mover");
+				addString("Duplicate", "Duplicar");
+				addString("Delete", "Excluir");
+				addString("ElementName", "Nome do Elemento");
+				addString("FindElement", "Localizar Elemento");
+				addString("ChangeElement", "Alterar Elemento");
+				addString("EditAttributes", "Editar Atributos");
+				addString("CreateElement", "Criar Elemento");
+				addString("CreateRule", "Criar Regra");
+				addString("CreateAttribute", "Criar Atributo");
+				addString("CreateText", "Criar Texto");
+				addString("CreateComment", "Criar Comentário");
+				addString("LoadImage", "Carregar Imagem");
+				addString("UseLoremIpsum", "Utilizar Parágrafo de Lorem Ipsum");
+				addString("PlaceholderText", "[Digite seu texto aqui]");
+				addString("ErrorBlockInsideInline", "Um elemento block não pode ser filho de um elemento inline \uD83D\uDE22");
+				addString("ErrorInlineParentBlock", "Um elemento inline não pode ser pai de um elemento block \uD83D\uDE22");
+				addString("ErrorNewElementMustHaveChildren", "O novo elemento também deve poder ter filhos \uD83D\uDE22");
+				addString("ErrorNewElementMustNotHaveChildren", "O novo elemento também não pode ter filhos \uD83D\uDE22");
+				addString("ErrorNoFile", "Seu browser não oferece suporte a acesso avançado de arquivos \uD83D\uDE22");
+				addString("ErrorFileTooLarge", "Por favor, escolha uma imagem com tamanho de até 1 MiB \uD83D\uDE22");
+				addString("ErrorFileLoad", "Ocorreu um erro ao ler o arquivo \uD83D\uDE22");
+				addString("ErrorInvalidHTML", "O arquivo escolhido não parece ser um arquivo HTML válido \uD83D\uDE22");
+				addString("ConfirmQuit", "Deseja mesmo sair da página? Você perderá o documento atual.");
+				addString("MoveMessage", "Clique sobre onde deseja mover o elemento ou tecle Esc para cancelar");
+				addString("HideChildren", "Ocultar Filhos");
+				addString("ShowChildren", "Mostrar Filhos");
+				addString("ElementHelp", "Ajuda do Elemento");
+				addString("MoreHelpLinks", "Mais Links de Ajuda");
+			} else {
+				addString("OK", "OK");
+				addString("Cancel", "Cancel");
+				addString("Close", "Close");
+				addString("Menu", "Menu");
+				addString("New", "New");
+				addString("Load", "Load");
+				addString("Save", "Save");
+				addString("FileName", "File Name");
+				addString("LoadEllipsis", "Load...");
+				addString("SaveEllipsis", "Save...");
+				addString("ExportHTML", "Export HTML...");
+				addString("EditText", "Edit Text");
+				addString("Text", "Text");
+				addString("EditComment", "Edit Comment");
+				addString("Comment", "Comment");
+				addString("EditSelector", "Edit Selector");
+				addString("Selector", "Selector");
+				addString("Name", "Name");
+				addString("Value", "Value");
+				addString("EditAttribute", "Edit Attribute");
+				addString("AttributeHelp", "Attribute Help");
+				addString("Move", "Move");
+				addString("Duplicate", "Duplicate");
+				addString("Delete", "Delete");
+				addString("ElementName", "Elemento Name");
+				addString("FindElement", "Find Elemento");
+				addString("ChangeElement", "Change Elemento");
+				addString("EditAttributes", "Edit Attributes");
+				addString("CreateElement", "Create Element");
+				addString("CreateRule", "Create Rule");
+				addString("CreateAttribute", "Create Attribute");
+				addString("CreateText", "Create Text");
+				addString("CreateComment", "Create Comment");
+				addString("LoadImage", "Load Imagem");
+				addString("UseLoremIpsum", "Use Lorem Ipsum Paragraph");
+				addString("PlaceholderText", "[Enter your text here]");
+				addString("ErrorBlockInsideInline", "A block element cannot be a child of an inline element \uD83D\uDE22");
+				addString("ErrorInlineParentBlock", "An inline element cannot be the parent of a block element \uD83D\uDE22");
+				addString("ErrorNewElementMustHaveChildren", "The new element must also be able to have children \uD83D\uDE22");
+				addString("ErrorNewElementMustNotHaveChildren", "The new element must also not be able to have children \uD83D\uDE22");
+				addString("ErrorNoFile", "Your browser does not support advanced file access \uD83D\uDE22");
+				addString("ErrorFileTooLarge", "Please, select an image with at most 1 MiB \uD83D\uDE22");
+				addString("ErrorFileLoad", "An error occurred while reading the file \uD83D\uDE22");
+				addString("ErrorInvalidHTML", "The selected file does not seem to be a valid HTML file \uD83D\uDE22");
+				addString("ConfirmQuit", "Do you really want to quit? You will lose unsaved information.");
+				addString("MoveMessage", "Click where you wish to move the element to or press Esc to cancel");
+				addString("HideChildren", "Hide Children");
+				addString("ShowChildren", "Show Children");
+				addString("ElementHelp", "Element Help");
+				addString("MoreHelpLinks", "More Help Links");
+			}
 
 			window.translate = function (key) { return (editorStrings[key] || key); };
 
@@ -1076,13 +1389,17 @@
 
 		// Initial
 		(function () {
-			var i, a, e,
+			var i, a, e, v,
 				modalTxtInput = _ID("modalTxtInput"),
 				modalTxtOk = _ID("modalTxtOk"),
 				modalTxtBtnLoremIpsum = _ID("modalTxtBtnLoremIpsum"),
 				modalTxtSelectLoremIpsum = _ID("modalTxtSelectLoremIpsum"),
 				modalRuleSelectorInput = _ID("modalRuleSelectorInput"),
-				modalRuleSelectorOk = _ID("modalRuleSelectorOk");
+				modalRuleSelectorOk = _ID("modalRuleSelectorOk"),
+				modalRuleAttributeName = _ID("modalRuleAttributeName"),
+				modalRuleAttributeValueInput = _ID("modalRuleAttributeValueInput"),
+				modalRuleAttributeValueImageInput = createImageInput(modalRuleAttributeValueInput.parentNode, true),
+				modalRuleAttributeOk = _ID("modalRuleAttributeOk");
 
 			$("#modalTxt").on("shown.bs.modal", function () {
 				modalTxtInput.focus();
@@ -1105,6 +1422,18 @@
 				if (e.key === "Enter" || e.keyCode === 13)
 					modalRuleSelectorOk.click();
 			};
+
+			function modalRuleAttributeValueInputKeyDown(e) {
+				if (e.key === "Enter" || e.keyCode === 13)
+					modalRuleAttributeOk.click();
+			}
+			$("#modalRuleAttribute").on("shown.bs.modal", function () {
+				modalRuleAttributeName.focus();
+			});
+			modalRuleAttributeName.onchange = updateRuleAttributeValueSelect;
+			_SA(modalRuleAttributeValueImageInput, "id", "modalRuleAttributeValueImageInput").onkeydown = modalRuleAttributeValueInputKeyDown;
+			modalRuleAttributeValueInput.onkeydown = modalRuleAttributeValueInputKeyDown;
+			_SA(modalRuleAttributeValueImageInput.parentNode, "id", "modalRuleAttributeValueImageInputGroup");
 
 			function sortByName(a, b) {
 				return (a.name < b.name ? -1 : 1);
@@ -1155,6 +1484,9 @@
 			elementTypesByName["text"] = elementTypeText;
 			elementTypesByName["comment"] = elementTypeComment;
 
+			for (i = 0; i < cssAttributes.length; i++)
+				_TXT(v = cssAttributes[i].name, _SA(_CE("option", null, modalRuleAttributeName), "value", v));
+
 			_SA(iframe, "src", "empty.html");
 
 			window.onbeforeunload = function () {
@@ -1166,10 +1498,10 @@
 
 		// Resize
 		(function () {
-			var bar = _ID("bar");
-			var barDrag = false;
-			var barDragX = 0;
-			var barX = (window.innerWidth >> 1);
+			var bar = _ID("bar"),
+				barDrag = false,
+				barDragX = 0,
+				barX = (window.innerWidth >> 1);
 
 			function resizeWindow() {
 				var width = (window.innerWidth | 0);
@@ -1233,11 +1565,11 @@
 		(function () {
 			var dropdownX = 0,
 				dropdownY = 0,
-				dropdownFading = false, dropdownMoving = false,
+				dropdownFading = false, dropdownMoving = false, dropdownMovingCss = false,
 				dropdownVisible = false, dropdownTypeVisible = false, dropdownHighlighting = false,
-				dropdownActionTop = false, dropdownActionClosingTag = false, dropdownActionChangeType = false, dropdownActionEditRuleSelector = false,
+				dropdownActionTop = false, dropdownActionClosingTag = false, dropdownActionChangeType = false, dropdownActionEditRuleSelector = false, dropdownActionEditRuleAttribute = false,
 				dropdownShowTop = false, dropdownShowLeft = false, dropdownShowRight = false, dropdownShowBottom = false,
-				dropdownShowTypeOnHide = false, dropdownCreateTextOnHide = false, dropdownCreateCommentOnHide = false, dropdownMoveOnHide = false, dropdownEditTextOnHide = false, dropdownEditAttributesOnHide = false, dropdownCreateEditRuleOnHide = false,
+				dropdownShowTypeOnHide = false, dropdownCreateTextOnHide = false, dropdownCreateCommentOnHide = false, dropdownMoveOnHide = false, dropdownEditTextOnHide = false, dropdownEditAttributesOnHide = false, dropdownCreateEditRuleOnHide = false, dropdownCreateEditRuleAttributeOnHide = false,
 				dropdownElement = null,
 				dropdownType = _ID("dropdownType"),
 				dropdownTypeInput = _("dropdownTypeInput"),
@@ -1245,6 +1577,7 @@
 				dropdownMenuTop = _ID("dropdownMenuTop"),
 				dropdownMenuTopCreateElement = _ID("dropdownMenuTopCreateElement"),
 				dropdownMenuTopCreateRule = _ID("dropdownMenuTopCreateRule"),
+				dropdownMenuTopCreateRuleAttribute = _ID("dropdownMenuTopCreateRuleAttribute"),
 				dropdownMenuTopCreateText = _ID("dropdownMenuTopCreateText"),
 				dropdownMenuTopCreateComment = _ID("dropdownMenuTopCreateComment"),
 				dropdownMenuLeft = _ID("dropdownMenuLeft"),
@@ -1254,10 +1587,12 @@
 				dropdownMenuRightFind = _ID("dropdownMenuRightFind"),
 				dropdownMenuRightChangeType = _ID("dropdownMenuRightChangeType"),
 				dropdownMenuRightEditRuleSelector = _ID("dropdownMenuRightEditRuleSelector"),
+				dropdownMenuRightEditRuleAttribute = _ID("dropdownMenuRightEditRuleAttribute"),
 				dropdownMenuRightEditAttributes = _ID("dropdownMenuRightEditAttributes"),
 				dropdownMenuBottom = _ID("dropdownMenuBottom"),
 				dropdownMenuBottomCreateElement = _ID("dropdownMenuBottomCreateElement"),
 				dropdownMenuBottomCreateRule = _ID("dropdownMenuBottomCreateRule"),
+				dropdownMenuBottomCreateRuleAttribute = _ID("dropdownMenuBottomCreateRuleAttribute"),
 				dropdownMenuBottomCreateText = _ID("dropdownMenuBottomCreateText"),
 				dropdownMenuBottomCreateComment = _ID("dropdownMenuBottomCreateComment");
 
@@ -1331,9 +1666,24 @@
 					if (dropdownActionEditRuleSelector)
 						editRuleSelector(dropdownElement);
 					else if (dropdownActionTop)
-						createRule("", dropdownElement);
+						createRule(null, dropdownElement);
 					else
-						createRule("", dropdownElement.nextSibling);
+						createRule(null, dropdownElement.nextSibling);
+				} else if (dropdownCreateEditRuleAttributeOnHide) {
+					dropdownCreateEditRuleAttributeOnHide = false;
+					if (dropdownActionEditRuleAttribute) {
+						editRuleAttribute(dropdownElement);
+					} else if (dropdownElement.elementCategory === categoryRule) {
+						if (dropdownActionTop)
+							createRuleAttribute(null, null, dropdownElement, null);
+						else
+							createRuleAttribute(null, null, dropdownElement, dropdownElement.elementContainer.firstChild);
+					} else {
+						if (dropdownActionTop)
+							createRuleAttribute(null, null, dropdownElement.elementParent, dropdownElement);
+						else
+							createRuleAttribute(null, null, dropdownElement.elementParent, dropdownElement.nextSibling);
+					}
 				}
 
 				lockUI(false);
@@ -1426,7 +1776,15 @@
 				if (!dropdownMoving || e.button)
 					return;
 
-				var moveTarget = e.target.moveTarget, targetElement, targetParent, parent;
+				var moveTarget = e.target.moveTarget, targetElement, targetParent, parent = e.target;
+
+				while (parent && parent !== document.body && parent !== editor && parent !== editorCss)
+					parent = parent.parentNode;
+				if (parent !== editor && parent !== editorCss) {
+					move(false);
+					return;
+				}
+
 				if (!moveTarget && e.target.parentNode) {
 					moveTarget = e.target.parentNode.moveTarget;
 					if (!moveTarget)
@@ -1437,37 +1795,62 @@
 				}
 
 				parent = targetElement;
-				while (parent && parent !== bodyElement) {
+				while (parent && parent !== bodyElement && parent !== document.body) {
 					if (parent === dropdownElement)
 						return;
 					parent = parent.parentNode;
 				}
 
-				if (moveTarget === moveTargetClosingTag)
-					targetParent = targetElement;
-				else
-					targetParent = targetElement.elementParent;
+				if (dropdownMovingCss) {
+					if (dropdownElement.elementCategory === categoryElement)
+						return;
 
-				if (dropdownElement.elementType.block) {
-					parent = targetParent;
-					while (parent && parent !== bodyElement) {
-						if (!parent.elementType.block)
+					if (dropdownElement.elementCategory === categoryRule) {
+						if (targetElement.elementCategory === categoryRuleAttribute || moveTarget === moveTargetClosingTag)
 							return;
-						parent = parent.elementParent;
+
+						_RC(dropdownElement.parentNode, dropdownElement);
+						_IB(editorCss, dropdownElement, targetElement);
+					} else {
+						if (targetElement.elementCategory === categoryRule && moveTarget === moveTargetTop)
+							return;
+
+						_RC(dropdownElement.parentNode, dropdownElement);
+						if (moveTarget === moveTargetClosingTag)
+							_AC(targetElement.elementContainer, dropdownElement);
+						else
+							_IB(targetElement.parentNode, dropdownElement, targetElement);
 					}
-				}
-
-				_RC(dropdownElement.parentNode, dropdownElement);
-				_RC(dropdownElement.elementIframe.parentNode, dropdownElement.elementIframe);
-
-				dropdownElement.elementParent = targetParent;
-
-				if (moveTarget === moveTargetClosingTag) {
-					_AC(targetParent.elementContainer, dropdownElement);
-					_AC(targetParent.elementIframe, dropdownElement.elementIframe);
 				} else {
-					_IB(targetParent.elementContainer, dropdownElement, targetElement);
-					_IB(targetParent.elementIframe, dropdownElement.elementIframe, targetElement.elementIframe);
+					if (dropdownElement.elementCategory !== categoryElement)
+						return;
+
+					if (moveTarget === moveTargetClosingTag)
+						targetParent = targetElement;
+					else
+						targetParent = targetElement.elementParent;
+
+					if (dropdownElement.elementType.block) {
+						parent = targetParent;
+						while (parent && parent !== bodyElement) {
+							if (!parent.elementType.block)
+								return;
+							parent = parent.elementParent;
+						}
+					}
+
+					_RC(dropdownElement.parentNode, dropdownElement);
+					_RC(dropdownElement.elementIframe.parentNode, dropdownElement.elementIframe);
+
+					dropdownElement.elementParent = targetParent;
+
+					if (moveTarget === moveTargetClosingTag) {
+						_AC(targetParent.elementContainer, dropdownElement);
+						_AC(targetParent.elementIframe, dropdownElement.elementIframe);
+					} else {
+						_IB(targetParent.elementContainer, dropdownElement, targetElement);
+						_IB(targetParent.elementIframe, dropdownElement.elementIframe, targetElement.elementIframe);
+					}
 				}
 
 				move(false);
@@ -1487,17 +1870,18 @@
 			function move(start) {
 				if (start) {
 					dropdownMoving = true;
+					dropdownMovingCss = (dropdownElement.elementCategory !== categoryElement);
 					document.addEventListener("click", clickMoving, true);
 					document.addEventListener("keydown", keyDownMoving, true);
 					$(dropdownElement).addClass("moving");
-					$(editor).addClass("moving");
+					$(dropdownMovingCss ? editorCss : editor).addClass(dropdownMovingCss && dropdownElement.elementCategory === categoryRule ? "moving-top" : "moving");
 					Notification.show(translate("MoveMessage"), "default", -1, false);
 				} else {
 					dropdownMoving = false;
 					document.removeEventListener("click", clickMoving, true);
 					document.removeEventListener("keydown", keyDownMoving, true);
 					$(dropdownElement).removeClass("moving");
-					$(editor).removeClass("moving");
+					$(dropdownMovingCss ? editorCss : editor).removeClass("moving moving-top");
 					Notification.hide();
 				}
 			}
@@ -1528,11 +1912,16 @@
 						dropdownShowBottom = (!closingTag || element.elementType !== elementTypeBody);
 						dropdownMenuTopCreateElement.style.display = "";
 						dropdownMenuTopCreateRule.style.display = "none";
+						dropdownMenuTopCreateRuleAttribute.style.display = "none";
 						dropdownMenuTopCreateText.style.display = "";
+						dropdownMenuTopCreateComment.style.display = "";
 						dropdownMenuBottomCreateElement.style.display = "";
 						dropdownMenuBottomCreateRule.style.display = "none";
+						dropdownMenuBottomCreateRuleAttribute.style.display = "none";
 						dropdownMenuBottomCreateText.style.display = "";
+						dropdownMenuBottomCreateComment.style.display = "";
 						dropdownMenuRightEditRuleSelector.style.display = "none";
+						dropdownMenuRightEditRuleAttribute.style.display = "none";
 						if (element.elementType === elementTypeText || element.elementType === elementTypeComment) {
 							dropdownMenuRightEditText.style.display = "";
 							dropdownMenuRightFind.style.display = "none";
@@ -1552,11 +1941,38 @@
 						dropdownShowBottom = true;
 						dropdownMenuTopCreateElement.style.display = "none";
 						dropdownMenuTopCreateRule.style.display = (closingTag ? "none" : "");
+						dropdownMenuTopCreateRuleAttribute.style.display = (closingTag ? "" : "none");
 						dropdownMenuTopCreateText.style.display = "none";
+						dropdownMenuTopCreateComment.style.display = "none";
 						dropdownMenuBottomCreateElement.style.display = "none";
 						dropdownMenuBottomCreateRule.style.display = (closingTag ? "" : "none");
+						dropdownMenuBottomCreateRuleAttribute.style.display = (closingTag ? "none" : "");
 						dropdownMenuBottomCreateText.style.display = "none";
+						dropdownMenuBottomCreateComment.style.display = "none";
 						dropdownMenuRightEditRuleSelector.style.display = "";
+						dropdownMenuRightEditRuleAttribute.style.display = "none";
+						dropdownMenuRightEditText.style.display = "none";
+						dropdownMenuRightFind.style.display = "none";
+						dropdownMenuRightChangeType.style.display = "none";
+						dropdownMenuRightEditAttributes.style.display = "none";
+						break;
+					case categoryRuleAttribute:
+						dropdownShowTop = true;
+						dropdownShowLeft = false;
+						dropdownShowRight = true;
+						dropdownShowBottom = true;
+						dropdownMenuTopCreateElement.style.display = "none";
+						dropdownMenuTopCreateRule.style.display = "none";
+						dropdownMenuTopCreateRuleAttribute.style.display = "";
+						dropdownMenuTopCreateText.style.display = "none";
+						dropdownMenuTopCreateComment.style.display = "none";
+						dropdownMenuBottomCreateElement.style.display = "none";
+						dropdownMenuBottomCreateRule.style.display = "none";
+						dropdownMenuBottomCreateRuleAttribute.style.display = "";
+						dropdownMenuBottomCreateText.style.display = "none";
+						dropdownMenuBottomCreateComment.style.display = "none";
+						dropdownMenuRightEditRuleSelector.style.display = "none";
+						dropdownMenuRightEditRuleAttribute.style.display = "";
 						dropdownMenuRightEditText.style.display = "none";
 						dropdownMenuRightFind.style.display = "none";
 						dropdownMenuRightChangeType.style.display = "none";
@@ -1579,6 +1995,7 @@
 				dropdownEditTextOnHide = false;
 				dropdownEditAttributesOnHide = false;
 				dropdownCreateEditRuleOnHide = false;
+				dropdownCreateEditRuleAttributeOnHide = false;
 
 				if (dropdownShowTop) {
 					dropdownMenuTop.style.display = "block";
@@ -1649,6 +2066,16 @@
 				hide();
 			};
 
+			window.dropdownCreateEditRuleAttribute = function (top, editRuleAttribute) {
+				if (loading || dropdownFading || dropdownMoving || !dropdownVisible || dropdownTypeVisible)
+					return;
+
+				dropdownActionTop = top;
+				dropdownActionEditRuleAttribute = editRuleAttribute;
+				dropdownCreateEditRuleAttributeOnHide = true;
+				hide();
+			};
+
 			window.dropdownMove = function () {
 				if (loading || dropdownFading || dropdownMoving || !dropdownVisible || dropdownTypeVisible)
 					return;
@@ -1687,7 +2114,29 @@
 					}
 				}
 
-				duplicate(dropdownElement, dropdownElement.elementParent, dropdownElement);
+				function duplicateRule(element, siblingBelow) {
+					var newElement = createRule(getRuleSelector(element), siblingBelow, true), i, a, attributes = element.elementContainer.childNodes;
+					for (i = 0; i < attributes.length; i++) {
+						a = attributes[i];
+						createRuleAttribute(getRuleAttributeName(a), getRuleAttributeValue(a), newElement, null, true);
+					}
+				}
+
+				function duplicateRuleAttribute(element, siblingBelow) {
+					createRuleAttribute(getRuleAttributeName(element), getRuleAttributeValue(element), element.elementParent, siblingBelow, true);
+				}
+
+				switch (dropdownElement.elementCategory) {
+					case categoryElement:
+						duplicate(dropdownElement, dropdownElement.elementParent, dropdownElement);
+						break;
+					case categoryRule:
+						duplicateRule(dropdownElement, dropdownElement);
+						break;
+					case categoryRuleAttribute:
+						duplicateRuleAttribute(dropdownElement, dropdownElement);
+						break;
+				}
 
 				hide();
 			};
@@ -1765,6 +2214,9 @@
 					case categoryRule:
 						deleteRule(dropdownElement);
 						break;
+					case categoryRuleAttribute:
+						deleteRuleAttribute(dropdownElement);
+						break;
 				}
 				hide();
 			};
@@ -1822,7 +2274,7 @@
 			};
 
 			function showModalAttributes() {
-				var i, j, a, c, row, v, div, input, inputGroup, opt, fileInput,
+				var i, j, a, c, row, v, div, input, opt,
 					e = dropdownElement.elementIframe,
 					elementType = dropdownElement.elementType,
 					attributes = elementType.attributes,
@@ -1856,37 +2308,9 @@
 								_SA(opt, "selected", "selected");
 						}
 					} else {
-						if (a.values === valueImage) {
-							inputGroup = _CE("div", "input-group", div);
-							input = _SA(_SA(_SA(_CE("input", "form-control", inputGroup), "spellcheck", "false"), "type", "text"), "autocomplete", "off");
-							fileInput = _SA(_SA(_SA(_CE("input", "editor-hidden-file-input", inputGroup), "tabindex", "-1"), "type", "file"), "accept", "image/png,image/gif,image/jpeg");
-							fileInput.input = input;
-							fileInput.onchange = function () {
-								var file, input = this.input;
-								if (loading)
-									return;
-								if (!("files" in this)) {
-									Notification.error(translate("ErrorNoFile"), true);
-									return;
-								}
-								if (!this.files.length || !(file = this.files[0]))
-									return;
-								if (file.size > (1 << 20)) {
-									Notification.error(translate("ErrorFileTooLarge"), true);
-									return;
-								}
-								loadFileDataURL(file, function (dataURL) {
-									input.value = dataURL || "";
-								});
-							};
-							_BTN("btn btn-default btn-force-border", "fa-folder-open", translate("LoadImage"), _CE("span", "input-group-btn", inputGroup), function () {
-								if (loading)
-									return;
-								this.fileInput.click();
-							}).fileInput = fileInput;
-						} else {
-							input = _SA(_SA(_SA(_CE("input", "form-control", div), "spellcheck", "false"), "type", a.values === valueNumber ? "number" : "text"), "autocomplete", "off");
-						}
+						input = ((a.values === valueImage) ?
+							createImageInput(div, false) :
+							_SA(_SA(_SA(_CE("input", "form-control", div), "spellcheck", "false"), "type", a.values === valueNumber ? "number" : "text"), "autocomplete", "off"));
 						input.onkeydown = attributeInputKeyDown;
 						input.value = v;
 					}
@@ -2011,6 +2435,10 @@
 
 				while (bodyElement.elementContainer.firstChild)
 					deleteElement(bodyElement.elementContainer.firstChild);
+
+				var i = editorCss.childNodes.length;
+				while (i-- > 0 && editorCss.firstChild)
+					deleteRule(editorCss.firstChild);
 			}
 
 			function loadDocument(doc) {
