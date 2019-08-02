@@ -204,12 +204,21 @@
 					border-top-color: transparent;
 				}
 
+		.element-decoration {
+			pointer-events: none;
+			opacity: 0.5;
+		}
+
 		.element-tag {
 			cursor: pointer;
 			color: #00f;
 			white-space: pre;
 			font-weight: bold;
 		}
+
+			.element-tag.no-click {
+				cursor: default;
+			}
 
 		.element.collapsed > .element-tag {
 			display: inline-block;
@@ -357,13 +366,13 @@
 					<div class="form-group no-margin-bottom">
 						<label data-string="text|MoreHelpLinks"></label>
 						<div>
-							<a target="_blank" href="https://dev.w3.org/html5/html-author/charref" class="btn btn-outline btn-primary"><i class="fa fa-margin fa-external-link"></i><span data-string="text|HTMLEntities"></span></a>
+							<a target="_blank" href="https://dev.w3.org/html5/html-author/charref" class="btn btn-outline btn-primary" data-string="text|HTMLEntities"><i class="fa fa-margin fa-external-link"></i></a>
 						</div>
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-outline btn-default" data-dismiss="modal"><i class="fa fa-margin fa-times"></i><span data-string="text|Cancel"></span></button>
-					<button type="button" class="btn btn-primary" id="modalTxtOk"><i class="fa fa-margin fa-check"></i><span data-string="text|OK"></span></button>
+					<button type="button" class="btn btn-outline btn-default" data-dismiss="modal" data-string="text|Cancel"><i class="fa fa-margin fa-times"></i></button>
+					<button type="button" class="btn btn-primary" id="modalTxtOk" data-string="text|OK"><i class="fa fa-margin fa-check"></i></button>
 				</div>
 			</div>
 		</div>
@@ -378,8 +387,8 @@
 				</div>
 				<div class="modal-body" id="modalAttributesBody"></div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-outline btn-default" data-dismiss="modal"><i class="fa fa-margin fa-times"></i><span data-string="text|Cancel"></span></button>
-					<button type="button" class="btn btn-primary" id="modalAttributesOk"><i class="fa fa-margin fa-check"></i><span data-string="text|OK"></span></button>
+					<button type="button" class="btn btn-outline btn-default" data-dismiss="modal" data-string="text|Cancel"><i class="fa fa-margin fa-times"></i></button>
+					<button type="button" class="btn btn-primary" id="modalAttributesOk" data-string="text|OK"><i class="fa fa-margin fa-check"></i></button>
 				</div>
 			</div>
 		</div>
@@ -399,8 +408,8 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-outline btn-default" data-dismiss="modal"><i class="fa fa-margin fa-times"></i><span data-string="text|Cancel"></span></button>
-					<button type="button" class="btn btn-primary" id="modalSaveOk"><i class="fa fa-margin fa-check"></i><span data-string="text|Save"></span></button>
+					<button type="button" class="btn btn-outline btn-default" data-dismiss="modal" data-string="text|Cancel"><i class="fa fa-margin fa-times"></i></button>
+					<button type="button" class="btn btn-primary" id="modalSaveOk" data-string="text|Save"><i class="fa fa-margin fa-check"></i></button>
 				</div>
 			</div>
 		</div>
@@ -420,8 +429,8 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-outline btn-default" data-dismiss="modal"><i class="fa fa-margin fa-times"></i><span data-string="text|Cancel"></span></button>
-					<button type="button" class="btn btn-primary" id="modalRuleSelectorOk"><i class="fa fa-margin fa-check"></i><span data-string="text|OK"></span></button>
+					<button type="button" class="btn btn-outline btn-default" data-dismiss="modal" data-string="text|Cancel"><i class="fa fa-margin fa-times"></i></button>
+					<button type="button" class="btn btn-primary" id="modalRuleSelectorOk" data-string="text|OK"><i class="fa fa-margin fa-check"></i></button>
 				</div>
 			</div>
 		</div>
@@ -437,7 +446,7 @@
 				<div class="modal-body">
 					<div class="form-group">
 						<label for="modalRuleAttributeName" data-string="text|Name"></label>
-						<a target="_blank" href="#" class="btn btn-xs btn-outline btn-primary" id="modalRuleAttributeHelp"><i class="fa fa-margin fa-question-circle"></i><span data-string="text|AttributeHelp"></span></a>
+						<a target="_blank" href="#" class="btn btn-xs btn-outline btn-primary" id="modalRuleAttributeHelp" data-string="text|AttributeHelp"><i class="fa fa-margin fa-question-circle"></i></a>
 						<select size="1" class="form-control" id="modalRuleAttributeName"></select>
 					</div>
 					<div class="form-group">
@@ -458,8 +467,8 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-outline btn-default" data-dismiss="modal"><i class="fa fa-margin fa-times"></i><span data-string="text|Cancel"></span></button>
-					<button type="button" class="btn btn-primary" id="modalRuleAttributeOk"><i class="fa fa-margin fa-check"></i><span data-string="text|OK"></span></button>
+					<button type="button" class="btn btn-outline btn-default" data-dismiss="modal" data-string="text|Cancel"><i class="fa fa-margin fa-times"></i></button>
+					<button type="button" class="btn btn-primary" id="modalRuleAttributeOk" data-string="text|OK"><i class="fa fa-margin fa-check"></i></button>
 				</div>
 			</div>
 		</div>
@@ -476,15 +485,36 @@
 				<span class="fa fa-bars" data-string="aria-label|Menu"></span>
 			</button>
 			<ul class="dropdown-menu dropdown-menu-right">
-				<li><a href="#" data-string="text|New" id="editorActionNew"><i class="fa fa-file-o"></i> </a></li>
+				<li><a href="#" data-string="text|New" id="editorActionNew"><i class="fa fa-margin fa-file-o"></i></a></li>
 				<li role="separator" class="divider"></li>
-				<li><a href="#" data-string="text|LoadEllipsis" id="editorActionLoad"><i class="fa fa-folder-open-o"></i> </a></li>
-				<li><a href="#" data-string="text|SaveEllipsis" id="editorActionSave"><i class="fa fa-cloud-download"></i> </a></li>
+				<li><a href="#" data-string="text|LoadEllipsis" id="editorActionLoad"><i class="fa fa-margin fa-folder-open-o"></i></a></li>
+				<li><a href="#" data-string="text|SaveEllipsis" id="editorActionSave"><i class="fa fa-margin fa-cloud-download"></i></a></li>
+				<li role="separator" class="divider"></li>
+				<li><a href="#" id="editorActionToggleDecoration"><i class="fa fa-margin fa-code"></i><span id="editorActionToggleDecorationLabel" data-string="text|HideDecoration"></span></a></li>
 			</ul>
 			<div class="nav-tabs-file-load"><input id="editorActionFileLoad" tabindex="-1" type="file" accept="text/html" /></div>
 		</div>
 		<div class="tab-content">
-			<div id="editor" role="tabpanel" class="tab-pane fade in active editor"></div>
+			<div id="editor" role="tabpanel" class="tab-pane fade in active editor">
+				<div class="element">
+					<div class="element-decoration" id="editor-decoration-top">
+						<div class="element-tag element-text">&lt;!DOCTYPE html&gt;</div>
+						<div class="element-tag no-click">&lt;<span class="element-name-block">html</span>&gt;</div>
+						<div class="element-tag no-click">&lt;<span class="element-name-block">head</span>&gt;</div>
+						<div class="element-container">
+							<div class="element-tag no-click">&lt;<span class="element-name-block">meta</span> <span class="attribute-name">charset</span>=<span class="attribute-value">"utf-8"</span> /&gt;</div>
+							<div class="element-tag no-click">&lt;<span class="element-name-block">meta</span> <span class="attribute-name">name</span>=<span class="attribute-value">"viewport"</span> <span class="attribute-name">content</span>=<span class="attribute-value">"width=device-width, initial-scale=1"</span> /&gt;</div>
+							<div><span class="element-tag no-click">&lt;<span class="element-name-block">title</span>&gt;</span><span class="element-tag element-text" data-string="text|PageTitle"></span><span class="element-tag no-click">&lt;/<span class="element-name-block">title</span>&gt;</span></div>
+							<div><span class="element-tag no-click">&lt;<span class="element-name-block">style</span> <span class="attribute-name">type</span>=<span class="attribute-value">"text/css"</span>&gt;</span><span class="element-tag element-text" data-string="text|CSSTab"></span><span class="element-tag no-click">&lt;/<span class="element-name-block">style</span>&gt;</span></div>
+						</div>
+						<div class="element-tag no-click">&lt;/<span class="element-name-block">head</span>&gt;</div>
+					</div>
+					<div id="editor-container"></div>
+					<div class="element-decoration" id="editor-decoration-bottom">
+						<div class="element-tag no-click">&lt;/<span class="element-name-block">html</span>&gt;</div>
+					</div>
+				</div>
+			</div>
 			<div id="editorCss" role="tabpanel" class="tab-pane fade editor editor-css"></div>
 		</div>
 	</div>
@@ -699,6 +729,9 @@
 			cssAttributesByName = {},
 			editorContainer = _ID("editorContainer"),
 			editor = _ID("editor"),
+			editorDecorationVisible = true,
+			editorDecorationTop = _ID("editor-decoration-top"),
+			editorDecorationBottom = _ID("editor-decoration-bottom"),
 			editorCss = _ID("editorCss"),
 			loremIpsum = [
 				"Lorem ipsum dolor sit amet, consectetur adipiscing elit.\nSuspendisse erat nulla, mattis et maximus in, molestie at felis.\nVestibulum ac eros vel est commodo egestas.\nFusce blandit, purus sit amet aliquam tincidunt, nisl mauris euismod nisi, euismod pulvinar dolor metus sit amet orci.\nPraesent lectus magna, porta a volutpat ac, egestas a dui.\nQuisque semper, ex eget pretium faucibus, ante ipsum dictum nisl, sed iaculis ante nisi vehicula arcu.\nPraesent at feugiat dolor, placerat auctor ligula.\nCras venenatis viverra nisi eu volutpat.",
@@ -778,7 +811,7 @@
 				_TXT("body", _CE("span", "element-name-block", bodyElement.elementClosingTag));
 				_TXT(">", bodyElement.elementClosingTag);
 
-				_AC(editor, bodyElement);
+				_AC(_ID("editor-container"), bodyElement);
 
 				return bodyElement;
 			}
@@ -829,7 +862,7 @@
 				if (!elementType.noChildren) {
 					e.elementContainerVisible = true;
 					e.elementContainerPlaceholder = _CE("span", "element-placeholder", e);
-					_TXT("...", e.elementContainerPlaceholder);
+					_TXT("\u2026", e.elementContainerPlaceholder);
 					e.elementContainer = _CE("div", "element-container", e);
 					e.elementContainer.element = e;
 
@@ -1059,7 +1092,7 @@
 
 			e.elementContainerVisible = true;
 			e.elementContainerPlaceholder = _CE("span", "element-placeholder", e);
-			_TXT("...", e.elementContainerPlaceholder);
+			_TXT("\u2026", e.elementContainerPlaceholder);
 			e.elementContainer = _CE("div", "element-container", e);
 			e.elementContainer.element = e;
 
@@ -1281,9 +1314,9 @@
 				addString("Load", "Abrir");
 				addString("Save", "Salvar");
 				addString("FileName", "Nome do Arquivo");
-				addString("LoadEllipsis", "Abrir...");
-				addString("SaveEllipsis", "Salvar...");
-				addString("ExportHTML", "Exportar HTML...");
+				addString("LoadEllipsis", "Abrir\u2026");
+				addString("SaveEllipsis", "Salvar\u2026");
+				addString("ExportHTML", "Exportar HTML\u2026");
 				addString("EditText", "Editar Texto");
 				addString("Text", "Texto");
 				addString("EditComment", "Editar Comentário");
@@ -1325,6 +1358,10 @@
 				addString("ElementHelp", "Ajuda do Elemento");
 				addString("MoreHelpLinks", "Mais Links de Ajuda");
 				addString("HTMLEntities", "Entidades HTML");
+				addString("PageTitle", "Título da Página");
+				addString("CSSTab", "Este conteúdo está na aba CSS");
+				addString("ShowDecoration", "Exibir HTML Completo");
+				addString("HideDecoration", "Ocultar HTML Completo");
 			} else {
 				addString("OK", "OK");
 				addString("Cancel", "Cancel");
@@ -1334,9 +1371,9 @@
 				addString("Load", "Load");
 				addString("Save", "Save");
 				addString("FileName", "File Name");
-				addString("LoadEllipsis", "Load...");
-				addString("SaveEllipsis", "Save...");
-				addString("ExportHTML", "Export HTML...");
+				addString("LoadEllipsis", "Load\u2026");
+				addString("SaveEllipsis", "Save\u2026");
+				addString("ExportHTML", "Export HTML\u2026");
 				addString("EditText", "Edit Text");
 				addString("Text", "Text");
 				addString("EditComment", "Edit Comment");
@@ -1378,6 +1415,10 @@
 				addString("ElementHelp", "Element Help");
 				addString("MoreHelpLinks", "More Help Links");
 				addString("HTMLEntities", "HTML Entities");
+				addString("PageTitle", "Page Title");
+				addString("CSSTab", "This content is in the CSS tab");
+				addString("ShowDecoration", "Show Full HTML");
+				addString("HideDecoration", "Hide Full HTML");
 			}
 
 			window.translate = function (key) { return (editorStrings[key] || key); };
@@ -2376,6 +2417,7 @@
 		// Actions Menu
 		(function () {
 			var editorActionFileLoad = _ID("editorActionFileLoad"),
+				editorActionToggleDecorationLabel = _ID("editorActionToggleDecorationLabel"),
 				modalSaveFileName = _ID("modalSaveFileName"),
 				modalSaveOk = _ID("modalSaveOk");
 
@@ -2556,6 +2598,26 @@
 				return cancelEvent(e);
 			};
 
+			_ID("editorActionToggleDecoration").onclick = function (e) {
+				if (loading)
+					return cancelEvent(e);
+
+				$("#editorMenuDropdown").dropdown("toggle");
+
+				editorDecorationVisible = !editorDecorationVisible;
+				if (editorDecorationVisible) {
+					editorActionToggleDecorationLabel.textContent = translate("HideDecoration");
+					editorDecorationTop.style.display = "";
+					editorDecorationBottom.style.display = "";
+				} else {
+					editorActionToggleDecorationLabel.textContent = translate("ShowDecoration");
+					editorDecorationTop.style.display = "none";
+					editorDecorationBottom.style.display = "none";
+				}
+
+				return cancelEvent(e);
+			};
+
 			modalSaveOk.onclick = function () {
 				var fileName = trim(modalSaveFileName.value);
 				if (!fileName)
@@ -2573,7 +2635,9 @@
 
 				BlobDownloader.download(fileName, new Blob([
 					new Uint8Array([0xEF, 0xBB, 0xBF]), // UTF-8 BOM
-					'<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml" lang="pt-br">\n<head>\n	<meta charset="utf-8" />\n	<meta name="viewport" content="width=device-width, initial-scale=1" />\n	<title>HTML</title>\n	<style type="text/css" id="style">',
+					'<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml" lang="pt-br">\n<head>\n	<meta charset="utf-8" />\n	<meta name="viewport" content="width=device-width, initial-scale=1" />\n	<title>',
+					translate("PageTitle"),
+					'</title>\n	<style type="text/css">',
 					trim(iframeStyle.textContent),
 					"	</style>\n</head>\n<body>",
 					trim(iframeBody.innerHTML),
