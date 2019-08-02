@@ -353,6 +353,13 @@
 						<button type="button" class="btn btn-outline btn-primary" id="modalTxtBtnLoremIpsum" data-string="text|UseLoremIpsum"></button>
 						<select size="1" class="form-control" id="modalTxtSelectLoremIpsum" style="display: inline-block; width: auto;"></select>
 					</div>
+					<hr />
+					<div class="form-group no-margin-bottom">
+						<label data-string="text|MoreHelpLinks"></label>
+						<div>
+							<a target="_blank" href="https://dev.w3.org/html5/html-author/charref" class="btn btn-outline btn-primary"><i class="fa fa-margin fa-external-link"></i><span data-string="text|HTMLEntities"></span></a>
+						</div>
+					</div>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-outline btn-default" data-dismiss="modal"><i class="fa fa-margin fa-times"></i><span data-string="text|Cancel"></span></button>
@@ -438,6 +445,7 @@
 						<input type="text" class="form-control" id="modalRuleAttributeValueInput" spellcheck="false" autocomplete="off" style="display: none" />
 						<select size="1" class="form-control" id="modalRuleAttributeValueSelect" style="display: none"></select>
 					</div>
+					<hr />
 					<div class="form-group no-margin-bottom">
 						<label data-string="text|MoreHelpLinks"></label>
 						<div>
@@ -711,6 +719,7 @@
 			lastEditedRuleSelector = "p",
 			lastEditedRuleAttributeName = "color",
 			lastEditedRuleAttributeValue = "black",
+			tmpDiv = _CE("div", null, null),
 			iframe = _ID("iframe"),
 			iframeWindow = null,
 			iframeDocument = null,
@@ -870,7 +879,8 @@
 				} else {
 					elementTag.empty = false;
 					elementTag.firstChild.nodeValue = text;
-					element.elementIframe.nodeValue = text;
+					tmpDiv.innerHTML = text;
+					element.elementIframe.nodeValue = tmpDiv.textContent;
 				}
 			} else if (element.elementType === elementTypeComment) {
 				element.elementComment.textContent = text;
@@ -886,6 +896,11 @@
 				modalTxtOk = _ID("modalTxtOk");
 			modalTxtInput.value = getElementText(element);
 			modalTxtOk.onclick = function () {
+				var txt = modalTxtInput.value;
+				if (txt.indexOf("<") >= 0 || txt.indexOf(">") >= 0) {
+					Notification.error(translate("ErrorInvalidChar"), true);
+					return;
+				}
 				$("#modalTxt").modal("hide");
 				setElementText(element, modalTxtInput.value);
 			};
@@ -1302,12 +1317,14 @@
 				addString("ErrorFileTooLarge", "Por favor, escolha uma imagem com tamanho de até 1 MiB \uD83D\uDE22");
 				addString("ErrorFileLoad", "Ocorreu um erro ao ler o arquivo \uD83D\uDE22");
 				addString("ErrorInvalidHTML", "O arquivo escolhido não parece ser um arquivo HTML válido \uD83D\uDE22");
+				addString("ErrorInvalidChar", "Você não pode digitar os símbolos < ou > aqui. Para mais informações, por favor, veja o link \"Entidades HTML\" \uD83D\uDE22");
 				addString("ConfirmQuit", "Deseja mesmo sair da página? Você perderá o documento atual.");
 				addString("MoveMessage", "Clique sobre onde deseja mover o elemento ou tecle Esc para cancelar");
 				addString("HideChildren", "Ocultar Filhos");
 				addString("ShowChildren", "Mostrar Filhos");
 				addString("ElementHelp", "Ajuda do Elemento");
 				addString("MoreHelpLinks", "Mais Links de Ajuda");
+				addString("HTMLEntities", "Entidades HTML");
 			} else {
 				addString("OK", "OK");
 				addString("Cancel", "Cancel");
@@ -1353,12 +1370,14 @@
 				addString("ErrorFileTooLarge", "Please, select an image with at most 1 MiB \uD83D\uDE22");
 				addString("ErrorFileLoad", "An error occurred while reading the file \uD83D\uDE22");
 				addString("ErrorInvalidHTML", "The selected file does not seem to be a valid HTML file \uD83D\uDE22");
+				addString("ErrorInvalidChar", "You cannot enter the symbols < or > here. For more information, please, refer to the \"HTML Entities\" link below \uD83D\uDE22");
 				addString("ConfirmQuit", "Do you really want to quit? You will lose unsaved information.");
 				addString("MoveMessage", "Click where you wish to move the element to or press Esc to cancel");
 				addString("HideChildren", "Hide Children");
 				addString("ShowChildren", "Show Children");
 				addString("ElementHelp", "Element Help");
 				addString("MoreHelpLinks", "More Help Links");
+				addString("HTMLEntities", "HTML Entities");
 			}
 
 			window.translate = function (key) { return (editorStrings[key] || key); };
@@ -2447,6 +2466,8 @@
 
 				newDocument();
 
+				//var amp = /\&/g, lt = /\</g, gt = /\>/g;
+
 				function createElementsFromDoc(srcParent, dstParent) {
 					var i, j, tag, srcElement, dstElement, emptyText, elementIframe, elementType, attributes, a, v;
 					for (i = 0; i < srcParent.childNodes.length; i++) {
@@ -2457,8 +2478,12 @@
 								if (i === srcParent.childNodes.length - 1 && dstParent === bodyElement && !emptyText && !trim(srcElement.nodeValue))
 									continue;
 								dstElement = createElement("text", dstParent, null, true);
-								if (!emptyText)
-									setElementText(dstElement, srcElement.nodeValue);
+								if (!emptyText) {
+									// Is this computationally faster/safer than replacing?!?!
+									tmpDiv.textContent = srcElement.nodeValue;
+									setElementText(dstElement, tmpDiv.innerHTML);
+									//setElementText(dstElement, srcElement.nodeValue.replace(amp, "&amp;").replace(lt, "&lt;").replace(gt, "&gt;"));
+								}
 							} else if (srcElement.nodeType === 8) {
 								v = srcElement.nodeValue;
 								if (v.length >= 2 && v.charAt(0) === "\r" && v.charAt(1) == "\n")
