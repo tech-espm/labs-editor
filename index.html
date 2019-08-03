@@ -294,6 +294,11 @@
 			overflow: auto;
 		}
 
+		.dropdown-menu-right > li {
+			margin: 0;
+			padding: 0;
+		}
+
 		.editor-menu {
 			display: none;
 			position: fixed;
@@ -609,7 +614,7 @@
 			categoryRule = 1,
 			categoryRuleAttribute = 2,
 			htmlAttributes = [
-				{ name: "class", values: [""], common: true },
+				{ name: "class", values: valueFreeText, common: true },
 				{ name: "id", values: valueFreeText, common: true },
 				{ name: "title", values: valueFreeText, common: true },
 			],
@@ -757,7 +762,8 @@
 			iframeWindow = null,
 			iframeDocument = null,
 			iframeBody = null,
-			iframeStyle = null;
+			iframeStyle = null,
+			ignoreCssChanges = false;
 
 		function iframeLoaded(win, doc, style) {
 			iframeWindow = win;
@@ -1059,7 +1065,7 @@
 					return;
 				}
 				loadFileDataURL(file, function (dataURL) {
-					input.value = ((addAsUrl && dataURL) ? ("url(" + dataURL + ")") : (dataURL || ""));
+					input.value = ((addAsUrl && dataURL) ? ("url(\"" + dataURL + "\")") : (dataURL || ""));
 				});
 			};
 			_BTN("btn btn-default btn-force-border", "fa-folder-open", translate("LoadImage"), _CE("span", "input-group-btn", inputGroup), function () {
@@ -1107,6 +1113,8 @@
 			else
 				_AC(editorCss, e);
 
+			updateCss();
+
 			if (!ruleSelector && !hideUI)
 				editRuleSelector(e);
 
@@ -1121,6 +1129,8 @@
 
 			if (!editorCss.childNodes.length)
 				createRule("body");
+
+			updateCss();
 		}
 
 		function getRuleSelector(element) {
@@ -1146,6 +1156,7 @@
 				lastEditedRuleSelector = newRuleSelector;
 				$("#modalRuleSelector").modal("hide");
 				setRuleSelector(element, newRuleSelector);
+				updateCss();
 			};
 			$("#modalRuleSelector").modal({
 				keyboard: true,
@@ -1191,6 +1202,8 @@
 
 			setRuleAttribute(e, name, value);
 
+			updateCss();
+
 			if (!hideUI)
 				editRuleAttribute(e);
 
@@ -1202,6 +1215,8 @@
 				return;
 
 			_RC(element.elementParent.elementContainer, element);
+
+			updateCss();
 		}
 
 		function getRuleAttributeName(element) {
@@ -1291,11 +1306,36 @@
 				lastEditedRuleAttributeValue = newRuleAttributeValue;
 				$("#modalRuleAttribute").modal("hide");
 				setRuleAttribute(element, newRuleAttributeName, newRuleAttributeValue);
+				updateCss();
 			};
 			$("#modalRuleAttribute").modal({
 				keyboard: true,
 				backdrop: true
 			});
+		}
+
+		function generateCss() {
+			// For the future... Perhaps we could use the CSSStyleSheet API?!?!
+			// https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet/insertRule
+
+			var css = "", tmp, i, j, rule, rules = editorCss.childNodes, attribute, attributes;
+
+			for (i = 0; i < rules.length; i++) {
+				tmp = ("\t" + getRuleSelector(rule = rules[i]) + " {\n");
+
+				attributes = rule.elementContainer.childNodes;
+				for (j = 0; j < attributes.length; j++)
+					tmp += ("\t\t" + getRuleAttributeName(attribute = attributes[j]) + ": " + getRuleAttributeValue(attribute) + ";\n");
+
+				css += (tmp + "\t}\n");
+			}
+
+			return css;
+		}
+
+		function updateCss() {
+			if (!ignoreCssChanges)
+				iframeStyle.textContent = generateCss();
 		}
 
 		// Translation
@@ -1881,6 +1921,8 @@
 						else
 							_IB(targetElement.parentNode, dropdownElement, targetElement);
 					}
+
+					updateCss();
 				} else {
 					if (dropdownElement.elementCategory !== categoryElement)
 						return;
@@ -2175,11 +2217,17 @@
 				}
 
 				function duplicateRule(element, siblingBelow) {
+					ignoreCssChanges = true;
+
 					var newElement = createRule(getRuleSelector(element), siblingBelow, true), i, a, attributes = element.elementContainer.childNodes;
 					for (i = 0; i < attributes.length; i++) {
 						a = attributes[i];
 						createRuleAttribute(getRuleAttributeName(a), getRuleAttributeValue(a), newElement, null, true);
 					}
+
+					ignoreCssChanges = false;
+
+					updateCss();
 				}
 
 				function duplicateRuleAttribute(element, siblingBelow) {
@@ -2500,13 +2548,151 @@
 				var i = editorCss.childNodes.length;
 				while (i-- > 0 && editorCss.firstChild)
 					deleteRule(editorCss.firstChild);
+
+				updateCss();
 			}
 
 			function loadDocument(doc) {
 				if (!doc || !doc.body || !doc.head)
 					return;
 
+				function isWhiteSpace(charCode) {
+					return ((charCode === 0x20) || (charCode >= 0x09 && charCode <= 0x0D) || charCode === 0xA0 || charCode === 0x85);
+				}
+
+				function parseAttributeValue(css, start, end, valueIndices) {
+					// Due to time restrictions this parser is way too simple...
+					// It does not even recognize comments...
+					// It should be improved in the future!
+
+					var c;
+
+					while (start < end) {
+						if (!isWhiteSpace(css.charCodeAt(start)))
+							break;
+
+						start++;
+					}
+
+					if (start >= end)
+						return false;
+
+					valueIndices.start = start;
+
+					while (start < end) {
+						c = css.charCodeAt(start);
+						if (c === 0x22) { // " = 0x22
+							if ((start = css.indexOf("\"", start + 1)) < 0)
+								return false;
+						} else if (c === 0x27) { // ' = 0x27
+							if ((start = css.indexOf("\'", start + 1)) < 0)
+								return false;
+						} else if (c === 0x28) { // ( = 0x28
+							if ((start = css.indexOf(")", start + 1)) < 0)
+								return false;
+						} else if (c === 0x3B) { // ; = 0x3B
+							break;
+						}
+						start++;
+					}
+
+					valueIndices.end = start;
+
+					return true;
+				}
+
+				function parseRuleAttributes(rule, css, start) {
+					// Due to time restrictions this parser is way too simple...
+					// It does not even recognize comments...
+					// It should be improved in the future!
+
+					var end = css.indexOf("}", start),
+						name, nameStart, value, valueIndices = { start: -1, end: -1 };
+
+					if (end < 0)
+						return end;
+
+					// Skip the initial {
+					for (start = start + 1; start < end; start++) {
+						if (isWhiteSpace(css.charCodeAt(start)))
+							continue;
+
+						nameStart = start;
+						while (start < end) {
+							if (css.charCodeAt(start) === 0x3A) // : = 0x3A
+								break;
+
+							start++;
+						}
+
+						if (start >= end)
+							break;
+
+						name = trim(css.substring(nameStart, start));
+
+						if (!parseAttributeValue(css, start + 1, end, valueIndices))
+							break;
+						value = trim(css.substring(valueIndices.start, valueIndices.end));
+						createRuleAttribute(name, value, rule, null, true);
+
+						start = valueIndices.end;
+					}
+
+					return end;
+				}
+
+				function parseCss(css) {
+					// Due to time restrictions this parser is way too simple...
+					// It does not even recognize comments...
+					// It should be improved in the future!
+
+					var start, end = css.length, selector, selectorStart, selectorEnd, rule;
+
+					for (start = 0; start < end; start++) {
+						if (isWhiteSpace(css.charCodeAt(start)))
+							continue;
+
+						selectorStart = start;
+
+						selectorEnd = css.indexOf("{", start + 1);
+
+						if (selectorEnd < 0)
+							return;
+
+						selector = trim(css.substring(selectorStart, selectorEnd));
+						rule = createRule(selector, null, true);
+
+						start = parseRuleAttributes(rule, css, selectorEnd + 1);
+
+						if (start < 0)
+							return;
+					}
+				}
+
+				function loadDocumentCss(head) {
+					try {
+						var i, element;
+
+						for (i = 0; i < head.childNodes.length; i++) {
+							element = head.childNodes[i];
+							if (element.tagName === "STYLE")
+								parseCss(element.textContent);
+						}
+
+					} catch (ex) {
+						// Just ignore...
+					}
+				}
+
+				ignoreCssChanges = true;
 				newDocument();
+				while (editorCss.firstChild)
+					_RC(editorCss, editorCss.firstChild);
+				loadDocumentCss(doc.head);
+				if (!editorCss.childNodes.length)
+					createRule("body");
+				ignoreCssChanges = false;
+				updateCss();
 
 				//var amp = /\&/g, lt = /\</g, gt = /\>/g;
 
@@ -2637,8 +2823,8 @@
 					new Uint8Array([0xEF, 0xBB, 0xBF]), // UTF-8 BOM
 					'<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml" lang="pt-br">\n<head>\n	<meta charset="utf-8" />\n	<meta name="viewport" content="width=device-width, initial-scale=1" />\n	<title>',
 					translate("PageTitle"),
-					'</title>\n	<style type="text/css">',
-					trim(iframeStyle.textContent),
+					'</title>\n	<style type="text/css">\n',
+					iframeStyle.textContent,
 					"	</style>\n</head>\n<body>",
 					trim(iframeBody.innerHTML),
 					"</body>\n</html>\n"

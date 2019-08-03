@@ -114,7 +114,11 @@ self.addEventListener("fetch", (event) => {
 		// a request for resources like images or scripts.
 		// This will speed up the loading time after the first
 		// time the user loads the game. The downside of this
-		// technique is that we will have to delete
+		// technique is that we will work with an outdated
+		// version of the resource if it has been changed at
+		// the server, but has not yet been updated in our
+		// local cache (which, right now, will only happen
+		// when the service worker is reinstalled).
 
 		event.respondWith(caches.open(CACHE_NAME).then((cache) => {
 			return cache.match(event.request).then((response) => {
