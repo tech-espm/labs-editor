@@ -587,7 +587,9 @@
 				installationPrompt = e;
 			});
 
-			navigator.serviceWorker.register("service-worker.js");
+			// Remove the service worker for now, just to prevent caching
+			// content requested by empty.html
+			//navigator.serviceWorker.register("service-worker.js");
 		}
 
 		// Helper functions
