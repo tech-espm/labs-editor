@@ -129,11 +129,17 @@
 		.editor {
 			position: absolute;
 			left: 0;
-			top: 46px;
+			top: 78px;
 			right: 0;
 			bottom: 0;
 			font: normal 14px 'Roboto Mono', monospace;
 			overflow: auto;
+		}
+
+		.editor-toolbar {
+			margin: 0;
+			padding: 4px;
+			border-bottom: 1px solid #ddd;
 		}
 
 		.editor-css {
@@ -500,6 +506,16 @@
 			<div class="nav-tabs-file-load"><input id="editorActionFileLoad" tabindex="-1" type="file" accept="text/html" /></div>
 		</div>
 		<div class="tab-content">
+			<div id="toolbar" class="editor-toolbar">
+				<div id="toolbarButtons" class="fade in">
+					<button class="btn btn-outline btn-xs btn-fa btn-success" type="button" data-string="title|CreateElement" onclick="toolbarShowType()" id="editorToolbarCreateElement"><i class="fa fa-nomargin fa-code"></i></button>
+					<button class="btn btn-outline btn-xs btn-fa btn-primary" type="button" data-string="title|CreateText" onclick="toolbarCreateText()" id="editorToolbarCreateText"><i class="fa fa-nomargin fa-i-cursor"></i></button>
+					<button class="btn btn-outline btn-xs btn-fa btn-primary" type="button" data-string="title|CreateComment" onclick="toolbarCreateComment()" id="editorToolbarCreateComment"><i class="fa fa-nomargin fa-comment"></i></button>
+				</div>
+				<div id="toolbarButtonsCss" class="fade">
+
+				</div>
+			</div>
 			<div id="editor" role="tabpanel" class="tab-pane fade in active editor">
 				<div class="element">
 					<div class="element-decoration" id="editor-decoration-top">
@@ -740,6 +756,9 @@
 			editorDecorationTop = _ID("editor-decoration-top"),
 			editorDecorationBottom = _ID("editor-decoration-bottom"),
 			editorCss = _ID("editorCss"),
+			toolbar = _ID("toolbar"),
+			toolbarButtons = _ID("toolbarButtons"),
+			toolbarButtonsCss = _ID("toolbarButtonsCss"),
 			loremIpsum = [
 				"Lorem ipsum dolor sit amet, consectetur adipiscing elit.\nSuspendisse erat nulla, mattis et maximus in, molestie at felis.\nVestibulum ac eros vel est commodo egestas.\nFusce blandit, purus sit amet aliquam tincidunt, nisl mauris euismod nisi, euismod pulvinar dolor metus sit amet orci.\nPraesent lectus magna, porta a volutpat ac, egestas a dui.\nQuisque semper, ex eget pretium faucibus, ante ipsum dictum nisl, sed iaculis ante nisi vehicula arcu.\nPraesent at feugiat dolor, placerat auctor ligula.\nCras venenatis viverra nisi eu volutpat.",
 				"Morbi sed tortor ac lectus porta vehicula.\nNullam venenatis magna in accumsan sodales.\nDonec massa orci, egestas vel tincidunt eu, laoreet et enim.\nCurabitur fermentum tempor felis, ac condimentum urna dictum sed.\nMaecenas at purus finibus, pellentesque sem at, scelerisque lorem.\nNam pretium vitae lorem ac volutpat.\nInteger ligula turpis, lobortis quis congue ut, suscipit semper velit.\nInteger scelerisque quis lacus eu imperdiet.\nInteger ex tortor, finibus nec ultrices quis, pretium vel elit.\nPhasellus tincidunt hendrerit purus, in cursus erat euismod vitae.",
@@ -1394,7 +1413,10 @@
 				addString("ErrorInvalidHTML", "O arquivo escolhido não parece ser um arquivo HTML válido \uD83D\uDE22");
 				addString("ErrorInvalidChar", "Você não pode digitar os símbolos < ou > aqui. Para mais informações, por favor, veja o link \"Entidades HTML\" \uD83D\uDE22");
 				addString("ConfirmQuit", "Deseja mesmo sair da página? Você perderá o documento atual.");
-				addString("MoveMessage", "Clique sobre onde deseja mover o elemento ou tecle Esc para cancelar");
+				addString("MoveMessage", "Clique para onde deseja mover o elemento ou tecle Esc para cancelar");
+				addString("MoveMessageCreateElement", "Clique onde deseja criar o elemento ou tecle Esc para cancelar");
+				addString("MoveMessageCreateText", "Clique onde deseja criar o texto ou tecle Esc para cancelar");
+				addString("MoveMessageCreateComment", "Clique onde deseja criar o comentário ou tecle Esc para cancelar");
 				addString("HideChildren", "Ocultar Filhos");
 				addString("ShowChildren", "Mostrar Filhos");
 				addString("ElementHelp", "Ajuda do Elemento");
@@ -1452,6 +1474,9 @@
 				addString("ErrorInvalidChar", "You cannot enter the symbols < or > here. For more information, please, refer to the \"HTML Entities\" link below \uD83D\uDE22");
 				addString("ConfirmQuit", "Do you really want to quit? You will lose unsaved information.");
 				addString("MoveMessage", "Click where you wish to move the element to or press Esc to cancel");
+				addString("MoveMessageCreateElement", "Click where you wish to create the element or press Esc to cancel");
+				addString("MoveMessageCreateText", "Click where you wish to create the text or press Esc to cancel");
+				addString("MoveMessageCreateComment", "Click where you wish to create the comment or press Esc to cancel");
 				addString("HideChildren", "Hide Children");
 				addString("ShowChildren", "Show Children");
 				addString("ElementHelp", "Element Help");
@@ -1672,6 +1697,7 @@
 				dropdownActionTop = false, dropdownActionClosingTag = false, dropdownActionChangeType = false, dropdownActionEditRuleSelector = false, dropdownActionEditRuleAttribute = false,
 				dropdownShowTop = false, dropdownShowLeft = false, dropdownShowRight = false, dropdownShowBottom = false,
 				dropdownShowTypeOnHide = false, dropdownCreateTextOnHide = false, dropdownCreateCommentOnHide = false, dropdownMoveOnHide = false, dropdownEditTextOnHide = false, dropdownEditAttributesOnHide = false, dropdownCreateEditRuleOnHide = false, dropdownCreateEditRuleAttributeOnHide = false,
+				toolbarElementName = null, toolbarShowTypeOnClick = false, toolbarCreateTextOnClick = false, toolbarCreateCommentOnClick = false,
 				dropdownElement = null,
 				dropdownType = _ID("dropdownType"),
 				dropdownTypeInput = _("dropdownTypeInput"),
@@ -1696,7 +1722,10 @@
 				dropdownMenuBottomCreateRule = _ID("dropdownMenuBottomCreateRule"),
 				dropdownMenuBottomCreateRuleAttribute = _ID("dropdownMenuBottomCreateRuleAttribute"),
 				dropdownMenuBottomCreateText = _ID("dropdownMenuBottomCreateText"),
-				dropdownMenuBottomCreateComment = _ID("dropdownMenuBottomCreateComment");
+				dropdownMenuBottomCreateComment = _ID("dropdownMenuBottomCreateComment"),
+				editorToolbarCreateElement = _ID("editorToolbarCreateElement"),
+				editorToolbarCreateText = _ID("editorToolbarCreateText"),
+				editorToolbarCreateComment = _ID("editorToolbarCreateComment");
 
 			dropdownTypeContainer.style.height = (300 - 59) + "px";
 
@@ -1726,7 +1755,7 @@
 				dropdownMenuRight.style.display = "";
 				dropdownMenuBottom.style.display = "";
 
-				if (dropdownShowTypeOnHide) {
+				if (dropdownShowTypeOnHide || toolbarShowTypeOnClick) {
 					dropdownShowTypeOnHide = false;
 					dropdownTypeVisible = true;
 					dropdownFading = true;
@@ -1756,7 +1785,7 @@
 				} else if (dropdownMoveOnHide) {
 					lockUI(false);
 					dropdownMoveOnHide = false;
-					move(true);
+					move(true, false);
 				} else if (dropdownEditTextOnHide) {
 					dropdownEditTextOnHide = false;
 					editText(dropdownElement);
@@ -1878,12 +1907,12 @@
 				if (!dropdownMoving || e.button)
 					return;
 
-				var moveTarget = e.target.moveTarget, targetElement, targetParent, parent = e.target;
+				var moveTarget = e.target.moveTarget, targetElement, targetParent, parent = e.target, name;
 
 				while (parent && parent !== document.body && parent !== editor && parent !== editorCss)
 					parent = parent.parentNode;
 				if (parent !== editor && parent !== editorCss) {
-					move(false);
+					move(false, false);
 					return;
 				}
 
@@ -1903,7 +1932,36 @@
 					parent = parent.parentNode;
 				}
 
-				if (dropdownMovingCss) {
+				if (toolbarShowTypeOnClick) {
+					if ((name = toolbarElementName)) {
+						// We must invert the order here, in order not to hide a possible error
+						// message displayed by createElement()
+
+						move(false, false);
+
+						cancelEvent(e);
+
+						if (moveTarget === moveTargetClosingTag)
+							createElement(name, targetElement, null);
+						else
+							createElement(name, targetElement.elementParent, targetElement);
+
+						return false;
+					}
+					clearToolbarActions();
+				} else if (toolbarCreateTextOnClick) {
+					clearToolbarActions();
+					if (moveTarget === moveTargetClosingTag)
+						createElement("text", targetElement, null);
+					else
+						createElement("text", targetElement.elementParent, targetElement);
+				} else if (toolbarCreateCommentOnClick) {
+					clearToolbarActions();
+					if (moveTarget === moveTargetClosingTag)
+						createElement("comment", targetElement, null);
+					else
+						createElement("comment", targetElement.elementParent, targetElement);
+				} else if (dropdownMovingCss) {
 					if (dropdownElement.elementCategory === categoryElement)
 						return;
 
@@ -1957,7 +2015,7 @@
 					}
 				}
 
-				move(false);
+				move(false, false);
 
 				cancelEvent(e);
 
@@ -1968,18 +2026,19 @@
 				if (!dropdownMoving)
 					return;
 				if (e.key === "Escape" || e.keyCode === 27)
-					move(false);
+					move(false, false);
 			}
 
-			function move(start) {
+			function move(start, startByToolbar) {
 				if (start) {
 					dropdownMoving = true;
-					dropdownMovingCss = (dropdownElement.elementCategory !== categoryElement);
+					dropdownMovingCss = $(editorCss).hasClass("active");
 					document.addEventListener("click", clickMoving, true);
 					document.addEventListener("keydown", keyDownMoving, true);
-					$(dropdownElement).addClass("moving");
+					if (!startByToolbar)
+						$(dropdownElement).addClass("moving");
 					$(dropdownMovingCss ? editorCss : editor).addClass(dropdownMovingCss && dropdownElement.elementCategory === categoryRule ? "moving-top" : "moving");
-					Notification.show(translate("MoveMessage"), "default", -1, false);
+					Notification.show(translate(startByToolbar ? (toolbarCreateTextOnClick ? "MoveMessageCreateText" : (toolbarCreateCommentOnClick ? "MoveMessageCreateComment" : "MoveMessageCreateElement")) : "MoveMessage"), "default", -1, false);
 				} else {
 					dropdownMoving = false;
 					document.removeEventListener("click", clickMoving, true);
@@ -2092,6 +2151,7 @@
 						dropdownMenuLeftToggleVisibility.firstChild.className = "fa fa-nomargin fa-plus";
 					}
 				}
+				clearToolbarActions();
 				dropdownShowTypeOnHide = false;
 				dropdownCreateTextOnHide = false;
 				dropdownCreateCommentOnHide = false;
@@ -2332,7 +2392,10 @@
 			};
 
 			function dropdownCreateElement(name) {
-				if (dropdownActionChangeType) {
+				if (toolbarShowTypeOnClick) {
+					toolbarElementName = name;
+					move(true, true);
+				} else if (dropdownActionChangeType) {
 					changeType(name, dropdownElement);
 				} else if (dropdownActionClosingTag) {
 					if (dropdownActionTop)
@@ -2432,6 +2495,50 @@
 					backdrop: true
 				});
 			}
+
+			function clearToolbarActions() {
+				toolbarElementName = null;
+				toolbarShowTypeOnClick = false;
+				toolbarCreateTextOnClick = false;
+				toolbarCreateCommentOnClick = false;
+			}
+
+			window.toolbarShowType = function () {
+				if (loading || dropdownFading || dropdownMoving || dropdownVisible || dropdownTypeVisible)
+					return;
+
+				var rect = editorToolbarCreateElement.getBoundingClientRect(),
+					height = (rect.height | 0);
+
+				dropdownX = (rect.left | 0) + 12;
+				dropdownY = (rect.top | 0) + (height >> 1);
+				dropdownElement = null;
+				clearToolbarActions();
+				toolbarShowTypeOnClick = true;
+				fadeOutFinished();
+			};
+
+			window.toolbarCreateText = function () {
+				if (loading || dropdownFading || dropdownMoving || dropdownVisible || dropdownTypeVisible)
+					return;
+
+				dropdownElement = null;
+				clearToolbarActions();
+				toolbarCreateTextOnClick = true;
+				lockUI(false);
+				move(true, true);
+			};
+
+			window.toolbarCreateComment = function () {
+				if (loading || dropdownFading || dropdownMoving || dropdownVisible || dropdownTypeVisible)
+					return;
+
+				dropdownElement = null;
+				clearToolbarActions();
+				toolbarCreateCommentOnClick = true;
+				lockUI(false);
+				move(true, true);
+			};
 
 			// Initial
 			(function () {
