@@ -625,6 +625,7 @@
 		function _RC(parent, oldChild) { parent.removeChild(oldChild); return parent; }
 
 		var loading = true,
+			dirty = false,
 			valueFreeText = null,
 			valueColor = 0,
 			valueNumber = 1,
@@ -705,6 +706,11 @@
 				{ name: "border-width", values: valueFreeText },
 				{ name: "border-style", values: ["none", "hidden", "dashed", "dotted", "double", "groove", "inset", "outset", "ridge", "solid"] },
 				{ name: "border-collapse", values: ["collapse", "separate"] },
+				{ name: "border-radius", values: valueFreeText },
+				{ name: "border-top-left-radius", values: valueFreeText },
+				{ name: "border-top-right-radius", values: valueFreeText },
+				{ name: "border-bottom-left-radius", values: valueFreeText },
+				{ name: "border-bottom-right-radius", values: valueFreeText },
 				{ name: "background", values: valueFreeText },
 				{ name: "background-color", values: valueColor },
 				{ name: "background-image", values: valueImage },
@@ -857,6 +863,8 @@
 				return;
 			}
 
+			dirty = true;
+
 			e = _CE("div", "element");
 			e.elementCategory = categoryElement;
 			e.elementParent = parent;
@@ -924,6 +932,8 @@
 			if (loading || !element || !element.elementParent || !element.elementParent.elementContainer)
 				return;
 
+			dirty = true;
+
 			_RC(element.elementParent.elementContainer, element);
 			_RC(element.elementParent.elementIframe, element.elementIframe);
 		}
@@ -934,6 +944,8 @@
 
 		function setElementText(element, text) {
 			if (element.elementType === elementTypeText) {
+				dirty = true;
+
 				var elementTag = element.elementTag;
 				if (!text) {
 					elementTag.empty = true;
@@ -946,6 +958,8 @@
 					element.elementIframe.nodeValue = tmpDiv.textContent;
 				}
 			} else if (element.elementType === elementTypeComment) {
+				dirty = true;
+
 				element.elementComment.textContent = text;
 				element.elementIframe.nodeValue = "\n" + text + "\n";
 			}
@@ -999,6 +1013,8 @@
 				Notification.error(translate(newElementType.noChildren ? "ErrorNewElementMustHaveChildren" : "ErrorNewElementMustNotHaveChildren"), true);
 				return;
 			}
+
+			dirty = true;
 
 			var newElement = createElement(newName, element.elementParent, element);
 
@@ -1105,6 +1121,8 @@
 			if (loading)
 				return;
 
+			dirty = true;
+
 			// For the future... Perhaps we could use the CSSStyleSheet API?!?!
 			// https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet/insertRule
 
@@ -1149,6 +1167,8 @@
 			if (loading || !element || element.elementCategory !== categoryRule)
 				return;
 
+			dirty = true;
+
 			_RC(editorCss, element);
 
 			if (!editorCss.childNodes.length)
@@ -1162,8 +1182,11 @@
 		}
 
 		function setRuleSelector(element, newRuleSelector) {
-			if (element.elementCategory === categoryRule && newRuleSelector)
+			if (element.elementCategory === categoryRule && newRuleSelector) {
+				dirty = true;
+
 				element.elementTag.firstChild.firstChild.nodeValue = newRuleSelector;
+			}
 		}
 
 		function editRuleSelector(element) {
@@ -1204,6 +1227,8 @@
 			if (!elementAttribute)
 				return;
 
+			dirty = true;
+
 			e = _CE("div", "element");
 			// These attribute names were chosen like this in order to
 			// avoid any conflicts with existing attribute names!
@@ -1238,6 +1263,8 @@
 			if (loading || !element || element.elementCategory !== categoryRuleAttribute)
 				return;
 
+			dirty = true;
+
 			_RC(element.elementParent.elementContainer, element);
 
 			updateCss();
@@ -1253,6 +1280,8 @@
 
 		function setRuleAttribute(element, newRuleAttributeName, newRuleAttributeValue) {
 			if (element.elementCategory === categoryRuleAttribute && newRuleAttributeName && newRuleAttributeValue) {
+				dirty = true;
+
 				element.elementAttributeName.firstChild.nodeValue = newRuleAttributeName;
 				element.elementAttributeValue.elementActualAttributeValue = newRuleAttributeValue;
 				if (newRuleAttributeValue.length > 50)
@@ -1416,6 +1445,7 @@
 				addString("ErrorInvalidHTML", "O arquivo escolhido não parece ser um arquivo HTML válido \uD83D\uDE22");
 				addString("ErrorInvalidChar", "Você não pode digitar os símbolos < ou > aqui. Para mais informações, por favor, veja o link \"Entidades HTML\" \uD83D\uDE22");
 				addString("ConfirmQuit", "Deseja mesmo sair da página? Você perderá o documento atual.");
+				addString("ConfirmClose", "Deseja mesmo continuar? Você perderá as alterações não salvas.");
 				addString("MoveMessage", "Clique para onde deseja mover o elemento ou tecle Esc para cancelar");
 				addString("MoveMessageCreateElement", "Clique onde deseja criar o novo elemento ou tecle Esc para cancelar");
 				addString("MoveMessageCreateText", "Clique onde deseja criar o novo texto ou tecle Esc para cancelar");
@@ -1478,6 +1508,7 @@
 				addString("ErrorInvalidHTML", "The selected file does not seem to be a valid HTML file \uD83D\uDE22");
 				addString("ErrorInvalidChar", "You cannot enter the symbols < or > here. For more information, please, refer to the \"HTML Entities\" link below \uD83D\uDE22");
 				addString("ConfirmQuit", "Do you really want to quit? You will lose unsaved information.");
+				addString("ConfirmClose", "Do you really want to continue? You will lose unsaved information.");
 				addString("MoveMessage", "Click where you wish to move the element to or press Esc to cancel");
 				addString("MoveMessageCreateElement", "Click where you wish to create the new element or press Esc to cancel");
 				addString("MoveMessageCreateText", "Click where you wish to create the new text or press Esc to cancel");
@@ -1624,7 +1655,7 @@
 			_SA(iframe, "src", "empty.html");
 
 			window.onbeforeunload = function () {
-				return null; // translate("ConfirmQuit")
+				return (dirty ? translate("ConfirmQuit") : null);
 			};
 
 			setTimeout(function () { document.body.style.visibility = ""; }, 250);
@@ -2635,6 +2666,10 @@
 					modalSaveOk.click();
 			};
 
+			function confirmClose() {
+				return (!dirty || confirm(translate("ConfirmClose")));
+			}
+
 			function loadFileFromInput() {
 				if (loading)
 					return;
@@ -2696,7 +2731,7 @@
 			}
 
 			function newDocument() {
-				if (!bodyElement)
+				if (!bodyElement || !confirmClose())
 					return;
 
 				while (bodyElement.elementContainer.firstChild)
@@ -2707,10 +2742,12 @@
 					deleteRule(editorCss.firstChild);
 
 				updateCss();
+
+				dirty = false;
 			}
 
 			function loadDocument(doc) {
-				if (!doc || !doc.body || !doc.head)
+				if (!doc || !doc.body || !doc.head || !confirmClose())
 					return;
 
 				function isWhiteSpace(charCode) {
@@ -2901,6 +2938,8 @@
 				}
 
 				createElementsFromDoc(doc.body, bodyElement);
+
+				dirty = false;
 			}
 
 			editorActionFileLoad.onchange = loadFileFromInput;
@@ -2986,6 +3025,8 @@
 					trim(iframeBody.innerHTML),
 					"</body>\n</html>\n"
 				], { type: "text/html;charset=utf-8" }));
+
+				dirty = false;
 			};
 
 		})();
