@@ -64,6 +64,7 @@
 
 		body {
 			background: #fff;
+			overflow: hidden;
 		}
 
 		textarea {
@@ -114,6 +115,17 @@
 			width: 0;
 		}
 
+		.dropdown-menu > li > a {
+			-webkit-transition: background-color ease-in-out .2s;
+			-o-transition: background-color ease-in-out .2s;
+			transition: background-color ease-in-out .2s;
+			outline: 0;
+		}
+
+			.dropdown-menu > li > a:hover {
+				outline: 0;
+			}
+
 		.editor-container {
 			position: absolute;
 			left: 0;
@@ -134,16 +146,13 @@
 			bottom: 0;
 			font: normal 14px 'Roboto Mono', monospace;
 			overflow: auto;
+			padding: 0 2ch 4ch;
 		}
 
 		.editor-toolbar {
 			margin: 0;
 			padding: 4px;
 			border-bottom: 1px solid #ddd;
-		}
-
-		.editor-css {
-			padding-left: 4ch;
 		}
 
 		.editor-bar {
@@ -171,29 +180,6 @@
 			height: 100%;
 		}
 
-		.move-target, .move-target-top {
-			border-top: 2px solid transparent;
-			-webkit-transition: border-color ease-in-out .2s;
-			-o-transition: border-color ease-in-out .2s;
-			transition: border-color ease-in-out .2s;
-		}
-
-		.editor.moving .move-target {
-			border-top-color: #ddd;
-		}
-
-			.editor.moving .move-target:hover {
-				border-top-color: #00f;
-			}
-
-		.editor.moving-top .move-target-top {
-			border-top-color: #ddd;
-		}
-
-			.editor.moving-top .move-target-top:hover {
-				border-top-color: #00f;
-			}
-
 		.element {
 			padding: 0;
 			margin: 8px 0;
@@ -203,12 +189,9 @@
 		}
 
 			.element.moving {
+				border-radius: 3px;
 				background-color: #eee;
 			}
-
-				.element.moving .move-target, .element.moving .move-target:hover, .element.moving .move-target-top, .element.moving .move-target-top:hover {
-					border-top-color: transparent;
-				}
 
 		.element-decoration {
 			pointer-events: none;
@@ -220,11 +203,47 @@
 			color: #00f;
 			white-space: pre;
 			font-weight: bold;
+			border-radius: 3px;
+			-webkit-transition: background-color ease-in-out .2s, border-color ease-in-out .2s;
+			-o-transition: background-color ease-in-out .2s, border-color ease-in-out .2s;
+			transition: background-color ease-in-out .2s, border-color ease-in-out .2s;
 		}
 
 			.element-tag.no-click {
 				cursor: default;
 			}
+
+		.move-target, .move-target-top {
+			border-top: 2px solid transparent;
+		}
+
+		.editor:not(.moving) .element-tag:hover {
+			background-color: #eef;
+		}
+
+		.editor.moving .move-target {
+			border-radius: 0;
+			border-top-color: #ddd;
+		}
+
+			.editor.moving .move-target:hover {
+				border-radius: 0;
+				border-top-color: #00f;
+			}
+
+		.editor.moving-top .move-target-top {
+			border-radius: 0;
+			border-top-color: #ddd;
+		}
+
+			.editor.moving-top .move-target-top:hover {
+				border-radius: 0;
+				border-top-color: #00f;
+			}
+
+		.element.moving .move-target, .element.moving .move-target:hover, .element.moving .move-target-top, .element.moving .move-target-top:hover {
+			border-top-color: transparent;
+		}
 
 		.element.collapsed > .element-tag {
 			display: inline-block;
@@ -251,6 +270,8 @@
 		.element-text {
 			color: #000;
 			font-weight: normal;
+			overflow: hidden;
+			text-overflow: ellipsis;
 		}
 
 		.element-comment {
@@ -280,6 +301,9 @@
 			float: right;
 			margin-top: 2px;
 			color: #aaa;
+			-webkit-transition: color ease-in-out .2s;
+			-o-transition: color ease-in-out .2s;
+			transition: color ease-in-out .2s;
 		}
 
 			.fa-floating-help:hover {
@@ -310,7 +334,7 @@
 			position: fixed;
 			background: #fff;
 			width: auto;
-			border-radius: 4px;
+			border-radius: 3px;
 			-webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
 			box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
 			z-index: 10;
@@ -544,7 +568,12 @@
 	<iframe class="editor-iframe" id="iframe" frameborder="0"></iframe>
 	<ul class="dropdown-menu editor-menu-animated" id="dropdownType">
 		<li class="dropdown-menu-input-container">
-			<input id="dropdownTypeInput" spellcheck="false" autocomplete="off" class="dropdown-menu-input form-control input-sm" data-string="placeholder|ElementName" />
+			<div class="input-group">
+				<input id="dropdownTypeInput" spellcheck="false" autocomplete="off" class="dropdown-menu-input form-control input-sm" data-string="placeholder|ElementName" />
+				<span class="input-group-btn">
+					<button id="dropdownTypeButton" class="btn btn-default btn-force-border btn-sm" type="button" data-string="text|Create"></button>
+				</span>
+			</div>
 		</li>
 		<li class="divider"></li>
 		<li class="dropdown-menu-container" id="dropdownTypeContainer"></li>
@@ -805,6 +834,8 @@
 
 			createElement("body");
 			createRule("body");
+
+			dirty = false;
 		}
 
 		function tagClick(e) {
@@ -1427,6 +1458,7 @@
 				addString("FindElement", "Localizar Elemento");
 				addString("ChangeElement", "Alterar Elemento");
 				addString("EditAttributes", "Editar Atributos");
+				addString("Create", "Criar");
 				addString("CreateElement", "Criar Elemento");
 				addString("CreateRule", "Criar Regra");
 				addString("CreateAttribute", "Criar Atributo");
@@ -1490,6 +1522,7 @@
 				addString("FindElement", "Find Element");
 				addString("ChangeElement", "Change Element");
 				addString("EditAttributes", "Edit Attributes");
+				addString("Create", "Create");
 				addString("CreateElement", "Create Element");
 				addString("CreateRule", "Create Rule");
 				addString("CreateAttribute", "Create Attribute");
@@ -1739,6 +1772,7 @@
 				dropdownElement = null,
 				dropdownType = _ID("dropdownType"),
 				dropdownTypeInput = _("dropdownTypeInput"),
+				dropdownTypeButton = _("dropdownTypeButton"),
 				dropdownTypeContainer = _("dropdownTypeContainer"),
 				dropdownMenuTop = _ID("dropdownMenuTop"),
 				dropdownMenuTopCreateElement = _ID("dropdownMenuTopCreateElement"),
@@ -1805,14 +1839,14 @@
 						height = (window.innerHeight | 0),
 						x = dropdownX,
 						y = dropdownY;
-					if ((x + 160 + 4) > width)
-						x = width - 160 - 4;
+					if ((x + 210 + 4) > width)
+						x = width - 210 - 4;
 					if ((y + 300 + 4) > height)
 						y = height - 300 - 4;
 					dropdownType.style.display = "block";
 					dropdownType.style.left = x + "px";
 					dropdownType.style.top = y + "px";
-					dropdownType.style.width = 160 + "px";
+					dropdownType.style.width = 210 + "px";
 					dropdownType.style.height = 300 + "px";
 					setTimeout(startFadeInType, 50);
 					return;
@@ -2468,12 +2502,19 @@
 				hide();
 			}
 
+			dropdownTypeButton.onclick = function () {
+				var name = trimValue(dropdownTypeInput).toLowerCase();
+				if (name && name.charAt(0) === "<")
+					name = trim(name.substr(1));
+				if (name && name.charAt(name.length - 1) === ">")
+					name = trim(name.substr(0, name.length - 1));
+				if ((name in elementTypesByName) && name !== "text" && dropdownTypeVisible)
+					dropdownCreateElement(name);
+			};
+
 			dropdownTypeInput.onkeydown = function (e) {
-				if (e.key === "Enter" || e.keyCode === 13) {
-					var name = trimValue(dropdownTypeInput).toLowerCase();
-					if ((name in elementTypesByName) && name !== "text" && dropdownTypeVisible)
-						dropdownCreateElement(name);
-				}
+				if (e.key === "Enter" || e.keyCode === 13)
+					dropdownTypeButton.click();
 			};
 
 			_ID("modalAttributesOk").onclick = function () {
