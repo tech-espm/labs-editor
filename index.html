@@ -149,6 +149,10 @@
 			padding: 0 2ch 4ch;
 		}
 
+		.editor-css {
+			padding: 0 2ch 4ch 4ch;
+		}
+
 		.editor-toolbar {
 			margin: 0;
 			padding: 4px;
@@ -525,6 +529,8 @@
 				<li><a href="#" data-string="text|LoadEllipsis" id="editorActionLoad"><i class="fa fa-margin fa-folder-open-o"></i></a></li>
 				<li><a href="#" data-string="text|SaveEllipsis" id="editorActionSave"><i class="fa fa-margin fa-cloud-download"></i></a></li>
 				<li role="separator" class="divider"></li>
+				<li><a href="#" data-string="text|LoadExample" id="editorActionLoadExample"><i class="fa fa-margin fa-lightbulb-o"></i></a></li>
+				<li role="separator" class="divider"></li>
 				<li><a href="#" id="editorActionToggleDecoration"><i class="fa fa-margin fa-code"></i><span id="editorActionToggleDecorationLabel" data-string="text|HideDecoration"></span></a></li>
 			</ul>
 			<div class="nav-tabs-file-load"><input id="editorActionFileLoad" tabindex="-1" type="file" accept="text/html" /></div>
@@ -686,6 +692,7 @@
 				{ name: "em", attributes: null },
 				{ name: "cite", attributes: null },
 				{ name: "s", attributes: null },
+				{ name: "u", attributes: null },
 				{ name: "blockquote", block: true, attributes: null },
 				{ name: "dl", block: true, attributes: null },
 				{ name: "dt", block: true, attributes: null },
@@ -1504,6 +1511,8 @@
 				addString("HTMLEntities", "Entidades HTML");
 				addString("PageTitle", "Título da Página");
 				addString("CSSTab", "Este conteúdo está na aba CSS");
+				addString("LoadExample", "Abrir Exemplo");
+				addString("ExampleFile", "/labs-editor/examplePt.html");
 				addString("ShowDecoration", "Exibir HTML Completo");
 				addString("HideDecoration", "Ocultar HTML Completo");
 			} else {
@@ -1568,6 +1577,8 @@
 				addString("HTMLEntities", "HTML Entities");
 				addString("PageTitle", "Page Title");
 				addString("CSSTab", "This content is in the CSS tab");
+				addString("LoadExample", "Load Example");
+				addString("ExampleFile", "/labs-editor/example.html");
 				addString("ShowDecoration", "Show Full HTML");
 				addString("HideDecoration", "Hide Full HTML");
 			}
@@ -2724,6 +2735,41 @@
 				return (!dirty || confirm(translate("ConfirmClose")));
 			}
 
+			function loadFileFromURL(url) {
+				loading = true;
+				Notification.wait();
+
+				try {
+					var xhr = new XMLHttpRequest(), done = false;
+					xhr.responseType = "document";
+					xhr.onreadystatechange = function () {
+						if (xhr.readyState === 4) {
+							if (done)
+								return;
+							done = true;
+
+							loading = false;
+							Notification.hide();
+
+							try {
+								loadDocument(xhr.responseXML);
+							} catch (ex) {
+								Notification.error(translate("ErrorFileLoad"), true);
+							}
+						}
+					};
+					xhr.onerror = function () {
+						loading = false;
+						Notification.error(translate("ErrorFileLoad"), true);
+					};
+					xhr.open("get", url);
+					xhr.send();
+				} catch (ex) {
+					loading = false;
+					Notification.error(translate("ErrorFileLoad"), true);
+				}
+			}
+
 			function loadFileFromInput() {
 				if (loading)
 					return;
@@ -2749,43 +2795,12 @@
 						return;
 					}
 
-					loading = true;
-					Notification.wait();
-
-					try {
-						var xhr = new XMLHttpRequest(), done = false;
-						xhr.responseType = "document";
-						xhr.onreadystatechange = function () {
-							if (xhr.readyState === 4) {
-								if (done)
-									return;
-								done = true;
-
-								loading = false;
-								Notification.hide();
-
-								try {
-									loadDocument(xhr.responseXML);
-								} catch (ex) {
-									Notification.error(translate("ErrorFileLoad"), true);
-								}
-							}
-						};
-						xhr.onerror = function () {
-							loading = false;
-							Notification.error(translate("ErrorFileLoad"), true);
-						};
-						xhr.open("get", dataURL);
-						xhr.send();
-					} catch (ex) {
-						loading = false;
-						Notification.error(translate("ErrorFileLoad"), true);
-					}
+					loadFileFromURL(dataURL);
 				});
 			}
 
 			function newDocument() {
-				if (!bodyElement || !confirmClose())
+				if (!bodyElement)
 					return;
 
 				while (bodyElement.elementContainer.firstChild)
@@ -2801,7 +2816,7 @@
 			}
 
 			function loadDocument(doc) {
-				if (!doc || !doc.body || !doc.head || !confirmClose())
+				if (!doc || !doc.body || !doc.head)
 					return;
 
 				function isWhiteSpace(charCode) {
@@ -3004,6 +3019,9 @@
 
 				$("#editorMenuDropdown").dropdown("toggle");
 
+				if (!confirmClose())
+					return cancelEvent(e);
+
 				newDocument();
 
 				return cancelEvent(e);
@@ -3014,6 +3032,9 @@
 					return cancelEvent(e);
 
 				$("#editorMenuDropdown").dropdown("toggle");
+
+				if (!confirmClose())
+					return cancelEvent(e);
 
 				editorActionFileLoad.click();
 
@@ -3030,6 +3051,20 @@
 					keyboard: true,
 					backdrop: true
 				});
+
+				return cancelEvent(e);
+			};
+
+			_ID("editorActionLoadExample").onclick = function (e) {
+				if (loading)
+					return cancelEvent(e);
+
+				$("#editorMenuDropdown").dropdown("toggle");
+
+				if (!confirmClose())
+					return cancelEvent(e);
+
+				loadFileFromURL(translate("ExampleFile"));
 
 				return cancelEvent(e);
 			};
