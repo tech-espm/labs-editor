@@ -553,7 +553,7 @@
 				<li><a href="#" data-string="text|LoadExample" id="editorActionLoadExample"><i class="fa fa-margin fa-lightbulb-o"></i></a></li>
 				<li role="separator" class="divider"></li>
 				<li><a href="#" data-string="text|GoogleFonts" id="editorActionGoogleFonts"><i class="fa fa-margin fa-google"></i></a></li>
-				<li><a href="#" id="editorActionToggleBootstrap"><i class="fa fa-margin fa-paint-brush"></i><span data-string="text|AddBootstrap" id="editorActionToggleBootstrap"></span></a></li>
+				<li><a href="#" id="editorActionToggleBootstrap"><i class="fa fa-margin fa-paint-brush"></i><span data-string="text|AddBootstrap" id="editorActionToggleBootstrapLabel"></span></a></li>
 				<li role="separator" class="divider"></li>
 				<li><a href="#" id="editorActionToggleDecoration"><i class="fa fa-margin fa-code"></i><span id="editorActionToggleDecorationLabel" data-string="text|HideDecoration"></span></a></li>
 			</ul>
@@ -832,6 +832,7 @@
 			cssAttributesByName = {},
 			editorContainer = _ID("editorContainer"),
 			editor = _ID("editor"),
+			editorBootstrapEnabled = false,
 			editorDecorationVisible = true,
 			editorDecorationTop = _ID("editor-decoration-top"),
 			editorDecorationBottom = _ID("editor-decoration-bottom"),
@@ -1474,7 +1475,7 @@
 		function updateGoogleFontsLink(href) {
 			if (iframeGoogleFontsLink)
 				_RC(iframeHead, iframeGoogleFontsLink);
-			_IB(iframeHead, iframeGoogleFontsLink = _SA(_SA(_SA(_ICE("link"), "rel", "stylesheet"), "id", "googleFontsLink"), "href", trim(href || "")), iframeStyle);
+			_IB(iframeHead, iframeGoogleFontsLink = _SA(_SA(_SA(_SA(_ICE("link"), "rel", "stylesheet"), "type", "text/css"), "id", "googleFontsLink"), "href", trim(href || "")), iframeStyle);
 		}
 
 		// Translation
@@ -2765,6 +2766,7 @@
 		// Actions Menu
 		(function () {
 			var editorActionFileLoad = _ID("editorActionFileLoad"),
+				editorActionToggleBootstrapLabel = _ID("editorActionToggleBootstrapLabel"),
 				editorActionToggleDecorationLabel = _ID("editorActionToggleDecorationLabel"),
 				modalSaveFileName = _ID("modalSaveFileName"),
 				modalSaveOk = _ID("modalSaveOk"),
@@ -2784,6 +2786,19 @@
 				if (e.key === "Enter" || e.keyCode === 13)
 					modalGoogleFontsOk.click();
 			};
+
+			function enableBootstrap(enable) {
+				editorBootstrapEnabled = enable;
+
+				editorActionToggleBootstrapLabel.textContent = translate(enable ? "RemoveBootstrap" : "AddBootstrap");
+
+				var e = iframeDocument.getElementById("bootstrapCSS");
+				if (e)
+					_RC(iframeHead, e);
+
+				if (enable)
+					_IB(iframeHead, _SA(_SA(_SA(_SA(_ICE("link"), "href", "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"), "type", "text/css"), "rel", "stylesheet"), "id", "bootstrapCSS"), iframeStyle);
+			}
 
 			function confirmClose() {
 				return (!dirty || confirm(translate("ConfirmClose")));
@@ -2865,6 +2880,7 @@
 					deleteRule(editorCss.firstChild);
 
 				updateGoogleFontsLink();
+				enableBootstrap(false);
 
 				updateCss();
 
@@ -2990,15 +3006,18 @@
 
 				function loadDocumentCss(head) {
 					try {
-						var i, element;
+						var i, id, element;
 
 						for (i = 0; i < head.childNodes.length; i++) {
 							element = head.childNodes[i];
 							if (element.tagName === "STYLE") {
 								parseCss(element.textContent);
 							} else if (element.tagName === "LINK") {
-								if (_GA(element, "id") === "googleFontsLink")
+								id = _GA(element, "id");
+								if (id === "googleFontsLink")
 									updateGoogleFontsLink(_GA(element, "href"));
+								else if (id === "bootstrapCSS")
+									enableBootstrap(true);
 							}
 						}
 
@@ -3150,6 +3169,17 @@
 				return cancelEvent(e);
 			};
 
+			_ID("editorActionToggleBootstrap").onclick = function (e) {
+				if (loading)
+					return cancelEvent(e);
+
+				$("#editorMenuDropdown").dropdown("toggle");
+
+				enableBootstrap(!editorBootstrapEnabled);
+
+				return cancelEvent(e);
+			};
+
 			_ID("editorActionToggleDecoration").onclick = function (e) {
 				if (loading)
 					return cancelEvent(e);
@@ -3196,6 +3226,7 @@
 					translate("PageTitle"),
 					'</title>\n',
 					googleFontsHref,
+					(editorBootstrapEnabled ? '	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" type="text/css" rel="stylesheet" id="bootstrapCSS" />' : ''),
 					'	<style type="text/css">\n',
 					iframeStyle.textContent,
 					"	</style>\n</head>\n<body>",
