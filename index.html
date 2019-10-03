@@ -513,6 +513,27 @@
 		</div>
 	</div>
 
+	<div class="modal fade" tabindex="-1" role="dialog" id="modalGoogleFonts">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" data-string="aria-label|Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" data-string="text|GoogleFonts"></h4>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label for="modalGoogleFontsLink"><span data-string="text|HTMLLink"></span> <i><small data-string="text|GoogleFontsExample"></small></i></label>
+						<input type="text" class="form-control" id="modalGoogleFontsLink" spellcheck="false" autocomplete="off" />
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-outline btn-default" data-dismiss="modal" data-string="text|Cancel"><i class="fa fa-margin fa-times"></i></button>
+					<button type="button" class="btn btn-primary" id="modalGoogleFontsOk" data-string="text|OK"><i class="fa fa-margin fa-check"></i></button>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<div class="editor-container" id="editorContainer">
 		<ul class="nav nav-tabs" role="tablist">
 			<li role="presentation" class="active"><a id="tabEditor" href="#editor" aria-controls="editor" role="tab" data-toggle="tab">HTML</a></li>
@@ -530,6 +551,9 @@
 				<li><a href="#" data-string="text|SaveEllipsis" id="editorActionSave"><i class="fa fa-margin fa-cloud-download"></i></a></li>
 				<li role="separator" class="divider"></li>
 				<li><a href="#" data-string="text|LoadExample" id="editorActionLoadExample"><i class="fa fa-margin fa-lightbulb-o"></i></a></li>
+				<li role="separator" class="divider"></li>
+				<li><a href="#" data-string="text|GoogleFonts" id="editorActionGoogleFonts"><i class="fa fa-margin fa-google"></i></a></li>
+				<li><a href="#" id="editorActionToggleBootstrap"><i class="fa fa-margin fa-paint-brush"></i><span data-string="text|AddBootstrap" id="editorActionToggleBootstrap"></span></a></li>
 				<li role="separator" class="divider"></li>
 				<li><a href="#" id="editorActionToggleDecoration"><i class="fa fa-margin fa-code"></i><span id="editorActionToggleDecorationLabel" data-string="text|HideDecoration"></span></a></li>
 			</ul>
@@ -778,7 +802,7 @@
 				{ name: "color", values: valueColor },
 				{ name: "opacity", values: valueFreeText },
 				{ name: "line-height", values: valueFreeText },
-				{ name: "list-style-type", values: ["none", "disc", "circle", "square", "decimal", "decimal-leading-zero", "lower-roman", "upper-roman", "lower-alpha", "upper-alpha", "lower-greek", "upper-greek" ] },
+				{ name: "list-style-type", values: ["none", "disc", "circle", "square", "decimal", "decimal-leading-zero", "lower-roman", "upper-roman", "lower-alpha", "upper-alpha", "lower-greek", "upper-greek"] },
 				{ name: "font", values: valueFreeText },
 				{ name: "font-family", values: valueFreeText },
 				{ name: "font-size", values: valueFreeText },
@@ -840,13 +864,16 @@
 			iframe = _ID("iframe"),
 			iframeWindow = null,
 			iframeDocument = null,
+			iframeHead = null,
 			iframeBody = null,
 			iframeStyle = null,
+			iframeGoogleFontsLink = null,
 			ignoreCssChanges = false;
 
 		function iframeLoaded(win, doc, style) {
 			iframeWindow = win;
 			iframeDocument = doc;
+			iframeHead = doc.head;
 			iframeBody = doc.body;
 			iframeStyle = style;
 
@@ -856,6 +883,8 @@
 			createRule("body");
 
 			dirty = false;
+
+			updateGoogleFontsLink();
 		}
 
 		function tagClick(e) {
@@ -1442,6 +1471,12 @@
 				iframeStyle.textContent = generateCss();
 		}
 
+		function updateGoogleFontsLink(href) {
+			if (iframeGoogleFontsLink)
+				_RC(iframeHead, iframeGoogleFontsLink);
+			_IB(iframeHead, iframeGoogleFontsLink = _SA(_SA(_SA(_ICE("link"), "rel", "stylesheet"), "id", "googleFontsLink"), "href", trim(href || "")), iframeStyle);
+		}
+
 		// Translation
 		(function () {
 			if (!window.editorStrings || (typeof window.editorStrings !== "object")) window.editorStrings = {};
@@ -1512,6 +1547,12 @@
 				addString("PageTitle", "Título da Página");
 				addString("CSSTab", "Este conteúdo está na aba CSS");
 				addString("LoadExample", "Abrir Exemplo");
+				addString("HTMLLink", "Elemento HTML link");
+				addString("GoogleFontsExample", "Exemplo: <link href=\"...\" />");
+				addString("GoogleFonts", "Google Fonts");
+				addString("GoogleFontsEllipsis", "Google Fonts\u2026");
+				addString("AddBootstrap", "Adicionar Bootstrap 3");
+				addString("RemoveBootstrap", "Remover Bootstrap 3");
 				addString("ExampleFile", "/labs-editor/examplePt.html");
 				addString("ShowDecoration", "Exibir HTML Completo");
 				addString("HideDecoration", "Ocultar HTML Completo");
@@ -1578,6 +1619,12 @@
 				addString("PageTitle", "Page Title");
 				addString("CSSTab", "This content is in the CSS tab");
 				addString("LoadExample", "Load Example");
+				addString("HTMLLink", "HTML link element");
+				addString("GoogleFontsExample", "Example: <link href=\"...\" />");
+				addString("GoogleFonts", "Google Fonts");
+				addString("GoogleFontsEllipsis", "Google Fonts\u2026");
+				addString("AddBootstrap", "Add Bootstrap 3");
+				addString("RemoveBootstrap", "Remove Bootstrap 3");
 				addString("ExampleFile", "/labs-editor/example.html");
 				addString("ShowDecoration", "Show Full HTML");
 				addString("HideDecoration", "Hide Full HTML");
@@ -2720,7 +2767,9 @@
 			var editorActionFileLoad = _ID("editorActionFileLoad"),
 				editorActionToggleDecorationLabel = _ID("editorActionToggleDecorationLabel"),
 				modalSaveFileName = _ID("modalSaveFileName"),
-				modalSaveOk = _ID("modalSaveOk");
+				modalSaveOk = _ID("modalSaveOk"),
+				modalGoogleFontsLink = _ID("modalGoogleFontsLink"),
+				modalGoogleFontsOk = _ID("modalGoogleFontsOk");
 
 			$("#modalSave").on("shown.bs.modal", function () {
 				modalSaveFileName.focus();
@@ -2729,6 +2778,11 @@
 			modalSaveFileName.onkeydown = function (e) {
 				if (e.key === "Enter" || e.keyCode === 13)
 					modalSaveOk.click();
+			};
+
+			modalGoogleFontsLink.onkeydown = function (e) {
+				if (e.key === "Enter" || e.keyCode === 13)
+					modalGoogleFontsOk.click();
 			};
 
 			function confirmClose() {
@@ -2809,6 +2863,8 @@
 				var i = editorCss.childNodes.length;
 				while (i-- > 0 && editorCss.firstChild)
 					deleteRule(editorCss.firstChild);
+
+				updateGoogleFontsLink();
 
 				updateCss();
 
@@ -2938,8 +2994,12 @@
 
 						for (i = 0; i < head.childNodes.length; i++) {
 							element = head.childNodes[i];
-							if (element.tagName === "STYLE")
+							if (element.tagName === "STYLE") {
 								parseCss(element.textContent);
+							} else if (element.tagName === "LINK") {
+								if (_GA(element, "id") === "googleFontsLink")
+									updateGoogleFontsLink(_GA(element, "href"));
+							}
 						}
 
 					} catch (ex) {
@@ -3069,6 +3129,27 @@
 				return cancelEvent(e);
 			};
 
+			_ID("editorActionGoogleFonts").onclick = function (e) {
+				if (loading)
+					return cancelEvent(e);
+
+				$("#editorMenuDropdown").dropdown("toggle");
+
+				if (iframeGoogleFontsLink) {
+					var href = _GA(iframeGoogleFontsLink, "href");
+					modalGoogleFontsLink.value = (href ? ("<link href=\"" + href + "\" rel=\"stylesheet\" />") : "");
+				} else {
+					modalGoogleFontsLink.value = "";
+				}
+
+				$("#modalGoogleFonts").modal({
+					keyboard: true,
+					backdrop: true
+				});
+
+				return cancelEvent(e);
+			};
+
 			_ID("editorActionToggleDecoration").onclick = function (e) {
 				if (loading)
 					return cancelEvent(e);
@@ -3090,7 +3171,7 @@
 			};
 
 			modalSaveOk.onclick = function () {
-				var fileName = trim(modalSaveFileName.value);
+				var fileName = trim(modalSaveFileName.value), googleFontsHref = "";
 				if (!fileName)
 					return;
 
@@ -3104,11 +3185,18 @@
 
 				$("#modalSave").modal("hide");
 
+				if (iframeGoogleFontsLink) {
+					if ((googleFontsHref = _GA(iframeGoogleFontsLink, "href")))
+						googleFontsHref = '	<link href="' + googleFontsHref + '" id="googleFontsLink" rel="stylesheet" />\n'
+				}
+
 				BlobDownloader.download(fileName, new Blob([
 					new Uint8Array([0xEF, 0xBB, 0xBF]), // UTF-8 BOM
 					'<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml" lang="pt-br">\n<head>\n	<meta charset="utf-8" />\n	<meta name="viewport" content="width=device-width, initial-scale=1" />\n	<title>',
 					translate("PageTitle"),
-					'</title>\n	<style type="text/css">\n',
+					'</title>\n',
+					googleFontsHref,
+					'	<style type="text/css">\n',
 					iframeStyle.textContent,
 					"	</style>\n</head>\n<body>",
 					trim(iframeBody.innerHTML),
@@ -3116,6 +3204,27 @@
 				], { type: "text/html;charset=utf-8" }));
 
 				dirty = false;
+			};
+
+			modalGoogleFontsOk.onclick = function () {
+				$("#modalGoogleFonts").modal("hide");
+
+				var i, e, link = trim(modalGoogleFontsLink.value);
+
+				if (!link) {
+					updateGoogleFontsLink();
+					return;
+				}
+
+				if (((i = link.indexOf("href=\"")) >= 0 &&
+						(e = link.indexOf("\"", i + 6)) >= 0) ||
+					((i = link.indexOf("href='")) >= 0 &&
+						(e = link.indexOf("'", i + 6)) >= 0)) {
+					updateGoogleFontsLink(link.substring(i + 6, e));
+					return;
+				}
+
+				updateGoogleFontsLink(link);
 			};
 
 		})();
@@ -3151,7 +3260,7 @@
 			$(tabEditorCss).on("show.bs.tab", function () {
 				animateToolbar(toolbarButtonsCss, toolbarButtons);
 			});
-		}) ();
+		})();
 	</script>
 </body>
 </html>
