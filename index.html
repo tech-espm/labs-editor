@@ -525,6 +525,10 @@
 						<label for="modalGoogleFontsLink"><span data-string="text|HTMLLink"></span> <i><small data-string="text|GoogleFontsExample"></small></i></label>
 						<input type="text" class="form-control" id="modalGoogleFontsLink" spellcheck="false" autocomplete="off" />
 					</div>
+					<hr />
+					<div class="form-group no-margin-bottom">
+						<a target="_blank" href="https://fonts.google.com" class="btn btn-outline btn-primary" data-string="text|GoogleFonts"><i class="fa fa-margin fa-external-link"></i></a>
+					</div>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-outline btn-default" data-dismiss="modal" data-string="text|Cancel"><i class="fa fa-margin fa-times"></i></button>
@@ -552,7 +556,7 @@
 				<li role="separator" class="divider"></li>
 				<li><a href="#" data-string="text|LoadExample" id="editorActionLoadExample"><i class="fa fa-margin fa-lightbulb-o"></i></a></li>
 				<li role="separator" class="divider"></li>
-				<li><a href="#" data-string="text|GoogleFonts" id="editorActionGoogleFonts"><i class="fa fa-margin fa-google"></i></a></li>
+				<li><a href="#" data-string="text|GoogleFontsEllipsis" id="editorActionGoogleFonts"><i class="fa fa-margin fa-google"></i></a></li>
 				<li><a href="#" id="editorActionToggleBootstrap"><i class="fa fa-margin fa-paint-brush"></i><span data-string="text|AddBootstrap" id="editorActionToggleBootstrapLabel"></span></a></li>
 				<li role="separator" class="divider"></li>
 				<li><a href="#" id="editorActionToggleDecoration"><i class="fa fa-margin fa-code"></i><span id="editorActionToggleDecorationLabel" data-string="text|HideDecoration"></span></a></li>
@@ -3176,6 +3180,8 @@
 
 				$("#editorMenuDropdown").dropdown("toggle");
 
+				dirty = true;
+
 				enableBootstrap(!editorBootstrapEnabled);
 
 				return cancelEvent(e);
@@ -3242,6 +3248,8 @@
 				$("#modalGoogleFonts").modal("hide");
 
 				var i, e, link = trim(modalGoogleFontsLink.value);
+
+				dirty = true;
 
 				if (!link) {
 					updateGoogleFontsLink();
