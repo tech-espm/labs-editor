@@ -558,6 +558,8 @@
 				<li role="separator" class="divider"></li>
 				<li><a href="#" data-string="text|GoogleFontsEllipsis" id="editorActionGoogleFonts"><i class="fa fa-margin fa-google"></i></a></li>
 				<li><a href="#" id="editorActionToggleBootstrap"><i class="fa fa-margin fa-paint-brush"></i><span data-string="text|AddBootstrap" id="editorActionToggleBootstrapLabel"></span></a></li>
+				<li id="editorActionInstallSeparator" role="separator" class="divider" style="display: none;"></li>
+				<li id="editorActionInstallItem" style="display: none;"><a href="#" id="editorActionInstall" data-string="text|Install"><i class="fa fa-margin fa-download"></i></a></li>
 				<li role="separator" class="divider"></li>
 				<li><a href="#" id="editorActionToggleDecoration"><i class="fa fa-margin fa-code"></i><span id="editorActionToggleDecorationLabel" data-string="text|HideDecoration"></span></a></li>
 			</ul>
@@ -665,6 +667,8 @@
 				if (("preventDefault" in e))
 					e.preventDefault();
 				installationPrompt = e;
+				_ID("editorActionInstallSeparator").style.display = "";
+				_ID("editorActionInstallItem").style.display = "";
 			});
 
 			navigator.serviceWorker.register("sw.js");
@@ -1558,6 +1562,7 @@
 				addString("AddBootstrap", "Adicionar Bootstrap 3");
 				addString("RemoveBootstrap", "Remover Bootstrap 3");
 				addString("ExampleFile", "/labs-editor/examplePt.html");
+				addString("Install", "Instalar Editor\u2026");
 				addString("ShowDecoration", "Exibir HTML Completo");
 				addString("HideDecoration", "Ocultar HTML Completo");
 			} else {
@@ -1630,6 +1635,7 @@
 				addString("AddBootstrap", "Add Bootstrap 3");
 				addString("RemoveBootstrap", "Remove Bootstrap 3");
 				addString("ExampleFile", "/labs-editor/example.html");
+				addString("Install", "Install Editor\u2026");
 				addString("ShowDecoration", "Show Full HTML");
 				addString("HideDecoration", "Hide Full HTML");
 			}
@@ -3183,6 +3189,20 @@
 				dirty = true;
 
 				enableBootstrap(!editorBootstrapEnabled);
+
+				return cancelEvent(e);
+			};
+
+			_ID("editorActionInstall").onclick = function (e) {
+				$("#editorMenuDropdown").dropdown("toggle");
+
+				_ID("editorActionInstallSeparator").style.display = "none";
+				_ID("editorActionInstallItem").style.display = "none";
+
+				if (installationPrompt) {
+					installationPrompt.prompt();
+					installationPrompt = null;
+				}
 
 				return cancelEvent(e);
 			};
