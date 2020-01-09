@@ -25,7 +25,7 @@
 
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
-	<meta name="apple-mobile-web-app-title" content="Neon Labyrinth Maker" />
+	<meta name="apple-mobile-web-app-title" content="Editor" />
 	<!--
 		https://w3c.github.io/manifest/#icon-masks
 		https://github.com/w3c/manifest/issues/555
@@ -54,334 +54,9 @@
 	<title>Editor</title>
 
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,600|Roboto+Mono:400,700" />
-	<link rel="stylesheet" href="lib/bootstrap/css/bootstrap-1.0.18.min.css" />
+	<link rel="stylesheet" href="lib/bootstrap/css/bootstrap-1.0.22.min.css" />
 	<link rel="stylesheet" href="lib/font-awesome/css/font-awesome-1.0.2.min.css" />
-
-	<style type="text/css">
-		html, body {
-			min-height: 100%;
-		}
-
-		body {
-			background: #fff;
-			overflow: hidden;
-		}
-
-		textarea {
-			resize: vertical;
-		}
-
-		.fa-margin {
-			margin-right: 0.5em;
-		}
-
-		.btn-fa {
-			padding: 0 4px;
-			font-size: 14px;
-			min-width: 25px;
-		}
-
-		.nav-tabs {
-			padding: 4px 0 0 91px;
-		}
-
-			.nav-tabs > li > a {
-				-webkit-transition: background-color ease-in-out .2s, border-color ease-in-out .2s, color ease-in-out .2s;
-				-o-transition: background-color ease-in-out .2s, border-color ease-in-out .2s, color ease-in-out .2s;
-				transition: background-color ease-in-out .2s, border-color ease-in-out .2s, color ease-in-out .2s;
-			}
-
-				.nav-tabs > li > a:focus, .nav-tabs > li > a:hover, .nav-tabs > li > a:active {
-					border-color: #ddd;
-					background-color: #f0f0f0;
-					color: #333;
-				}
-
-		.nav-tabs-menu {
-			position: absolute;
-			right: 5px;
-			top: 5px;
-		}
-
-		.nav-tabs-logo {
-			position: absolute;
-			left: 8px;
-			top: 10px;
-		}
-
-		.nav-tabs-file-load {
-			position: absolute;
-			overflow: hidden;
-			width: 0;
-		}
-
-		.dropdown-menu > li > a {
-			-webkit-transition: background-color ease-in-out .2s;
-			-o-transition: background-color ease-in-out .2s;
-			transition: background-color ease-in-out .2s;
-			outline: 0;
-		}
-
-			.dropdown-menu > li > a:hover {
-				outline: 0;
-			}
-
-		.editor-container {
-			position: absolute;
-			left: 0;
-			top: 0;
-			bottom: 0;
-			cursor: default;
-			-moz-user-select: none;
-			-ms-user-select: none;
-			-webkit-user-select: none;
-			user-select: none;
-		}
-
-		.editor {
-			position: absolute;
-			left: 0;
-			top: 78px;
-			right: 0;
-			bottom: 0;
-			font: normal 14px 'Roboto Mono', monospace;
-			overflow: auto;
-			padding: 0 2ch 4ch;
-		}
-
-		.editor-css {
-			padding: 0 2ch 4ch 4ch;
-		}
-
-		.editor-toolbar {
-			margin: 0;
-			padding: 4px;
-			border-bottom: 1px solid #ddd;
-		}
-
-		.editor-bar {
-			display: none;
-			position: absolute;
-			top: 0;
-			bottom: 0;
-			width: 8px;
-			cursor: ew-resize;
-			background-color: #fff;
-			border-left: 1px solid #ddd;
-			border-right: 1px solid #ddd;
-			-webkit-transition: background-color ease-in-out .2s;
-			-o-transition: background-color ease-in-out .2s;
-			transition: background-color ease-in-out .2s;
-		}
-
-			.editor-bar:hover, .editor-bar-drag {
-				background-color: #f0f0f0;
-			}
-
-		.editor-iframe {
-			position: absolute;
-			top: 0;
-			height: 100%;
-		}
-
-		.element {
-			padding: 0;
-			margin: 8px 0;
-			-webkit-transition: background-color ease-in-out .2s;
-			-o-transition: background-color ease-in-out .2s;
-			transition: background-color ease-in-out .2s;
-		}
-
-			.element.moving {
-				border-radius: 3px;
-				background-color: #eee;
-			}
-
-		.element-decoration {
-			pointer-events: none;
-			opacity: 0.5;
-		}
-
-		.element-tag {
-			cursor: pointer;
-			color: #00f;
-			white-space: pre;
-			font-weight: bold;
-			border-radius: 3px;
-			-webkit-transition: background-color ease-in-out .2s, border-color ease-in-out .2s;
-			-o-transition: background-color ease-in-out .2s, border-color ease-in-out .2s;
-			transition: background-color ease-in-out .2s, border-color ease-in-out .2s;
-		}
-
-			.element-tag.no-click {
-				cursor: default;
-			}
-
-		.move-target, .move-target-top {
-			border-top: 2px solid transparent;
-		}
-
-		.editor:not(.moving) .element-tag:hover {
-			background-color: #eef;
-		}
-
-		.editor.moving .move-target {
-			border-radius: 0;
-			border-top-color: #ddd;
-		}
-
-			.editor.moving .move-target:hover {
-				border-radius: 0;
-				border-top-color: #00f;
-			}
-
-		.editor.moving-top .move-target-top {
-			border-radius: 0;
-			border-top-color: #ddd;
-		}
-
-			.editor.moving-top .move-target-top:hover {
-				border-radius: 0;
-				border-top-color: #00f;
-			}
-
-		.element.moving .move-target, .element.moving .move-target:hover, .element.moving .move-target-top, .element.moving .move-target-top:hover {
-			border-top-color: transparent;
-		}
-
-		.element.collapsed > .element-tag {
-			display: inline-block;
-		}
-
-		.element-placeholder {
-			display: none;
-		}
-
-		.element.collapsed > .element-placeholder {
-			display: inline;
-		}
-
-		.element-name {
-			color: #f0f;
-			font-weight: normal;
-		}
-
-		.element-name-block {
-			color: #a00;
-			font-weight: normal;
-		}
-
-		.element-text {
-			color: #000;
-			font-weight: normal;
-			overflow: hidden;
-			text-overflow: ellipsis;
-		}
-
-		.element-comment {
-			color: #080;
-			font-weight: normal;
-		}
-
-		.element-container {
-			padding-left: 4ch;
-		}
-
-		.element.collapsed > .element-container {
-			display: none;
-		}
-
-		.attribute-name {
-			color: #f0f;
-			font-weight: normal;
-		}
-
-		.attribute-value {
-			color: #000;
-			font-weight: normal;
-		}
-
-		.fa-floating-help {
-			float: right;
-			margin-top: 2px;
-			color: #aaa;
-			-webkit-transition: color ease-in-out .2s;
-			-o-transition: color ease-in-out .2s;
-			transition: color ease-in-out .2s;
-		}
-
-			.fa-floating-help:hover {
-				color: #000;
-			}
-
-		.dropdown-menu {
-			margin: 0;
-		}
-
-		.dropdown-menu-input-container {
-			position: relative;
-			margin: 0 5px;
-		}
-
-		.dropdown-menu-container {
-			position: relative;
-			overflow: auto;
-		}
-
-		.dropdown-menu-right > li {
-			margin: 0;
-			padding: 0;
-		}
-
-		.editor-menu {
-			display: none;
-			position: fixed;
-			background: #fff;
-			width: auto;
-			border-radius: 3px;
-			-webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
-			box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
-			z-index: 10;
-		}
-
-		.editor-menu-animated {
-			opacity: 0;
-			cursor: default;
-			-webkit-transition: opacity ease-in-out .2s, margin-left ease-in-out .2s, margin-top ease-in-out .2s;
-			-o-transition: opacity ease-in-out .2s, margin-left ease-in-out .2s, margin-top ease-in-out .2s;
-			transition: opacity ease-in-out .2s, margin-left ease-in-out .2s, margin-top ease-in-out .2s;
-			-moz-user-select: none;
-			-ms-user-select: none;
-			-webkit-user-select: none;
-			user-select: none;
-		}
-
-		.editor-menu-top {
-			margin-top: 12px;
-		}
-
-		.editor-menu-left {
-			margin-left: 12px;
-		}
-
-		.editor-menu-right {
-			margin-left: -12px;
-		}
-
-		.editor-menu-bottom {
-			margin-top: -12px;
-		}
-
-		.editor-menu-visible {
-			margin: 0;
-			opacity: 1;
-		}
-
-		.editor-hidden-file-input {
-			width: 0;
-			position: absolute;
-		}
-	</style>
+	<link rel="stylesheet" href="css/style.css" />
 </head>
 <body style="visibility: hidden">
 
@@ -543,7 +218,7 @@
 			<li role="presentation" class="active"><a id="tabEditor" href="#editor" aria-controls="editor" role="tab" data-toggle="tab">HTML</a></li>
 			<li role="presentation"><a id="tabEditorCss" href="#editorCss" aria-controls="editorCss" role="tab" data-toggle="tab">CSS</a></li>
 		</ul>
-		<a href="https://github.com/tech-espm/labs-editor" target="_blank"><img class="nav-tabs-logo" width="75" src="images/logo.png" style="border: none;" /></a>
+		<a class="nav-tabs-logo" href="https://github.com/tech-espm/labs-editor" target="_blank"><img width="75" src="images/logo.png" style="border: none;" /></a>
 		<div class="nav-tabs-menu">
 			<button type="button" id="editorMenuDropdown" class="btn btn-primary btn-outline dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 				<span class="fa fa-bars" data-string="aria-label|Menu"></span>
@@ -558,6 +233,8 @@
 				<li role="separator" class="divider"></li>
 				<li><a href="#" data-string="text|GoogleFontsEllipsis" id="editorActionGoogleFonts"><i class="fa fa-margin fa-google"></i></a></li>
 				<li><a href="#" id="editorActionToggleBootstrap"><i class="fa fa-margin fa-paint-brush"></i><span data-string="text|AddBootstrap" id="editorActionToggleBootstrapLabel"></span></a></li>
+				<li role="separator" class="divider"></li>
+				<li><a href="html/" data-string="text|AdvancedMode"><i class="fa fa-margin fa-edit"></i></a></li>
 				<li id="editorActionInstallSeparator" role="separator" class="divider" style="display: none;"></li>
 				<li id="editorActionInstallItem" style="display: none;"><a href="#" id="editorActionInstall" data-string="text|Install"><i class="fa fa-margin fa-download"></i></a></li>
 				<li role="separator" class="divider"></li>
@@ -650,17 +327,7 @@
 	<script type="text/javascript">
 		"use strict";
 
-		var queryString = "", isPWA = false, installationPrompt = null;
-
-		(function () {
-			var i, pair, assoc = {}, keyValues = location.search.substr(1).split("&");
-			for (i = keyValues.length - 1; i >= 0; i--) {
-				pair = keyValues[i].split("=");
-				assoc[decodeURIComponent(pair[0].replace(/\+/g, " "))] = (pair.length === 1 ? "" : decodeURIComponent(pair[1].replace(/\+/g, " ")));
-			}
-			queryString = assoc;
-			isPWA = ("pwa" in queryString);
-		})();
+		var installationPrompt = null;
 
 		if (("serviceWorker" in navigator)) {
 			window.addEventListener("beforeinstallprompt", function (e) {
@@ -673,21 +340,6 @@
 
 			navigator.serviceWorker.register("sw.js");
 		}
-
-		// Helper functions
-		function _ID(id) { return document.getElementById(id); }
-		function _SA(parent, name, value) { parent.setAttribute(name, value); return parent; }
-		function _GA(parent, name) { return (parent.getAttribute(name) || ""); }
-		function _RA(parent, name) { parent.removeAttribute(name); return parent; }
-		function _CE(tagName, className, parent) { var e = document.createElement(tagName); if (className) e.className = className; if (parent) _AC(parent, e); return e; }
-		function _ICE(tagName, className, parent) { var e = iframeDocument.createElement(tagName); if (className) e.className = className; if (parent) _AC(parent, e); return e; }
-		function _TXT(text, parent) { var e = document.createTextNode(text); if (parent) _AC(parent, e); return e; }
-		function _ITXT(text, parent) { var e = iframeDocument.createTextNode(text); if (parent) _AC(parent, e); return e; }
-		function _ICMT(text, parent) { var e = iframeDocument.createComment(text); if (parent) _AC(parent, e); return e; }
-		function _AC(parent, newChild) { parent.appendChild(newChild); return parent; }
-		function _IB(parent, newChild, refChild) { parent.insertBefore(newChild, refChild); return parent; }
-		function _BTN(className, icon, title, parent, clickHandler) { var btn = _CE("button", className, parent); _CE("i", "fa fa-nomargin " + icon, btn); _SA(btn, "type", "button"); btn.onclick = clickHandler; if (title) _SA(btn, "title", title); return btn; }
-		function _RC(parent, oldChild) { parent.removeChild(oldChild); return parent; }
 
 		var loading = true,
 			dirty = false,
@@ -863,7 +515,6 @@
 			],
 			moveTargetTop = 1,
 			moveTargetClosingTag = 2,
-			placeholderText = null,
 			bodyElement = null,
 			lastEditedRuleSelector = "p",
 			lastEditedRuleAttributeName = "color",
@@ -964,7 +615,7 @@
 				e.elementTag.onclick = tagClick;
 				e.elementTag.moveTarget = moveTargetTop;
 				e.elementTag.empty = true;
-				_TXT(placeholderText, e.elementTag);
+				_TXT(window.placeholderText, e.elementTag);
 				e.elementIframe = _ITXT("");
 			} else if (elementType === elementTypeComment) {
 				e.elementTag = _CE("div", "element-tag element-comment move-target", e);
@@ -1037,7 +688,7 @@
 				var elementTag = element.elementTag;
 				if (!text) {
 					elementTag.empty = true;
-					elementTag.firstChild.nodeValue = placeholderText;
+					elementTag.firstChild.nodeValue = window.placeholderText;
 					element.elementIframe.nodeValue = "";
 				} else {
 					elementTag.empty = false;
@@ -1130,18 +781,6 @@
 
 			element.elementContainerVisible = !element.elementContainerVisible;
 			element.className = (element.elementContainerVisible ? "element" : "element collapsed");
-		}
-
-		function lockUI(lock) {
-			if (lock) {
-				editorContainer.style.pointerEvents = "none";
-				iframe.style.pointerEvents = "none";
-				bar.style.pointerEvents = "none";
-			} else {
-				editorContainer.style.pointerEvents = "";
-				iframe.style.pointerEvents = "";
-				bar.style.pointerEvents = "";
-			}
 		}
 
 		function loadFileDataURL(file, callback) {
@@ -1485,187 +1124,6 @@
 			_IB(iframeHead, iframeGoogleFontsLink = _SA(_SA(_SA(_SA(_ICE("link"), "rel", "stylesheet"), "type", "text/css"), "id", "googleFontsLink"), "href", trim(href || "")), iframeStyle);
 		}
 
-		// Translation
-		(function () {
-			if (!window.editorStrings || (typeof window.editorStrings !== "object")) window.editorStrings = {};
-
-			function addString(key, value) { if (!window.editorStrings[key]) window.editorStrings[key] = value; }
-
-			var language = (navigator.userLanguage || navigator.language);
-			if (!language || language.indexOf("pt") === 0) {
-				addString("OK", "OK");
-				addString("Cancel", "Cancelar");
-				addString("Close", "Fechar");
-				addString("Menu", "Menu");
-				addString("New", "Novo");
-				addString("Load", "Abrir");
-				addString("Save", "Salvar");
-				addString("FileName", "Nome do Arquivo");
-				addString("LoadEllipsis", "Abrir\u2026");
-				addString("SaveEllipsis", "Salvar\u2026");
-				addString("ExportHTML", "Exportar HTML\u2026");
-				addString("EditText", "Editar Texto");
-				addString("Text", "Texto");
-				addString("EditComment", "Editar Comentário");
-				addString("Comment", "Comentário");
-				addString("EditSelector", "Editar Seletor");
-				addString("Selector", "Seletor");
-				addString("Name", "Nome");
-				addString("Value", "Valor");
-				addString("EditAttribute", "Editar Atributo");
-				addString("AttributeHelp", "Ajuda do Atributo");
-				addString("Move", "Mover");
-				addString("Duplicate", "Duplicar");
-				addString("Delete", "Excluir");
-				addString("ElementName", "Nome do Elemento");
-				addString("FindElement", "Localizar Elemento");
-				addString("ChangeElement", "Alterar Elemento");
-				addString("EditAttributes", "Editar Atributos");
-				addString("Create", "Criar");
-				addString("CreateElement", "Criar Elemento");
-				addString("CreateRule", "Criar Regra");
-				addString("CreateAttribute", "Criar Atributo");
-				addString("CreateText", "Criar Texto");
-				addString("CreateComment", "Criar Comentário");
-				addString("LoadImage", "Carregar Imagem");
-				addString("UseLoremIpsum", "Utilizar Parágrafo de Lorem Ipsum");
-				addString("PlaceholderText", "[Digite seu texto aqui]");
-				addString("ErrorBlockInsideInline", "Um elemento block não pode ser filho de um elemento inline \uD83D\uDE22");
-				addString("ErrorInlineParentBlock", "Um elemento inline não pode ser pai de um elemento block \uD83D\uDE22");
-				addString("ErrorNewElementMustHaveChildren", "O novo elemento também deve poder ter filhos \uD83D\uDE22");
-				addString("ErrorNewElementMustNotHaveChildren", "O novo elemento também não pode ter filhos \uD83D\uDE22");
-				addString("ErrorNoFile", "Seu browser não oferece suporte a acesso avançado de arquivos \uD83D\uDE22");
-				addString("ErrorFileTooLarge", "Por favor, escolha uma imagem com tamanho de até 1 MiB \uD83D\uDE22");
-				addString("ErrorFileLoad", "Ocorreu um erro ao ler o arquivo \uD83D\uDE22");
-				addString("ErrorInvalidHTML", "O arquivo escolhido não parece ser um arquivo HTML válido \uD83D\uDE22");
-				addString("ErrorInvalidChar", "Você não pode digitar os símbolos < ou > aqui. Para mais informações, por favor, veja o link \"Entidades HTML\" \uD83D\uDE22");
-				addString("ConfirmQuit", "Deseja mesmo sair da página? Você perderá o documento atual.");
-				addString("ConfirmClose", "Deseja mesmo continuar? Você perderá as alterações não salvas.");
-				addString("MoveMessage", "Clique para onde deseja mover o elemento ou tecle Esc para cancelar");
-				addString("MoveMessageCreateElement", "Clique onde deseja criar o novo elemento ou tecle Esc para cancelar");
-				addString("MoveMessageCreateText", "Clique onde deseja criar o novo texto ou tecle Esc para cancelar");
-				addString("MoveMessageCreateComment", "Clique onde deseja criar o novo comentário ou tecle Esc para cancelar");
-				addString("MoveMessageCreateRule", "Clique onde deseja criar a nova regra ou tecle Esc para cancelar");
-				addString("MoveMessageCreateAttribute", "Clique onde deseja criar o novo atributo ou tecle Esc para cancelar");
-				addString("HideChildren", "Ocultar Filhos");
-				addString("ShowChildren", "Mostrar Filhos");
-				addString("ElementHelp", "Ajuda do Elemento");
-				addString("MoreHelpLinks", "Mais Links de Ajuda");
-				addString("HTMLEntities", "Entidades HTML");
-				addString("PageTitle", "Título da Página");
-				addString("CSSTab", "Este conteúdo está na aba CSS");
-				addString("LoadExample", "Abrir Exemplo");
-				addString("HTMLLink", "Elemento HTML link");
-				addString("GoogleFontsExample", "Exemplo: <link href=\"...\" />");
-				addString("GoogleFonts", "Google Fonts");
-				addString("GoogleFontsEllipsis", "Google Fonts\u2026");
-				addString("AddBootstrap", "Adicionar Bootstrap 3");
-				addString("RemoveBootstrap", "Remover Bootstrap 3");
-				addString("ExampleFile", "/labs-editor/examplePt.html");
-				addString("Install", "Instalar Editor\u2026");
-				addString("ShowDecoration", "Exibir HTML Completo");
-				addString("HideDecoration", "Ocultar HTML Completo");
-			} else {
-				addString("OK", "OK");
-				addString("Cancel", "Cancel");
-				addString("Close", "Close");
-				addString("Menu", "Menu");
-				addString("New", "New");
-				addString("Load", "Load");
-				addString("Save", "Save");
-				addString("FileName", "File Name");
-				addString("LoadEllipsis", "Load\u2026");
-				addString("SaveEllipsis", "Save\u2026");
-				addString("ExportHTML", "Export HTML\u2026");
-				addString("EditText", "Edit Text");
-				addString("Text", "Text");
-				addString("EditComment", "Edit Comment");
-				addString("Comment", "Comment");
-				addString("EditSelector", "Edit Selector");
-				addString("Selector", "Selector");
-				addString("Name", "Name");
-				addString("Value", "Value");
-				addString("EditAttribute", "Edit Attribute");
-				addString("AttributeHelp", "Attribute Help");
-				addString("Move", "Move");
-				addString("Duplicate", "Duplicate");
-				addString("Delete", "Delete");
-				addString("ElementName", "Element Name");
-				addString("FindElement", "Find Element");
-				addString("ChangeElement", "Change Element");
-				addString("EditAttributes", "Edit Attributes");
-				addString("Create", "Create");
-				addString("CreateElement", "Create Element");
-				addString("CreateRule", "Create Rule");
-				addString("CreateAttribute", "Create Attribute");
-				addString("CreateText", "Create Text");
-				addString("CreateComment", "Create Comment");
-				addString("LoadImage", "Load Image");
-				addString("UseLoremIpsum", "Use Lorem Ipsum Paragraph");
-				addString("PlaceholderText", "[Enter your text here]");
-				addString("ErrorBlockInsideInline", "A block element cannot be a child of an inline element \uD83D\uDE22");
-				addString("ErrorInlineParentBlock", "An inline element cannot be the parent of a block element \uD83D\uDE22");
-				addString("ErrorNewElementMustHaveChildren", "The new element must also be able to have children \uD83D\uDE22");
-				addString("ErrorNewElementMustNotHaveChildren", "The new element must also not be able to have children \uD83D\uDE22");
-				addString("ErrorNoFile", "Your browser does not support advanced file access \uD83D\uDE22");
-				addString("ErrorFileTooLarge", "Please, select an image with at most 1 MiB \uD83D\uDE22");
-				addString("ErrorFileLoad", "An error occurred while reading the file \uD83D\uDE22");
-				addString("ErrorInvalidHTML", "The selected file does not seem to be a valid HTML file \uD83D\uDE22");
-				addString("ErrorInvalidChar", "You cannot enter the symbols < or > here. For more information, please, refer to the \"HTML Entities\" link below \uD83D\uDE22");
-				addString("ConfirmQuit", "Do you really want to quit? You will lose unsaved information.");
-				addString("ConfirmClose", "Do you really want to continue? You will lose unsaved information.");
-				addString("MoveMessage", "Click where you wish to move the element to or press Esc to cancel");
-				addString("MoveMessageCreateElement", "Click where you wish to create the new element or press Esc to cancel");
-				addString("MoveMessageCreateText", "Click where you wish to create the new text or press Esc to cancel");
-				addString("MoveMessageCreateComment", "Click where you wish to create the new comment or press Esc to cancel");
-				addString("MoveMessageCreateRule", "Click where you wish to create the new rule or press Esc to cancel");
-				addString("MoveMessageCreateAttribute", "Click where you wish to create the new attribute or press Esc to cancel");
-				addString("HideChildren", "Hide Children");
-				addString("ShowChildren", "Show Children");
-				addString("ElementHelp", "Element Help");
-				addString("MoreHelpLinks", "More Help Links");
-				addString("HTMLEntities", "HTML Entities");
-				addString("PageTitle", "Page Title");
-				addString("CSSTab", "This content is in the CSS tab");
-				addString("LoadExample", "Load Example");
-				addString("HTMLLink", "HTML link element");
-				addString("GoogleFontsExample", "Example: <link href=\"...\" />");
-				addString("GoogleFonts", "Google Fonts");
-				addString("GoogleFontsEllipsis", "Google Fonts\u2026");
-				addString("AddBootstrap", "Add Bootstrap 3");
-				addString("RemoveBootstrap", "Remove Bootstrap 3");
-				addString("ExampleFile", "/labs-editor/example.html");
-				addString("Install", "Install Editor\u2026");
-				addString("ShowDecoration", "Show Full HTML");
-				addString("HideDecoration", "Hide Full HTML");
-			}
-
-			window.translate = function (key) { return (editorStrings[key] || key); };
-
-			placeholderText = translate("PlaceholderText");
-
-			function translateChildren(childNodes) {
-				var i, c, d, idx, attr, key;
-				for (i = childNodes.length - 1; i >= 0; i--) {
-					c = childNodes[i];
-					if (!c.tagName)
-						continue;
-					if (c.childNodes && c.childNodes.length)
-						translateChildren(c.childNodes);
-					if (!(d = c.getAttribute("data-string")) || (idx = d.indexOf("|")) <= 0)
-						continue;
-					attr = d.substr(0, idx);
-					key = d.substr(idx + 1);
-					if (attr === "text")
-						_TXT(translate(key), c);
-					else
-						_SA(c, attr, translate(key));
-				}
-			}
-
-			translateChildren(document.body.childNodes);
-		})();
-
 		// Initial
 		(function () {
 			var i, a, e, v,
@@ -1773,71 +1231,6 @@
 			};
 
 			setTimeout(function () { document.body.style.visibility = ""; }, 250);
-		})();
-
-		// Resize
-		(function () {
-			var bar = _ID("bar"),
-				barDrag = false,
-				barDragX = 0,
-				barX = (window.innerWidth >> 1);
-
-			function resizeWindow() {
-				var width = (window.innerWidth | 0);
-				var editorWidth = barX, iframeWidth = width - editorWidth - 8;
-				if (iframeWidth < 150) {
-					iframeWidth = 150;
-					editorWidth = width - iframeWidth - 8;
-				}
-				if (editorWidth < 230) {
-					editorWidth = 230;
-					iframeWidth = width - editorWidth - 8;
-				}
-				editorContainer.style.width = editorWidth + "px";
-				bar.style.left = editorContainer.style.width;
-				iframe.style.left = (width - iframeWidth) + "px";
-				iframe.style.width = iframeWidth + "px";
-			}
-
-			window.onresize = resizeWindow;
-
-			bar.onmousedown = function (e) {
-				if (e.button)
-					return;
-				var rect = bar.getBoundingClientRect();
-				barDragX = (e.clientX - rect.left) | 0;
-				barDrag = true;
-				document.body.style.cursor = "ew-resize";
-				editorContainer.style.cursor = "ew-resize";
-				iframe.style.cursor = "ew-resize";
-				bar.className = "editor-bar editor-bar-drag";
-				lockUI(true);
-				return cancelEvent(e);
-			};
-
-			document.addEventListener("mousemove", function (e) {
-				if (!barDrag)
-					return;
-				var x = (e.clientX - barDragX) | 0;
-				if (barX !== x) {
-					barX = x;
-					resizeWindow();
-				}
-			}, true);
-
-			document.addEventListener("mouseup", function (e) {
-				if (!barDrag)
-					return;
-				barDrag = false;
-				document.body.style.cursor = "";
-				editorContainer.style.cursor = "";
-				iframe.style.cursor = "";
-				bar.className = "editor-bar";
-				lockUI(false);
-			}, true);
-
-			resizeWindow();
-			bar.style.display = "block";
 		})();
 
 		// DropdownMenus

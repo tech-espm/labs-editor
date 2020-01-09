@@ -1,0 +1,357 @@
+html, body {
+	min-height: 100%;
+}
+
+body {
+	background: #fff;
+	overflow: hidden;
+}
+
+textarea {
+	resize: vertical;
+}
+
+.editor, .editor-html, .monospace {
+	font: normal 14px 'Roboto Mono', monospace;
+}
+
+.fa-margin {
+	margin-right: 0.5em;
+}
+
+.btn-fa {
+	padding: 0 4px;
+	font-size: 14px;
+	min-width: 25px;
+}
+
+.nav-tabs {
+	padding: 4px 0 0 91px;
+}
+
+	.nav-tabs > li > a {
+		-webkit-transition: background-color ease-in-out .2s, border-color ease-in-out .2s, color ease-in-out .2s;
+		-o-transition: background-color ease-in-out .2s, border-color ease-in-out .2s, color ease-in-out .2s;
+		transition: background-color ease-in-out .2s, border-color ease-in-out .2s, color ease-in-out .2s;
+	}
+
+		.nav-tabs > li > a:focus, .nav-tabs > li > a:hover, .nav-tabs > li > a:active {
+			border-color: #ddd;
+			background-color: #f0f0f0;
+			color: #333;
+		}
+
+.nav-tabs-menu {
+	position: absolute;
+	right: 5px;
+	top: 5px;
+}
+
+.nav-tabs-logo {
+	position: absolute;
+	left: 8px;
+	top: 10px;
+}
+
+.nav-tabs-buttons {
+	position: absolute;
+	left: 88px;
+	top: 5px;
+}
+
+.nav-tabs-file-load {
+	position: absolute;
+	overflow: hidden;
+	width: 0;
+}
+
+.dropdown-menu > li > a {
+	-webkit-transition: background-color ease-in-out .2s;
+	-o-transition: background-color ease-in-out .2s;
+	transition: background-color ease-in-out .2s;
+	outline: 0;
+}
+
+	.dropdown-menu > li > a:hover {
+		outline: 0;
+	}
+
+.editor-container {
+	position: absolute;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	cursor: default;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+.editor {
+	position: absolute;
+	left: 0;
+	top: 78px;
+	right: 0;
+	bottom: 0;
+	overflow: auto;
+	padding: 0 2ch 4ch;
+}
+
+.editor-html-container {
+	position: absolute;
+	left: 0;
+	top: 45px;
+	right: 0;
+	bottom: 0;
+	padding: 0;
+	border-top: 1px solid #ddd;
+	overflow: hidden;
+}
+
+.editor-html {
+	width: 100%;
+	height: 100%;
+	padding: 2ch;
+	border: none;
+	outline: none;
+	resize: none;
+	overflow: scroll;
+}
+
+	.editor-html:active, .editor-html:focus {
+		outline: none;
+	}
+
+.editor-css {
+	padding: 0 2ch 4ch 4ch;
+}
+
+.editor-toolbar {
+	margin: 0;
+	padding: 4px;
+	border-bottom: 1px solid #ddd;
+}
+
+.editor-bar {
+	display: none;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 8px;
+	cursor: ew-resize;
+	background-color: #fff;
+	border-left: 1px solid #ddd;
+	border-right: 1px solid #ddd;
+	-webkit-transition: background-color ease-in-out .2s;
+	-o-transition: background-color ease-in-out .2s;
+	transition: background-color ease-in-out .2s;
+}
+
+	.editor-bar:hover, .editor-bar-drag {
+		background-color: #f0f0f0;
+	}
+
+.editor-iframe {
+	position: absolute;
+	top: 0;
+	height: 100%;
+}
+
+.element {
+	padding: 0;
+	margin: 8px 0;
+	-webkit-transition: background-color ease-in-out .2s;
+	-o-transition: background-color ease-in-out .2s;
+	transition: background-color ease-in-out .2s;
+}
+
+	.element.moving {
+		border-radius: 3px;
+		background-color: #eee;
+	}
+
+.element-decoration {
+	pointer-events: none;
+	opacity: 0.5;
+}
+
+.element-tag {
+	cursor: pointer;
+	color: #00f;
+	white-space: pre;
+	font-weight: bold;
+	border-radius: 3px;
+	-webkit-transition: background-color ease-in-out .2s, border-color ease-in-out .2s;
+	-o-transition: background-color ease-in-out .2s, border-color ease-in-out .2s;
+	transition: background-color ease-in-out .2s, border-color ease-in-out .2s;
+}
+
+	.element-tag.no-click {
+		cursor: default;
+	}
+
+.move-target, .move-target-top {
+	border-top: 2px solid transparent;
+}
+
+.editor:not(.moving) .element-tag:hover {
+	background-color: #eef;
+}
+
+.editor.moving .move-target {
+	border-radius: 0;
+	border-top-color: #ddd;
+}
+
+	.editor.moving .move-target:hover {
+		border-radius: 0;
+		border-top-color: #00f;
+	}
+
+.editor.moving-top .move-target-top {
+	border-radius: 0;
+	border-top-color: #ddd;
+}
+
+	.editor.moving-top .move-target-top:hover {
+		border-radius: 0;
+		border-top-color: #00f;
+	}
+
+.element.moving .move-target, .element.moving .move-target:hover, .element.moving .move-target-top, .element.moving .move-target-top:hover {
+	border-top-color: transparent;
+}
+
+.element.collapsed > .element-tag {
+	display: inline-block;
+}
+
+.element-placeholder {
+	display: none;
+}
+
+.element.collapsed > .element-placeholder {
+	display: inline;
+}
+
+.element-name {
+	color: #f0f;
+	font-weight: normal;
+}
+
+.element-name-block {
+	color: #a00;
+	font-weight: normal;
+}
+
+.element-text {
+	color: #000;
+	font-weight: normal;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.element-comment {
+	color: #080;
+	font-weight: normal;
+}
+
+.element-container {
+	padding-left: 4ch;
+}
+
+.element.collapsed > .element-container {
+	display: none;
+}
+
+.attribute-name {
+	color: #f0f;
+	font-weight: normal;
+}
+
+.attribute-value {
+	color: #000;
+	font-weight: normal;
+}
+
+.fa-floating-help {
+	float: right;
+	margin-top: 2px;
+	color: #aaa;
+	-webkit-transition: color ease-in-out .2s;
+	-o-transition: color ease-in-out .2s;
+	transition: color ease-in-out .2s;
+}
+
+	.fa-floating-help:hover {
+		color: #000;
+	}
+
+.dropdown-menu {
+	margin: 0;
+}
+
+.dropdown-menu-input-container {
+	position: relative;
+	margin: 0 5px;
+}
+
+.dropdown-menu-container {
+	position: relative;
+	overflow: auto;
+}
+
+.dropdown-menu-right > li {
+	margin: 0;
+	padding: 0;
+}
+
+.editor-menu {
+	display: none;
+	position: fixed;
+	background: #fff;
+	width: auto;
+	border-radius: 3px;
+	-webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+	z-index: 10;
+}
+
+.editor-menu-animated {
+	opacity: 0;
+	cursor: default;
+	-webkit-transition: opacity ease-in-out .2s, margin-left ease-in-out .2s, margin-top ease-in-out .2s;
+	-o-transition: opacity ease-in-out .2s, margin-left ease-in-out .2s, margin-top ease-in-out .2s;
+	transition: opacity ease-in-out .2s, margin-left ease-in-out .2s, margin-top ease-in-out .2s;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+.editor-menu-top {
+	margin-top: 12px;
+}
+
+.editor-menu-left {
+	margin-left: 12px;
+}
+
+.editor-menu-right {
+	margin-left: -12px;
+}
+
+.editor-menu-bottom {
+	margin-top: -12px;
+}
+
+.editor-menu-visible {
+	margin: 0;
+	opacity: 1;
+}
+
+.editor-hidden-file-input {
+	width: 0;
+	position: absolute;
+}

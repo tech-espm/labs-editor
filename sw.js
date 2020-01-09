@@ -6,7 +6,7 @@
 // whenever it detects a change in the source code of the
 // service worker).
 const CACHE_PREFIX = "labs-editor-static-cache";
-const CACHE_VERSION = "-v1";
+const CACHE_VERSION = "-v2";
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
 
 self.addEventListener("install", (event) => {
@@ -39,17 +39,22 @@ self.addEventListener("install", (event) => {
 			// CacheStorage API ignores them.
 			"/labs-editor/",
 			"/labs-editor/?pwa",
+			"/labs-editor/html/",
+			"/labs-editor/html/?pwa",
 			"/labs-editor/empty.html",
 			"/labs-editor/example.html",
+			"/labs-editor/example-html.html",
 			"/labs-editor/examplePt.html",
+			"/labs-editor/examplePt-html.html",
 			"/labs-editor/favicon.ico",
 			"/labs-editor/favicon.png",
 			"/labs-editor/manifest.json",
+			"/labs-editor/css/style.css",
 			"/labs-editor/favicons/favicon-512x512.png",
 			"/labs-editor/images/loading-grey-t.gif",
 			"/labs-editor/images/logo.png",
 			"/labs-editor/js/main.js",
-			"/labs-editor/lib/bootstrap/css/bootstrap-1.0.18.min.css",
+			"/labs-editor/lib/bootstrap/css/bootstrap-1.0.22.min.css",
 			"/labs-editor/lib/bootstrap/js/bootstrap-1.0.0.min.js",
 			"/labs-editor/lib/font-awesome/css/font-awesome-1.0.2.min.css",
 			"/labs-editor/lib/font-awesome/fonts/fontawesome-webfont.eot?v=4.7.0",
