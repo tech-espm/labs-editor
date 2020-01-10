@@ -49,13 +49,9 @@ self.addEventListener("install", (event) => {
 			"/labs-editor/favicon.ico",
 			"/labs-editor/favicon.png",
 			"/labs-editor/manifest.json",
-			"/labs-editor/css/style.css",
 			"/labs-editor/favicons/favicon-512x512.png",
 			"/labs-editor/images/loading-grey-t.gif",
 			"/labs-editor/images/logo.png",
-			// Since this file's contents always change, but its name does not, I
-			// added a version number in order to try to avoid browsers' native cache
-			"/labs-editor/js/main.js?v=1.0.0",
 			"/labs-editor/lib/ace-1.4.7/ace.js",
 			"/labs-editor/lib/ace-1.4.7/ext-language_tools.js",
 			"/labs-editor/lib/ace-1.4.7/ext-searchbox.js",
@@ -83,7 +79,11 @@ self.addEventListener("install", (event) => {
 			"/labs-editor/lib/font-awesome/fonts/fontawesome-webfont.ttf?v=4.7.0",
 			"/labs-editor/lib/font-awesome/fonts/fontawesome-webfont.woff?v=4.7.0",
 			"/labs-editor/lib/font-awesome/fonts/fontawesome-webfont.woff2?v=4.7.0",
-			"/labs-editor/lib/jquery/jquery-1.0.0.min.js"
+			"/labs-editor/lib/jquery/jquery-1.0.0.min.js",
+			// Since these files' contents always change, but their names do not, I
+			// added a version number in order to try to avoid browsers' native cache
+			"/labs-editor/css/style.css?v=1.0.0",
+			"/labs-editor/js/main.js?v=1.0.0"
 		]);
 	}));
 });

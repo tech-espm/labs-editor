@@ -108,6 +108,34 @@ textarea {
 	border-top: 1px solid #ddd;
 }
 
+.editor-html-console {
+	display: none;
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	padding: 0;
+	height: 200px;
+	border-top: 1px solid #ddd;
+	overflow: auto;
+	cursor: auto;
+	-moz-user-select: text;
+	-ms-user-select: text;
+	-webkit-user-select: text;
+	user-select: text;
+}
+
+.editor-html-console-message {
+	padding: 5px;
+	border-bottom: 1px solid #ddd;
+	white-space: pre-wrap;
+}
+
+.editor-html-console-message-error {
+	color: #f00;
+	font-weight: bold;
+}
+
 .editor-css {
 	padding: 0 2ch 4ch 4ch;
 }

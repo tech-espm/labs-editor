@@ -390,6 +390,9 @@ function lockUI(lock) {
 		addString("InstallHTML", "Instalar Editor (HTML)\u2026");
 		addString("ShowDecoration", "Exibir HTML Completo");
 		addString("HideDecoration", "Ocultar HTML Completo");
+		addString("ShowConsole", "Exibir Console");
+		addString("HideConsole", "Ocultar Console");
+		addString("ClearConsole", "Limpar Console");
 		addString("Libraries", "Bibliotecas");
 		addString("LibrariesEllipsis", "Bibliotecas\u2026");
 		addString("Theme", "Tema");
@@ -473,6 +476,9 @@ function lockUI(lock) {
 		addString("InstallHTML", "Install Editor (HTML)\u2026");
 		addString("ShowDecoration", "Show Full HTML");
 		addString("HideDecoration", "Hide Full HTML");
+		addString("ShowConsole", "Show Console");
+		addString("HideConsole", "Hide Console");
+		addString("ClearConsole", "Clear Console");
 		addString("Libraries", "Libraries");
 		addString("LibrariesEllipsis", "Libraries\u2026");
 		addString("Theme", "Theme");
@@ -512,7 +518,7 @@ function lockUI(lock) {
 		barDragX = 0,
 		barX = (window.innerWidth >> 1);
 
-	function resizeWindow() {
+	window.resizeWindow = function () {
 		var width = (window.innerWidth | 0);
 		var editorWidth = barX, iframeWidth = width - editorWidth - 8;
 		if (iframeWidth < 150) {
@@ -527,9 +533,11 @@ function lockUI(lock) {
 		bar.style.left = editorContainer.style.width;
 		iframe.style.left = (width - iframeWidth) + "px";
 		iframe.style.width = iframeWidth + "px";
+		if (editorNeedsResize)
+			editor.resize();
 	}
 
-	window.onresize = resizeWindow;
+	window.onresize = window.resizeWindow;
 
 	bar.onmousedown = function (e) {
 		if (e.button)
@@ -551,7 +559,7 @@ function lockUI(lock) {
 		var x = (e.clientX - barDragX) | 0;
 		if (barX !== x) {
 			barX = x;
-			resizeWindow();
+			window.resizeWindow();
 		}
 	}, true);
 
@@ -566,6 +574,5 @@ function lockUI(lock) {
 		lockUI(false);
 	}, true);
 
-	resizeWindow();
 	bar.style.display = "block";
 })();

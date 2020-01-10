@@ -56,7 +56,7 @@
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,600|Roboto+Mono:400,700" />
 	<link rel="stylesheet" href="lib/bootstrap/css/bootstrap-1.0.22.min.css" />
 	<link rel="stylesheet" href="lib/font-awesome/css/font-awesome-1.0.2.min.css" />
-	<link rel="stylesheet" href="css/style.css" />
+	<link rel="stylesheet" href="css/style.css?v=1.0.0" />
 </head>
 <body style="visibility: hidden">
 
@@ -338,7 +338,7 @@
 				_ID("editorActionInstallItem").style.display = "";
 			});
 
-			//navigator.serviceWorker.register("sw.js");
+			navigator.serviceWorker.register("sw.js");
 		}
 
 		var loading = true,
@@ -491,6 +491,7 @@
 			],
 			cssAttributesByName = {},
 			editorContainer = _ID("editorContainer"),
+			editorNeedsResize = false,
 			editor = _ID("editor"),
 			editorBootstrapEnabled = false,
 			editorDecorationVisible = true,
@@ -1230,6 +1231,8 @@
 			window.onbeforeunload = function () {
 				return (dirty ? translate("ConfirmQuit") : null);
 			};
+
+			window.resizeWindow();
 
 			setTimeout(function () { document.body.style.visibility = ""; }, 250);
 		})();
