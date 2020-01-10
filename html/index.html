@@ -68,7 +68,7 @@
 					<h4 class="modal-title" data-string="text|Save"></h4>
 				</div>
 				<div class="modal-body">
-					<div class="form-group">
+					<div class="form-group no-margin-bottom">
 						<label for="modalSaveFileName" data-string="text|FileName"></label>
 						<input type="text" class="form-control" id="modalSaveFileName" spellcheck="false" autocomplete="off" />
 					</div>
@@ -76,6 +76,36 @@
 				<div class="modal-footer">
 					<button type="button" class="btn btn-outline btn-default" data-dismiss="modal" data-string="text|Cancel"><i class="fa fa-margin fa-times"></i></button>
 					<button type="button" class="btn btn-primary" id="modalSaveOk" data-string="text|Save"><i class="fa fa-margin fa-check"></i></button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" tabindex="-1" role="dialog" id="modalTheme">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" data-string="aria-label|Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" data-string="text|Theme"></h4>
+				</div>
+				<div class="modal-body">
+					<div class="form-group no-margin-bottom">
+						<label for="modalThemeSelect" data-string="text|Theme"></label>
+						<select size="1" class="form-control" id="modalThemeSelect">
+							<option value="ace/theme/chrome">Chrome</option>
+							<option value="ace/theme/dracula">Dracula</option>
+							<option value="ace/theme/eclipse">Eclipse</option>
+							<option value="ace/theme/labs">Labs</option>
+							<option value="ace/theme/mono_industrial">Mono Industrial</option>
+							<option value="ace/theme/monokai">Monokai</option>
+							<option value="ace/theme/sqlserver">SQL Server</option>
+							<option value="ace/theme/textmate">TextMate</option>
+						</select>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-outline btn-default" data-dismiss="modal" data-string="text|Cancel"><i class="fa fa-margin fa-times"></i></button>
+					<button type="button" class="btn btn-primary" id="modalThemeOk" data-string="text|Save"><i class="fa fa-margin fa-check"></i></button>
 				</div>
 			</div>
 		</div>
@@ -139,18 +169,22 @@
 				<li id="editorActionInstallSeparator" role="separator" class="divider" style="display: none;"></li>
 				<li id="editorActionInstallItem" style="display: none;"><a href="#" id="editorActionInstall" data-string="text|InstallHTML"><i class="fa fa-margin fa-download"></i></a></li>
 				<li role="separator" class="divider"></li>
+				<li><a href="#" data-string="text|ThemeEllipsis" id="editorActionTheme"><i class="fa fa-margin fa-paint-brush"></i></a></li>
 				<li><a href="#" data-string="text|LibrariesEllipsis" id="editorActionLibraries"><i class="fa fa-margin fa-code"></i></a></li>
 			</ul>
 			<div class="nav-tabs-file-load"><input id="editorActionFileLoad" tabindex="-1" type="file" accept="text/html" /></div>
 		</div>
-		<div class="editor-html-container"><textarea id="editor" class="editor-html" spellcheck="false" wrap="off"></textarea></div>
+		<div id="editor" class="editor-html"></div>
 	</div>
 	<div class="editor-bar" id="bar"></div>
 	<iframe class="editor-iframe" id="iframe" frameborder="0"></iframe>
 
 	<script type="text/javascript" src="../lib/jquery/jquery-1.0.0.min.js"></script>
 	<script type="text/javascript" src="../lib/bootstrap/js/bootstrap-1.0.0.min.js"></script>
-	<script type="text/javascript" src="../js/main.js"></script>
+	<script type="text/javascript" src="../js/main.js?v=1.0.0"></script>
+	<script type="text/javascript" src="../lib/ace-1.4.7/ace.js"></script>
+	<script type="text/javascript" src="../lib/ace-1.4.7/ext-searchbox.js"></script>
+	<script type="text/javascript" src="../lib/ace-1.4.7/ext-language_tools.js"></script>
 
 	<script type="text/javascript">
 		"use strict";
@@ -166,15 +200,15 @@
 				_ID("editorActionInstallItem").style.display = "";
 			});
 
-			navigator.serviceWorker.register("../sw.js");
+			//navigator.serviceWorker.register("../sw.js");
 		}
 
 		var loading = false,
-			dirty = false,
+			theme = null,
 			blobUrl = null,
 			blobTimeout = 0,
 			editorContainer = _ID("editorContainer"),
-			editor = _ID("editor"),
+			editor = null,
 			iframe = _ID("iframe");
 
 		function loadFileDataURL(file, callback) {
@@ -209,8 +243,45 @@
 		// Initial
 		(function () {
 			window.onbeforeunload = function () {
-				return (dirty ? translate("ConfirmQuit") : null);
+				return (!editor.session.getUndoManager().isClean() ? translate("ConfirmQuit") : null);
 			};
+
+			theme = (("localStorage" in window) ? localStorage.getItem("labs-editor-theme") : null);
+			if (!theme)
+				theme = "ace/theme/labs";
+
+			editor = ace.edit("editor");
+			editor.setOptions({
+				selectionStyle: "text",
+				highlightActiveLine: true,
+				highlightSelectedWord: true,
+				readOnly: false,
+				cursorStyle: "ace",
+				mergeUndoDeltas: true,
+				behavioursEnabled: false,
+				wrapBehavioursEnabled: false,
+				autoScrollEditorIntoView: false,
+				copyWithEmptySelection: false,
+				useSoftTabs: false,
+				navigateWithinSoftTabs: false,
+				enableMultiselect: true,
+				hScrollBarAlwaysVisible: false,
+				vScrollBarAlwaysVisible: false,
+				highlightGutterLine: true,
+				animatedScroll: false,
+				showInvisibles: false,
+				showPrintMargin: false,
+				fadeFoldWidgets: false,
+				showFoldWidgets: true,
+				showLineNumbers: true,
+				showGutter: true,
+				displayIndentGuides: true,
+				scrollPastEnd: false,
+				fixedWidthGutter: false,
+				theme: theme,
+				enableLiveAutocompletion: true
+			});
+			editor.session.setMode("ace/mode/html");
 
 			setTimeout(function () {
 				document.body.style.visibility = "";
@@ -224,15 +295,41 @@
 			}, 250);
 		})();
 
+		// Console
+		(function () {
+			function clearLog() {
+			}
+
+			function log(message) {
+			}
+
+			window.consoleProxy = {
+				clear: clearLog,
+				info: log,
+				warn: log,
+				error: log,
+				log: log,
+				debug: log,
+				exception: log,
+				trace: log
+			};
+		})();
+
 		// Actions Menu
 		(function () {
 			var editorActionFileLoad = _ID("editorActionFileLoad"),
 				modalSaveFileName = _ID("modalSaveFileName"),
 				modalSaveOk = _ID("modalSaveOk"),
+				modalThemeSelect = _ID("modalThemeSelect"),
+				modalThemeOk = _ID("modalThemeOk"),
 				modalLibrariesText = _ID("modalLibrariesText");
 
 			$("#modalSave").on("shown.bs.modal", function () {
 				modalSaveFileName.focus();
+			});
+
+			$("#modalTheme").on("shown.bs.modal", function () {
+				modalThemeSelect.focus();
 			});
 
 			$("#modalLibraries").on("shown.bs.modal", function () {
@@ -245,7 +342,7 @@
 			};
 
 			function confirmClose() {
-				return (!dirty || confirm(translate("ConfirmClose")));
+				return (editor.session.getUndoManager().isClean() || confirm(translate("ConfirmClose")));
 			}
 
 			function loadFileFromURL(url) {
@@ -327,9 +424,20 @@
 				if (blobTimeout)
 					clearTimeout(blobTimeout);
 
+				var html = editor.session.getValue(), i = html.indexOf("<head");
+				if (i >= 0) {
+					i = html.indexOf(">", i);
+					if (i >= 0) {
+						i++;
+						html = html.substr(0, i) +
+							'<script type="text/javascript">console = window.parent.consoleProxy;\u003c/script\u003e' +
+							html.substr(i);
+					}
+				}
+
 				var blob = new Blob([
 					new Uint8Array([0xEF, 0xBB, 0xBF]), // UTF-8 BOM
-					editor.value
+					html
 				], { type: "text/html;charset=utf-8" }), localBlobUrl = URL.createObjectURL(blob);
 
 				_SA(iframe, "src", localBlobUrl);
@@ -344,22 +452,32 @@
 				}, 5000);
 			}
 
+			function resetEditorSession() {
+				editor.session.setTabSize(4);
+				editor.session.setUseSoftTabs(false);
+				editor.session.setUseWrapMode(false);
+			}
+
 			function newDocument() {
-				editor.value = '<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml" lang="' +
+				resetEditorSession();
+
+				editor.session.setValue('<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml" lang="' +
 					window.language +
 					'">\n<head>\n\t<meta charset="utf-8" />\n\t<meta name="viewport" content="width=device-width, initial-scale=1" />\n\t\n\t<title>' +
 					translate("PageTitle") +
-					'</title>\n\t\n\t<style type="text/css">\n\t\t\n\t</style>\n</head>\n<body>\n\t\n</body>\n</html>\n';
+					'</title>\n\t\n\t<style type="text/css">\n\t\t\n\t</style>\n</head>\n<body>\n\t\n</body>\n</html>\n');
 
-				dirty = false;
+				editor.session.getUndoManager().markClean();
 
 				previewPage();
 			}
 
 			function loadDocument(doc) {
-				editor.value = doc;
+				resetEditorSession();
 
-				dirty = false;
+				editor.session.setValue(doc);
+
+				editor.session.getUndoManager().markClean();
 
 				previewPage();
 			}
@@ -438,6 +556,22 @@
 				return cancelEvent(e);
 			};
 
+			_ID("editorActionTheme").onclick = function (e) {
+				if (loading)
+					return cancelEvent(e);
+
+				$("#editorMenuDropdown").dropdown("toggle");
+
+				modalThemeSelect.value = theme;
+
+				$("#modalTheme").modal({
+					keyboard: true,
+					backdrop: true
+				});
+
+				return cancelEvent(e);
+			};
+
 			_ID("editorActionLibraries").onclick = function (e) {
 				if (loading)
 					return cancelEvent(e);
@@ -469,10 +603,21 @@
 
 				BlobDownloader.download(fileName, new Blob([
 					new Uint8Array([0xEF, 0xBB, 0xBF]), // UTF-8 BOM
-					editor.value
+					editor.session.getValue()
 				], { type: "text/html;charset=utf-8" }));
 
-				dirty = false;
+				editor.session.getUndoManager().markClean();
+			};
+
+			modalThemeOk.onclick = function () {
+				theme = modalThemeSelect.value;
+
+				if (("localStorage" in window))
+					localStorage.setItem("labs-editor-theme", theme);
+
+				editor.setTheme(theme);
+
+				$("#modalTheme").modal("hide");
 			};
 
 			newDocument();

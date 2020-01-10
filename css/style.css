@@ -98,7 +98,7 @@ textarea {
 	padding: 0 2ch 4ch;
 }
 
-.editor-html-container {
+.editor-html {
 	position: absolute;
 	left: 0;
 	top: 45px;
@@ -106,22 +106,7 @@ textarea {
 	bottom: 0;
 	padding: 0;
 	border-top: 1px solid #ddd;
-	overflow: hidden;
 }
-
-.editor-html {
-	width: 100%;
-	height: 100%;
-	padding: 2ch;
-	border: none;
-	outline: none;
-	resize: none;
-	overflow: scroll;
-}
-
-	.editor-html:active, .editor-html:focus {
-		outline: none;
-	}
 
 .editor-css {
 	padding: 0 2ch 4ch 4ch;

@@ -116,7 +116,7 @@
 					<h4 class="modal-title" data-string="text|Save"></h4>
 				</div>
 				<div class="modal-body">
-					<div class="form-group">
+					<div class="form-group no-margin-bottom">
 						<label for="modalSaveFileName" data-string="text|FileName"></label>
 						<input type="text" class="form-control" id="modalSaveFileName" spellcheck="false" autocomplete="off" />
 					</div>
@@ -137,7 +137,7 @@
 					<h4 class="modal-title" data-string="text|EditSelector"></h4>
 				</div>
 				<div class="modal-body">
-					<div class="form-group">
+					<div class="form-group no-margin-bottom">
 						<label for="modalRuleSelectorInput" data-string="text|Selector"></label>
 						<input type="text" class="form-control" id="modalRuleSelectorInput" spellcheck="false" autocomplete="off" />
 					</div>
@@ -195,7 +195,7 @@
 					<button type="button" class="close" data-dismiss="modal" data-string="aria-label|Close"><span aria-hidden="true">&times;</span></button>
 					<h4 class="modal-title" data-string="text|GoogleFonts"></h4>
 				</div>
-				<div class="modal-body">
+				<div class="modal-body no-margin-bottom">
 					<div class="form-group">
 						<label for="modalGoogleFontsLink"><span data-string="text|HTMLLink"></span> <i><small data-string="text|GoogleFontsExample"></small></i></label>
 						<input type="text" class="form-control" id="modalGoogleFontsLink" spellcheck="false" autocomplete="off" />
@@ -322,7 +322,7 @@
 
 	<script type="text/javascript" src="lib/jquery/jquery-1.0.0.min.js"></script>
 	<script type="text/javascript" src="lib/bootstrap/js/bootstrap-1.0.0.min.js"></script>
-	<script type="text/javascript" src="js/main.js"></script>
+	<script type="text/javascript" src="js/main.js?v=1.0.0"></script>
 
 	<script type="text/javascript">
 		"use strict";
@@ -338,7 +338,7 @@
 				_ID("editorActionInstallItem").style.display = "";
 			});
 
-			navigator.serviceWorker.register("sw.js");
+			//navigator.serviceWorker.register("sw.js");
 		}
 
 		var loading = true,

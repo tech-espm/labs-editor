@@ -392,6 +392,8 @@ function lockUI(lock) {
 		addString("HideDecoration", "Ocultar HTML Completo");
 		addString("Libraries", "Bibliotecas");
 		addString("LibrariesEllipsis", "Bibliotecas\u2026");
+		addString("Theme", "Tema");
+		addString("ThemeEllipsis", "Tema\u2026");
 	} else {
 		addString("PleaseWait", "Please wait...");
 		addString("OK", "OK");
@@ -473,6 +475,8 @@ function lockUI(lock) {
 		addString("HideDecoration", "Hide Full HTML");
 		addString("Libraries", "Libraries");
 		addString("LibrariesEllipsis", "Libraries\u2026");
+		addString("Theme", "Theme");
+		addString("ThemeEllipsis", "Theme\u2026");
 	}
 
 	window.translate = function (key) { return (editorStrings[key] || key); };

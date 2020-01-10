@@ -6,7 +6,7 @@
 // whenever it detects a change in the source code of the
 // service worker).
 const CACHE_PREFIX = "labs-editor-static-cache";
-const CACHE_VERSION = "-v2";
+const CACHE_VERSION = "-v3";
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
 
 self.addEventListener("install", (event) => {
@@ -53,7 +53,27 @@ self.addEventListener("install", (event) => {
 			"/labs-editor/favicons/favicon-512x512.png",
 			"/labs-editor/images/loading-grey-t.gif",
 			"/labs-editor/images/logo.png",
-			"/labs-editor/js/main.js",
+			// Since this file's contents always change, but its name does not, I
+			// added a version number in order to try to avoid browsers' native cache
+			"/labs-editor/js/main.js?v=1.0.0",
+			"/labs-editor/lib/ace-1.4.7/ace.js",
+			"/labs-editor/lib/ace-1.4.7/ext-language_tools.js",
+			"/labs-editor/lib/ace-1.4.7/ext-searchbox.js",
+			"/labs-editor/lib/ace-1.4.7/mode-html.js",
+			"/labs-editor/lib/ace-1.4.7/theme-chrome.js",
+			"/labs-editor/lib/ace-1.4.7/theme-dracula.js",
+			"/labs-editor/lib/ace-1.4.7/theme-eclipse.js",
+			"/labs-editor/lib/ace-1.4.7/theme-labs.js",
+			"/labs-editor/lib/ace-1.4.7/theme-monokai.js",
+			"/labs-editor/lib/ace-1.4.7/theme-mono_industrial.js",
+			"/labs-editor/lib/ace-1.4.7/theme-sqlserver.js",
+			"/labs-editor/lib/ace-1.4.7/theme-textmate.js",
+			"/labs-editor/lib/ace-1.4.7/worker-css.js",
+			"/labs-editor/lib/ace-1.4.7/worker-html.js",
+			"/labs-editor/lib/ace-1.4.7/worker-javascript.js",
+			"/labs-editor/lib/ace-1.4.7/snippets/css.js",
+			"/labs-editor/lib/ace-1.4.7/snippets/html.js",
+			"/labs-editor/lib/ace-1.4.7/snippets/javascript.js",
 			"/labs-editor/lib/bootstrap/css/bootstrap-1.0.22.min.css",
 			"/labs-editor/lib/bootstrap/js/bootstrap-1.0.0.min.js",
 			"/labs-editor/lib/font-awesome/css/font-awesome-1.0.2.min.css",
