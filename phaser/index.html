@@ -8,9 +8,9 @@
 
 	<meta property="og:locale" content="pt_BR" />
 	<meta property="og:type" content="website" />
-	<meta property="og:url" content="https://tech-espm.github.io/labs-editor/html/" />
-	<meta property="og:title" content="Editor (HTML)" />
-	<meta property="og:site_name" content="Editor (HTML)" />
+	<meta property="og:url" content="https://tech-espm.github.io/labs-editor/phaser/" />
+	<meta property="og:title" content="Editor (Phaser)" />
+	<meta property="og:site_name" content="Editor (Phaser)" />
 	<meta property="og:description" content="Editor HTML + CSS para uso em sala de aula." />
 	<!--
 	<meta property="og:image" content="fb.jpg" />
@@ -25,7 +25,7 @@
 
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
-	<meta name="apple-mobile-web-app-title" content="Editor (HTML)" />
+	<meta name="apple-mobile-web-app-title" content="Editor (Phaser)" />
 	<!--
 		https://w3c.github.io/manifest/#icon-masks
 		https://github.com/w3c/manifest/issues/555
@@ -47,11 +47,11 @@
 	<link rel="icon" type="image/png" sizes="16x16" href="../favicons/favicon-16x16.png" />
 	<link rel="Shortcut Icon" href="../favicon.ico" />
 	<link rel="Shortcut Icon" href="../favicon.png" />
-	<link rel="manifest" href="../manifest-html.json" />
+	<link rel="manifest" href="../manifest-phaser.json" />
 	<meta name="msapplication-config" content="../browserconfig.xml" />
 	<meta name="theme-color" content="#222222" />
 
-	<title>Editor (HTML)</title>
+	<title>Editor (Phaser)</title>
 
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,600|Roboto+Mono:400,700" />
 	<link rel="stylesheet" href="../lib/bootstrap/css/bootstrap-1.0.22.min.css" />
@@ -76,6 +76,45 @@
 				<div class="modal-footer">
 					<button type="button" class="btn btn-outline btn-default" data-dismiss="modal" data-string="text|Cancel"><i class="fa fa-margin fa-times"></i></button>
 					<button type="button" class="btn btn-primary" id="modalSaveOk" data-string="text|Save"><i class="fa fa-margin fa-check"></i></button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" tabindex="-1" role="dialog" id="modalDeleteFile">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" data-string="aria-label|Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" data-string="text|DeleteFile"></h4>
+				</div>
+				<div class="modal-body">
+					<div id="modalDeleteFileLabel"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-outline btn-default" data-dismiss="modal" data-string="text|Cancel"><i class="fa fa-margin fa-times"></i></button>
+					<button type="button" class="btn btn-danger" id="modalDeleteFileOk" data-string="text|Delete"><i class="fa fa-margin fa-check"></i></button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" tabindex="-1" role="dialog" id="modalCreateDocument">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" data-string="aria-label|Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" data-string="text|CreateDocument"></h4>
+				</div>
+				<div class="modal-body">
+					<div class="form-group no-margin-bottom">
+						<label for="modalCreateDocumentFileName" data-string="text|FileName"></label>
+						<input type="text" class="form-control" id="modalCreateDocumentFileName" spellcheck="false" autocomplete="off" />
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-outline btn-default" data-dismiss="modal" data-string="text|Cancel"><i class="fa fa-margin fa-times"></i></button>
+					<button type="button" class="btn btn-primary" id="modalCreateDocumentOk" data-string="text|Create"><i class="fa fa-margin fa-check"></i></button>
 				</div>
 			</div>
 		</div>
@@ -111,41 +150,6 @@
 		</div>
 	</div>
 
-	<div class="modal fade" tabindex="-1" role="dialog" id="modalLibraries">
-		<div class="modal-dialog modal-lg" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" data-string="aria-label|Close"><span aria-hidden="true">&times;</span></button>
-					<h4 class="modal-title" data-string="text|Libraries"></h4>
-				</div>
-				<div class="modal-body">
-					<textarea class="form-control monospace" id="modalLibrariesText" spellcheck="false" rows="20" wrap="off">&lt;!-- jQuery --&gt;
-&lt;script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"&gt;&lt;/script&gt;
-
-&lt;!-- Bootstrap 3 --&gt;
-&lt;link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" /&gt;
-&lt;script type="text/javascript" src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"&gt;&lt;/script&gt;
-
-&lt;!-- Bootstrap 4 --&gt;
-&lt;link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" /&gt;
-&lt;script type="text/javascript" src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"&gt;&lt;/script&gt;
-
-&lt;!-- Font Awesome 4.7 --&gt;
-&lt;link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css /&gt;
-
-&lt;!-- jQuery Validate 1.19 --&gt;
-&lt;script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.1/jquery.validate.min.js"&gt;&lt;/script&gt;
-&lt;script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.1/additional-methods.min.js"&gt;&lt;/script&gt;
-&lt;script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.1/localization/messages_pt_BR.min.js"&gt;&lt;/script&gt;
-</textarea>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-outline btn-default" data-dismiss="modal" data-string="text|Close"><i class="fa fa-margin fa-times"></i></button>
-				</div>
-			</div>
-		</div>
-	</div>
-
 	<div class="editor-container" id="editorContainer">
 		<a class="nav-tabs-logo" href="https://github.com/tech-espm/labs-editor" target="_blank"><img width="75" src="../images/logo.png" style="border: none;" /></a>
 		<div class="nav-tabs-buttons">
@@ -164,20 +168,20 @@
 				<li><a href="#" data-string="text|SaveEllipsis" id="editorActionSave"><i class="fa fa-margin fa-cloud-download"></i></a></li>
 				<li role="separator" class="divider"></li>
 				<li><a href="#" data-string="text|LoadExample" id="editorActionLoadExample"><i class="fa fa-margin fa-lightbulb-o"></i></a></li>
-				<li role="separator" class="divider"></li>
-				<li><a href="../" data-string="text|SimpleMode"><i class="fa fa-margin fa-edit"></i></a></li>
 				<li id="editorActionInstallSeparator" role="separator" class="divider" style="display: none;"></li>
-				<li id="editorActionInstallItem" style="display: none;"><a href="#" id="editorActionInstall" data-string="text|InstallHTML"><i class="fa fa-margin fa-download"></i></a></li>
+				<li id="editorActionInstallItem" style="display: none;"><a href="#" id="editorActionInstall" data-string="text|InstallPhaser"><i class="fa fa-margin fa-download"></i></a></li>
 				<li role="separator" class="divider"></li>
+				<li><a href="#" id="editorActionToggleFileList"><i class="fa fa-margin fa-files-o"></i><span id="editorActionToggleFileListLabel" data-string="text|ShowFileList"></span></a></li>
 				<li><a href="#" id="editorActionToggleConsole"><i class="fa fa-margin fa-terminal"></i><span id="editorActionToggleConsoleLabel" data-string="text|ShowConsole"></span></a></li>
 				<li><a href="#" data-string="text|ClearConsole" id="editorActionClearConsole"><i class="fa fa-margin fa-trash-o"></i></a></li>
 				<li role="separator" class="divider"></li>
 				<li><a href="#" data-string="text|ThemeEllipsis" id="editorActionTheme"><i class="fa fa-margin fa-paint-brush"></i></a></li>
-				<li><a href="#" data-string="text|LibrariesEllipsis" id="editorActionLibraries"><i class="fa fa-margin fa-code"></i></a></li>
 			</ul>
 			<div class="nav-tabs-file-load"><input id="editorActionFileLoad" tabindex="-1" type="file" accept="text/html" /></div>
 		</div>
 		<div id="editor" class="editor-html"></div>
+		<div id="editorFileListBar" class="editor-html-file-list-bar"><button type="button" id="btnEditorFileListBarCreateDocument" class="btn btn-outline btn-primary btn-xs" data-string="title|CreateDocument"><i class="fa fa-plus"></i></button></div>
+		<div id="editorFileList" class="editor-html-file-list"></div>
 		<div id="editorConsole" class="editor-html-console"></div>
 	</div>
 	<div class="editor-bar" id="bar"></div>
@@ -192,6 +196,9 @@
 
 	<script type="text/javascript">
 		"use strict";
+
+		if (!("CacheStorage" in window) || !("caches" in window) || !("localStorage" in window) || !("Blob" in window))
+			alert(translate("BrowserNotSupported"));
 
 		var installationPrompt = null;
 
@@ -214,9 +221,17 @@
 			editorContainer = _ID("editorContainer"),
 			editorNeedsResize = true,
 			editor = null,
+			editorFileListBar = _ID("editorFileListBar"),
+			editorFileList = _ID("editorFileList"),
+			editorFileListVisible = false,
 			editorConsole = _ID("editorConsole"),
 			editorConsoleVisible = false,
-			iframe = _ID("iframe");
+			iframe = _ID("iframe"),
+			defaultDocument = "menu.js",
+			currentDocument = defaultDocument,
+			gamePathPrefix = "/labs-editor/phaser/game/",
+			gameCacheName = "labs-editor-game-cache",
+			gameCacheFileList = [defaultDocument];
 
 		function loadFileDataURL(file, callback) {
 			if (loading) {
@@ -253,7 +268,7 @@
 				return (!editor.session.getUndoManager().isClean() ? translate("ConfirmQuit") : null);
 			};
 
-			theme = (("localStorage" in window) ? localStorage.getItem(itemLabsEditorTheme) : null);
+			theme = localStorage.getItem(itemLabsEditorTheme);
 			if (!theme)
 				theme = "ace/theme/labs";
 
@@ -282,13 +297,13 @@
 				showFoldWidgets: true,
 				showLineNumbers: true,
 				showGutter: true,
-				displayIndentGuides: true,
+				displayIndentGuides: false,
 				scrollPastEnd: false,
 				fixedWidthGutter: false,
 				theme: theme,
 				enableLiveAutocompletion: true
 			});
-			editor.session.setMode("ace/mode/html");
+			editor.session.setMode("ace/mode/javascript");
 
 			window.resizeWindow();
 
@@ -333,23 +348,26 @@
 		// Actions Menu
 		(function () {
 			var editorActionFileLoad = _ID("editorActionFileLoad"),
+				editorActionToggleFileListLabel = _ID("editorActionToggleFileListLabel"),
 				editorActionToggleConsoleLabel = _ID("editorActionToggleConsoleLabel"),
 				modalSaveFileName = _ID("modalSaveFileName"),
 				modalSaveOk = _ID("modalSaveOk"),
+				modalDeleteFileOk = _ID("modalDeleteFileOk"),
+				modalCreateDocumentFileName = _ID("modalCreateDocumentFileName"),
+				modalCreateDocumentOk = _ID("modalCreateDocumentOk"),
 				modalThemeSelect = _ID("modalThemeSelect"),
-				modalThemeOk = _ID("modalThemeOk"),
-				modalLibrariesText = _ID("modalLibrariesText");
+				modalThemeOk = _ID("modalThemeOk");
 
 			$("#modalSave").on("shown.bs.modal", function () {
 				modalSaveFileName.focus();
 			});
 
-			$("#modalTheme").on("shown.bs.modal", function () {
-				modalThemeSelect.focus();
+			$("#modalCreateDocument").on("shown.bs.modal", function () {
+				modalCreateDocumentFileName.focus();
 			});
 
-			$("#modalLibraries").on("shown.bs.modal", function () {
-				modalLibrariesText.focus();
+			$("#modalTheme").on("shown.bs.modal", function () {
+				modalThemeSelect.focus();
 			});
 
 			modalSaveFileName.onkeydown = function (e) {
@@ -357,8 +375,13 @@
 					modalSaveOk.click();
 			};
 
+			modalCreateDocumentFileName.onkeydown = function (e) {
+				if (e.key === "Enter" || e.keyCode === 13)
+					modalCreateDocumentOk.click();
+			};
+
 			function confirmClose() {
-				return (editor.session.getUndoManager().isClean() || confirm(translate("ConfirmClose")));
+				return ((editor.session.getUndoManager().isClean() && !localStorage.getItem(itemLabsEditorHasGame)) || confirm(translate("ConfirmClose")));
 			}
 
 			function loadFileFromURL(url) {
@@ -425,47 +448,13 @@
 				});
 			}
 
-			function previewPage() {
+			function previewPage(forceSave) {
 				if (loading)
 					return;
 
-				if (!BlobDownloader.supported) {
-					Notification.error(translate("ErrorNoFile"), true);
-					return;
-				}
-
-				if (blobUrl)
-					URL.revokeObjectURL(blobUrl);
-
-				if (blobTimeout)
-					clearTimeout(blobTimeout);
-
-				var html = editor.session.getValue(), i = html.indexOf("<head");
-				if (i >= 0) {
-					i = html.indexOf(">", i);
-					if (i >= 0) {
-						i++;
-						html = html.substr(0, i) +
-							'<script type="text/javascript">console = window.parent.consoleProxy;window.onerror = function(msg, url, line, col, error) { window.parent.consoleProxy.errorHandler(msg, url, line, col, error); return true; }\u003c/script\u003e' +
-							html.substr(i);
-					}
-				}
-
-				var blob = new Blob([
-					new Uint8Array([0xEF, 0xBB, 0xBF]), // UTF-8 BOM
-					html
-				], { type: "text/html;charset=utf-8" }), localBlobUrl = URL.createObjectURL(blob);
-
-				_SA(iframe, "src", localBlobUrl);
-
-				blobUrl = localBlobUrl;
-				blobTimeout = setTimeout(function () {
-					if (blobUrl === localBlobUrl) {
-						URL.revokeObjectURL(blobUrl);
-						blobUrl = null;
-						blobTimeout = 0;
-					}
-				}, 5000);
+				saveCurrentDocumentToCache(forceSave, function () {
+					_SA(iframe, "src", gamePathPrefix);
+				});
 			}
 
 			function resetEditorSession() {
@@ -477,16 +466,27 @@
 			function newDocument() {
 				resetEditorSession();
 
-				editor.session.setValue('<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml" lang="' +
-					window.language +
-					'">\n<head>\n\t<meta charset="utf-8" />\n\t<meta name="viewport" content="width=device-width, initial-scale=1" />\n\t\n\t<title>' +
-					translate("PageTitle") +
-					'</title>\n\t\n\t<style type="text/css">\n\t\t\n\t</style>\n</head>\n<body>\n\t\n</body>\n</html>\n');
+				editor.session.setValue('var ' + translate("levels") + ' = ["menu"];\nvar ' + translate("gameWidth") + ' = 800;\nvar ' + translate("gameHeight") + ' = 600;\n\nfunction menu() {\n\t\n\tthis.preload = function () {\n\t\t\n\t\tgame.stage.backgroundColor = "#0066ff";\n\t\t\n\t};\n\t\n\tthis.create = function () {\n\t\t\n\t};\n\t\n\tthis.update = function () {\n\t\t\n\t};\n\t\n}\n');
 
+				currentDocument = defaultDocument;
+				gameCacheFileList = [defaultDocument];
+				saveGameCacheFileList();
 				window.clearLog();
 				editor.session.getUndoManager().reset();
 
-				previewPage();
+				_SA(iframe, "src", "about:blank");
+
+				function finished() {
+					loading = false;
+					Notification.hide();
+
+					saveCurrentDocumentToCache(true);
+				}
+
+				loading = true;
+				Notification.wait();
+
+				caches.delete(gameCacheName).then(finished).catch(finished);
 			}
 
 			function loadDocument(doc) {
@@ -497,12 +497,225 @@
 				window.clearLog();
 				editor.session.getUndoManager().reset();
 
-				previewPage();
+				previewPage(true);
+			}
+
+			function loadDocumentFromCache(fileName, showNotification) {
+				if (loading)
+					return;
+
+				loading = true;
+				Notification.wait();
+
+				function loadError(reason) {
+					loading = false;
+					Notification.error(translate("ErrorFileLoad"));
+				}
+
+				function finishLoading(value) {
+					loading = false;
+					if (showNotification)
+						Notification.success(translate("RememberToAddFileToMenu"));
+					else
+						Notification.hide();
+
+					resetEditorSession();
+
+					currentDocument = fileName;
+					editor.session.setValue(value);
+					editor.session.getUndoManager().reset();
+				}
+
+				caches.open(gameCacheName).then(function (cache) {
+					cache.match(gamePathPrefix + fileName).then(function (response) {
+						if (!response)
+							finishLoading("");
+						else
+							response.text().then(finishLoading).catch(loadError);
+					}).catch(loadError);
+				}).catch(loadError);
+			}
+
+			function deleteFileFromCache(fileName, callback) {
+				loading = true;
+				Notification.wait();
+
+				caches.open(gameCacheName).then(function (cache) {
+					cache.delete(gamePathPrefix + fileName).then(function () {
+						loading = false;
+						Notification.hide();
+
+						if (callback)
+							callback();
+					}).catch(function (reason) {
+						console.error(reason);
+
+						loading = false;
+						Notification.hide();
+
+						if (callback)
+							callback();
+					});
+				});
+			}
+
+			function saveFileToCache(blob, fileName, callback) {
+				loading = true;
+				Notification.wait();
+
+				caches.open(gameCacheName).then(function (cache) {
+					// The spec says there is no need to worry about max-age
+					// and other cache-control headers/settings, because the
+					// CacheStorage API ignores them... But... Just in case...
+					var request = new Request(gamePathPrefix + fileName, { cache: "no-store" });
+
+					var headers = new Headers();
+					headers.append("cache", "private, no-store");
+					var response = new Response(blob, { headers: headers });
+
+					cache.put(request, response).then(function () {
+						loading = false;
+						Notification.hide();
+
+						if (callback)
+							callback();
+					}).catch(function (reason) {
+						console.error(reason);
+
+						loading = false;
+						Notification.hide();
+
+						if (callback)
+							callback();
+					});
+				});
+			}
+
+			function saveCurrentDocumentToCache(forceSave, callback) {
+				if (loading)
+					return;
+
+				if (forceSave || !editor.session.getUndoManager().isClean()) {
+					saveFileToCache(new Blob([
+						new Uint8Array([0xEF, 0xBB, 0xBF]), // UTF-8 BOM
+						editor.session.getValue()
+					], { type: "text/javascript" }), currentDocument, function () {
+						editor.session.getUndoManager().markClean();
+
+						if (callback)
+							callback();
+					});
+				} else if (callback) {
+					callback();
+				}
+			}
+
+			function deleteFileFromDiv(e) {
+				if (loading)
+					return cancelEvent(e);
+
+				var fileName = _GA(this, "data-name");
+
+				if (!fileName || fileName === defaultDocument)
+					return cancelEvent(e);
+
+				_ID("modalDeleteFileLabel").textContent = translate("ConfirmDelete") + fileName + "?";
+
+				_SA(modalDeleteFileOk, "data-name", fileName);
+
+				$("#modalDeleteFile").modal({
+					keyboard: true,
+					backdrop: true
+				});
+
+				return cancelEvent(e);
+			}
+
+			function loadFileFromDiv() {
+				if (loading)
+					return;
+
+				var fileName = _GA(this, "data-name");
+				if (!fileName)
+					return;
+
+				if (fileName.toLowerCase().endsWith(".js")) {
+					if (fileName !== currentDocument)
+						saveCurrentDocumentToCache(false, function () { loadDocumentFromCache(fileName, false); });
+				} else {
+					window.open(gamePathPrefix + fileName);
+				}
+			}
+
+			function updateGameCacheFileList() {
+				gameCacheFileList.sort();
+
+				while (editorFileList.firstChild)
+					editorFileList.removeChild(editorFileList.firstChild);
+
+				var i, fileName, div, button;
+				for (i = 0; i < gameCacheFileList.length; i++) {
+					fileName = gameCacheFileList[i];
+					div = _CE("div", "editor-html-file-list-item");
+					div.onclick = loadFileFromDiv;
+					_SA(div, "data-name", fileName);
+					_CE("i", "fa fa-margin fa-file-o", div);
+					_TXT(fileName, div);
+					if (fileName !== defaultDocument) {
+						button = _CE("button", "btn btn-outline btn-danger btn-xs editor-html-file-list-item-button", div);
+						button.onclick = deleteFileFromDiv;
+						_SA(button, "data-name", fileName);
+						_SA(button, "title", translate("Delete"));
+						_CE("i", "fa fa-times", button);
+					}
+					_AC(editorFileList, div);
+				}
+			}
+
+			function loadGameCacheFileList() {
+				gameCacheFileList = null;
+
+				try {
+					gameCacheFileList = JSON.parse(localStorage.getItem(itemLabsEditorGameFileList));
+				} catch (ex) {
+					// Just ignore...
+				}
+
+				if (!gameCacheFileList || !gameCacheFileList.length)
+					gameCacheFileList = [defaultDocument];
+
+				updateGameCacheFileList();
+			}
+
+			function saveGameCacheFileList() {
+				localStorage.setItem(itemLabsEditorGameFileList, JSON.stringify(gameCacheFileList));
+
+				updateGameCacheFileList();
+			}
+
+			function loadGameFromCache() {
+				// We must use a separate list (gameCacheFileList) because,
+				// in our case, all the responses returned by cache.matchAll()
+				// come with their url = "".
+
+				loadGameCacheFileList();
+
+				loadDocumentFromCache(defaultDocument, false);
 			}
 
 			editorActionFileLoad.onchange = loadFileFromInput;
 
-			_ID("editorPlay").onclick = previewPage;
+			_ID("editorPlay").onclick = function () {
+				if (loading)
+					return;
+
+				window.clearLog();
+
+				if (!localStorage.getItem(itemLabsEditorHasGame))
+					localStorage.setItem(itemLabsEditorHasGame, "1");
+
+				previewPage(false);
+			};
 
 			_ID("editorActionNew").onclick = function (e) {
 				if (loading)
@@ -524,10 +737,10 @@
 
 				$("#editorMenuDropdown").dropdown("toggle");
 
-				if (!confirmClose())
-					return cancelEvent(e);
+				//if (!confirmClose())
+				//	return cancelEvent(e);
 
-				editorActionFileLoad.click();
+				//editorActionFileLoad.click();
 
 				return cancelEvent(e);
 			};
@@ -538,10 +751,10 @@
 
 				$("#editorMenuDropdown").dropdown("toggle");
 
-				$("#modalSave").modal({
-					keyboard: true,
-					backdrop: true
-				});
+				//$("#modalSave").modal({
+				//	keyboard: true,
+				//	backdrop: true
+				//});
 
 				return cancelEvent(e);
 			};
@@ -552,10 +765,10 @@
 
 				$("#editorMenuDropdown").dropdown("toggle");
 
-				if (!confirmClose())
-					return cancelEvent(e);
+				//if (!confirmClose())
+				//	return cancelEvent(e);
 
-				loadFileFromURL(translate("ExampleFileHTML"));
+				//loadFileFromURL(translate("ExampleFileHTML"));
 
 				return cancelEvent(e);
 			};
@@ -574,14 +787,48 @@
 				return cancelEvent(e);
 			};
 
+			function toggleFileList() {
+				editorFileListVisible = !editorFileListVisible;
+				if (editorFileListVisible) {
+					editorActionToggleFileListLabel.textContent = translate("HideFileList");
+					_ID("editor").style.left = "200px";
+					editorFileListBar.style.display = "block";
+					editorFileList.style.display = "block";
+				} else {
+					editorActionToggleFileListLabel.textContent = translate("ShowFileList");
+					_ID("editor").style.left = "";
+					editorFileListBar.style.display = "none";
+					editorFileList.style.display = "none";
+				}
+				editor.resize();
+			}
+
+			_ID("editorActionToggleFileList").onclick = function (e) {
+				if (loading)
+					return cancelEvent(e);
+
+				$("#editorMenuDropdown").dropdown("toggle");
+
+				toggleFileList();
+
+				if (editorFileListVisible)
+					localStorage.setItem(itemLabsEditorFileListVisible, "1");
+				else
+					localStorage.removeItem(itemLabsEditorFileListVisible);
+
+				return cancelEvent(e);
+			};
+
 			function toggleConsole() {
 				editorConsoleVisible = !editorConsoleVisible;
 				if (editorConsoleVisible) {
 					editorActionToggleConsoleLabel.textContent = translate("HideConsole");
+					editorFileList.style.bottom = "200px";
 					_ID("editor").style.bottom = "200px";
 					editorConsole.style.display = "block";
 				} else {
 					editorActionToggleConsoleLabel.textContent = translate("ShowConsole");
+					editorFileList.style.bottom = "";
 					_ID("editor").style.bottom = "";
 					editorConsole.style.display = "none";
 				}
@@ -596,12 +843,10 @@
 
 				toggleConsole();
 
-				if (("localStorage" in window)) {
-					if (editorConsoleVisible)
-						localStorage.setItem(itemLabsEditorConsoleVisible, "1");
-					else
-						localStorage.removeItem(itemLabsEditorConsoleVisible);
-				}
+				if (editorConsoleVisible)
+					localStorage.setItem(itemLabsEditorConsoleVisible, "1");
+				else
+					localStorage.removeItem(itemLabsEditorConsoleVisible);
 
 				return cancelEvent(e);
 			};
@@ -633,18 +878,14 @@
 				return cancelEvent(e);
 			};
 
-			_ID("editorActionLibraries").onclick = function (e) {
+			_ID("btnEditorFileListBarCreateDocument").onclick = function () {
 				if (loading)
-					return cancelEvent(e);
+					return;
 
-				$("#editorMenuDropdown").dropdown("toggle");
-
-				$("#modalLibraries").modal({
+				$("#modalCreateDocument").modal({
 					keyboard: true,
 					backdrop: true
 				});
-
-				return cancelEvent(e);
 			};
 
 			modalSaveOk.onclick = function () {
@@ -670,24 +911,96 @@
 				editor.session.getUndoManager().markClean();
 			};
 
+			modalDeleteFileOk.onclick = function () {
+				if (loading)
+					return;
+
+				var fileName = _GA(modalDeleteFileOk, "data-name");
+				if (!fileName)
+					return;
+
+				$("#modalDeleteFile").modal("hide");
+
+				deleteFileFromCache(fileName, function () {
+					for (var i = gameCacheFileList.length - 1; i >= 0; i--) {
+						if (gameCacheFileList[i] === fileName) {
+							gameCacheFileList.splice(i, 1);
+							break;
+						}
+					}
+
+					saveGameCacheFileList();
+
+					loadDocumentFromCache(defaultDocument, false);
+				});
+			};
+
+			modalCreateDocumentOk.onclick = function () {
+				if (loading)
+					return;
+
+				var fileName = trim(modalCreateDocumentFileName.value);
+				if (!fileName)
+					return;
+
+				// Force lower case extensions
+				var lcase = fileName.toLowerCase(), noExtension;
+				if (!lcase.endsWith(".js")) {
+					noExtension = fileName;
+					fileName += ".js";
+					lcase += ".js";
+				} else {
+					noExtension = fileName.substr(0, fileName.length - 3);
+					fileName = noExtension + ".js";
+				}
+
+				if (/\W/.test(noExtension)) {
+					Notification.error(translate("ErrorInvalidFileName"), true);
+					return;
+				}
+
+				for (var i = gameCacheFileList.length - 1; i >= 0; i--) {
+					if (gameCacheFileList[i].toLowerCase() === lcase) {
+						Notification.error(translate("ErrorFileAlreadyExists"), true);
+						return;
+					}
+				}
+
+				saveFileToCache(new Blob([
+					new Uint8Array([0xEF, 0xBB, 0xBF]), // UTF-8 BOM
+					'function ',
+					noExtension,
+					'() {\n\t\n\tthis.preload = function () {\n\t\t\n\t};\n\t\n\tthis.create = function () {\n\t\t\n\t};\n\t\n\tthis.update = function () {\n\t\t\n\t};\n\t\n}\n'
+				], { type: "text/javascript" }), fileName, function () {
+					$("#modalCreateDocument").modal("hide");
+
+					gameCacheFileList.push(fileName);
+					saveGameCacheFileList();
+
+					loadDocumentFromCache(fileName, true);
+				});
+			};
+
 			modalThemeOk.onclick = function () {
 				theme = modalThemeSelect.value;
 
-				if (("localStorage" in window))
-					localStorage.setItem(itemLabsEditorTheme, theme);
+				localStorage.setItem(itemLabsEditorTheme, theme);
 
 				editor.setTheme(theme);
 
 				$("#modalTheme").modal("hide");
 			};
 
-			newDocument();
+			if (localStorage.getItem(itemLabsEditorHasGame))
+				loadGameFromCache();
+			else
+				newDocument();
 
-			if (("localStorage" in window)) {
-				if (localStorage.getItem(itemLabsEditorConsoleVisible))
-					toggleConsole();
-			}
+			if (localStorage.getItem(itemLabsEditorFileListVisible))
+				toggleFileList();
 
+			if (localStorage.getItem(itemLabsEditorConsoleVisible))
+				toggleConsole();
 		})();
 	</script>
 </body>

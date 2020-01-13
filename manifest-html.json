@@ -1,7 +1,7 @@
 {
 	"name": "Editor (HTML)",
 	"short_name": "Editor (HTML)",
-	"start_url": "/labs-editor/html/?pwa",
+	"start_url": "/labs-editor/html/",
 	"dir": "ltr",
 	"lang": "pt-BR",
 	"orientation": "landscape-primary",

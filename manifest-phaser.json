@@ -1,14 +1,14 @@
 {
-	"name": "Editor",
-	"short_name": "Editor",
-	"start_url": "/labs-editor/",
+	"name": "Editor (Phaser)",
+	"short_name": "Editor (Phaser)",
+	"start_url": "/labs-editor/phaser/",
 	"dir": "ltr",
 	"lang": "pt-BR",
 	"orientation": "landscape-primary",
 	"display": "fullscreen",
 	"background_color": "#ffffff",
 	"theme_color": "#222222",
-	"description": "Editor",
+	"description": "Editor (Phaser)",
 	"icons": [
 		{
 			"src": "favicons/favicon-36x36.png",

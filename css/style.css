@@ -12,7 +12,16 @@ textarea {
 }
 
 .editor, .editor-html, .monospace {
-	font: normal 14px 'Roboto Mono', monospace;
+	font-family: 'Roboto Mono', monospace;
+	font-style: normal;
+}
+
+.editor {
+	font-size: 14px;
+}
+
+.editor-html, .monospace {
+	font-size: 12px;
 }
 
 .fa-margin {
@@ -106,6 +115,64 @@ textarea {
 	bottom: 0;
 	padding: 0;
 	border-top: 1px solid #ddd;
+}
+
+.editor-html-file-list-bar {
+	display: none;
+	position: absolute;
+	left: 0;
+	top: 45px;
+	width: 200px;
+	height: 30px;
+	padding: 4px;
+	border-top: 1px solid #ddd;
+	border-right: 1px solid #ddd;
+}
+
+.editor-html-file-list {
+	display: none;
+	position: absolute;
+	left: 0;
+	top: 75px;
+	bottom: 0;
+	padding: 0;
+	width: 200px;
+	border-top: 1px solid #ddd;
+	border-right: 1px solid #ddd;
+	overflow: auto;
+	font-size: 12px;
+}
+
+.editor-html-file-list-item {
+	position: relative;
+	padding: 4px 30px 4px 8px;
+	border-bottom: 1px solid #ddd;
+	overflow: hidden;
+	cursor: pointer;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	-webkit-transition: background-color ease-in-out .2s;
+	-o-transition: background-color ease-in-out .2s;
+	transition: background-color ease-in-out .2s;
+}
+
+	.editor-html-file-list-item:hover, .editor-html-file-list-item:focus {
+		background-color: #eee;
+	}
+
+	.editor-html-file-list-item:active {
+		background-color: #ddd;
+	}
+
+	.editor-html-file-list-item.current {
+		font-weight: bold;
+		color: #f00;
+	}
+
+.editor-html-file-list-item-button {
+	position: absolute;
+	top: 1px;
+	right: 4px;
 }
 
 .editor-html-console {

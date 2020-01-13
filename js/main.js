@@ -1,5 +1,9 @@
 ﻿"use strict";
 
+window.emoji = {
+	happy: "\uD83D\uDE04",
+	sad: "\uD83D\uDE22"
+};
 window.isEmpty = function (x) {
 	return (x === undefined || x === null);
 };
@@ -220,7 +224,7 @@ window.BlobDownloader = {
 	supported: (("Blob" in window) && ("URL" in window) && ("createObjectURL" in window.URL) && ("revokeObjectURL" in window.URL)),
 
 	alertNotSupported: function () {
-		Notification.error("Infelizmente seu navegador não suporta essa funcionalidade \uD83D\uDE22", true);
+		Notification.error(translate("BrowserNotSupported"), true);
 		return false;
 	},
 
@@ -237,7 +241,7 @@ window.BlobDownloader = {
 				BlobDownloader.saveAs.call(window.navigator, blob, filename);
 				return;
 			} catch (ex) {
-				Notification.error("Ocorreu um erro durante o download dos dados \uD83D\uDE22", true);
+				Notification.error(translate("ErrorDownload"), true);
 			}
 		}
 
@@ -258,6 +262,12 @@ window.BlobDownloader = {
 		return true;
 	}
 };
+
+window.itemLabsEditorTheme = "labs-editor-theme";
+window.itemLabsEditorFileListVisible = "labs-editor-file-list-visible";
+window.itemLabsEditorConsoleVisible = "labs-editor-console-visible";
+window.itemLabsEditorHasGame = "labs-editor-has-game";
+window.itemLabsEditorGameFileList = "labs-editor-game-file-list";
 
 // Helper functions
 function _ID(id) { return document.getElementById(id); }
@@ -348,22 +358,28 @@ function lockUI(lock) {
 		addString("CreateAttribute", "Criar Atributo");
 		addString("CreateText", "Criar Texto");
 		addString("CreateComment", "Criar Comentário");
+		addString("CreateDocument", "Criar Documento");
+		addString("DeleteFile", "Excluir Arquivo");
 		addString("LoadImage", "Carregar Imagem");
 		addString("SimpleMode", "Modo Simples");
 		addString("AdvancedMode", "Modo Avançado");
 		addString("UseLoremIpsum", "Utilizar Parágrafo de Lorem Ipsum");
 		addString("PlaceholderText", "[Digite seu texto aqui]");
-		addString("ErrorBlockInsideInline", "Um elemento block não pode ser filho de um elemento inline \uD83D\uDE22");
-		addString("ErrorInlineParentBlock", "Um elemento inline não pode ser pai de um elemento block \uD83D\uDE22");
-		addString("ErrorNewElementMustHaveChildren", "O novo elemento também deve poder ter filhos \uD83D\uDE22");
-		addString("ErrorNewElementMustNotHaveChildren", "O novo elemento também não pode ter filhos \uD83D\uDE22");
-		addString("ErrorNoFile", "Seu browser não oferece suporte a acesso avançado de arquivos \uD83D\uDE22");
-		addString("ErrorFileTooLarge", "Por favor, escolha uma imagem com tamanho de até 1 MiB \uD83D\uDE22");
-		addString("ErrorFileLoad", "Ocorreu um erro ao ler o arquivo \uD83D\uDE22");
-		addString("ErrorInvalidHTML", "O arquivo escolhido não parece ser um arquivo HTML válido \uD83D\uDE22");
-		addString("ErrorInvalidChar", "Você não pode digitar os símbolos < ou > aqui. Para mais informações, por favor, veja o link \"Entidades HTML\" \uD83D\uDE22");
+		addString("ErrorBlockInsideInline", "Um elemento block não pode ser filho de um elemento inline " + emoji.sad);
+		addString("ErrorInlineParentBlock", "Um elemento inline não pode ser pai de um elemento block " + emoji.sad);
+		addString("ErrorNewElementMustHaveChildren", "O novo elemento também deve poder ter filhos " + emoji.sad);
+		addString("ErrorNewElementMustNotHaveChildren", "O novo elemento também não pode ter filhos " + emoji.sad);
+		addString("ErrorNoFile", "Seu browser não oferece suporte a acesso avançado de arquivos " + emoji.sad);
+		addString("ErrorFileTooLarge", "Por favor, escolha uma imagem com tamanho de até 1 MiB " + emoji.sad);
+		addString("ErrorFileLoad", "Ocorreu um erro ao ler o arquivo " + emoji.sad);
+		addString("ErrorDownload", "Ocorreu um erro durante o download dos dados " + emoji.sad);
+		addString("ErrorInvalidFileName", "Nome de arquivo inválido " + emoji.sad);
+		addString("ErrorFileAlreadyExists", "Já existe um arquivo com o mesmo nome " + emoji.sad);
+		addString("ErrorInvalidHTML", "O arquivo escolhido não parece ser um arquivo HTML válido " + emoji.sad);
+		addString("ErrorInvalidChar", "Você não pode digitar os símbolos < ou > aqui. Para mais informações, por favor, veja o link \"Entidades HTML\" " + emoji.sad);
 		addString("ConfirmQuit", "Deseja mesmo sair da página? Você perderá o documento atual.");
 		addString("ConfirmClose", "Deseja mesmo continuar? Você perderá as alterações não salvas.");
+		addString("ConfirmDelete", "Deseja mesmo excluir o arquivo ");
 		addString("MoveMessage", "Clique para onde deseja mover o elemento ou tecle Esc para cancelar");
 		addString("MoveMessageCreateElement", "Clique onde deseja criar o novo elemento ou tecle Esc para cancelar");
 		addString("MoveMessageCreateText", "Clique onde deseja criar o novo texto ou tecle Esc para cancelar");
@@ -388,8 +404,11 @@ function lockUI(lock) {
 		addString("ExampleFileHTML", "/labs-editor/examplePt-html.html");
 		addString("Install", "Instalar Editor\u2026");
 		addString("InstallHTML", "Instalar Editor (HTML)\u2026");
+		addString("InstallPhaser", "Instalar Editor (Phaser)\u2026");
 		addString("ShowDecoration", "Exibir HTML Completo");
 		addString("HideDecoration", "Ocultar HTML Completo");
+		addString("ShowFileList", "Exibir Arquivos");
+		addString("HideFileList", "Ocultar Arquivos");
 		addString("ShowConsole", "Exibir Console");
 		addString("HideConsole", "Ocultar Console");
 		addString("ClearConsole", "Limpar Console");
@@ -397,6 +416,11 @@ function lockUI(lock) {
 		addString("LibrariesEllipsis", "Bibliotecas\u2026");
 		addString("Theme", "Tema");
 		addString("ThemeEllipsis", "Tema\u2026");
+		addString("BrowserNotSupported", "Infelizmente seu navegador não suporta essa funcionalidade " + emoji.sad);
+		addString("RememberToAddFileToMenu", "Por favor, lembre-se de adicionar o nome do arquivo à lista em menu.js " + emoji.happy);
+		addString("levels", "telas");
+		addString("gameWidth", "larguraJogo");
+		addString("gameHeight", "alturaJogo");
 	} else {
 		addString("PleaseWait", "Please wait...");
 		addString("OK", "OK");
@@ -434,22 +458,28 @@ function lockUI(lock) {
 		addString("CreateAttribute", "Create Attribute");
 		addString("CreateText", "Create Text");
 		addString("CreateComment", "Create Comment");
+		addString("CreateDocument", "Create Document");
+		addString("DeleteFile", "Delete File");
 		addString("LoadImage", "Load Image");
 		addString("SimpleMode", "Simple Mode");
 		addString("AdvancedMode", "Advanced Mode");
 		addString("UseLoremIpsum", "Use Lorem Ipsum Paragraph");
 		addString("PlaceholderText", "[Enter your text here]");
-		addString("ErrorBlockInsideInline", "A block element cannot be a child of an inline element \uD83D\uDE22");
-		addString("ErrorInlineParentBlock", "An inline element cannot be the parent of a block element \uD83D\uDE22");
-		addString("ErrorNewElementMustHaveChildren", "The new element must also be able to have children \uD83D\uDE22");
-		addString("ErrorNewElementMustNotHaveChildren", "The new element must also not be able to have children \uD83D\uDE22");
-		addString("ErrorNoFile", "Your browser does not support advanced file access \uD83D\uDE22");
-		addString("ErrorFileTooLarge", "Please, select an image with at most 1 MiB \uD83D\uDE22");
-		addString("ErrorFileLoad", "An error occurred while reading the file \uD83D\uDE22");
-		addString("ErrorInvalidHTML", "The selected file does not seem to be a valid HTML file \uD83D\uDE22");
-		addString("ErrorInvalidChar", "You cannot enter the symbols < or > here. For more information, please, refer to the \"HTML Entities\" link below \uD83D\uDE22");
+		addString("ErrorBlockInsideInline", "A block element cannot be a child of an inline element " + emoji.sad);
+		addString("ErrorInlineParentBlock", "An inline element cannot be the parent of a block element " + emoji.sad);
+		addString("ErrorNewElementMustHaveChildren", "The new element must also be able to have children " + emoji.sad);
+		addString("ErrorNewElementMustNotHaveChildren", "The new element must also not be able to have children " + emoji.sad);
+		addString("ErrorNoFile", "Your browser does not support advanced file access " + emoji.sad);
+		addString("ErrorFileTooLarge", "Please, select an image with at most 1 MiB " + emoji.sad);
+		addString("ErrorFileLoad", "An error occurred while reading the file " + emoji.sad);
+		addString("ErrorDownload", "An error occurred while downloading data " + emoji.sad);
+		addString("ErrorInvalidFileName", "Invalid file name " + emoji.sad);
+		addString("ErrorFileAlreadyExists", "There is already a file with that same name " + emoji.sad);
+		addString("ErrorInvalidHTML", "The selected file does not seem to be a valid HTML file " + emoji.sad);
+		addString("ErrorInvalidChar", "You cannot enter the symbols < or > here. For more information, please, refer to the \"HTML Entities\" link below " + emoji.sad);
 		addString("ConfirmQuit", "Do you really want to quit? You will lose unsaved information.");
 		addString("ConfirmClose", "Do you really want to continue? You will lose unsaved information.");
+		addString("ConfirmDelete", "Do you really want to delete the file ");
 		addString("MoveMessage", "Click where you wish to move the element to or press Esc to cancel");
 		addString("MoveMessageCreateElement", "Click where you wish to create the new element or press Esc to cancel");
 		addString("MoveMessageCreateText", "Click where you wish to create the new text or press Esc to cancel");
@@ -474,8 +504,11 @@ function lockUI(lock) {
 		addString("ExampleFileHTML", "/labs-editor/example-html.html");
 		addString("Install", "Install Editor\u2026");
 		addString("InstallHTML", "Install Editor (HTML)\u2026");
+		addString("InstallPhaser", "Install Editor (Phaser)\u2026");
 		addString("ShowDecoration", "Show Full HTML");
 		addString("HideDecoration", "Hide Full HTML");
+		addString("ShowFileList", "Show Files");
+		addString("HideFileList", "Hide Files");
 		addString("ShowConsole", "Show Console");
 		addString("HideConsole", "Hide Console");
 		addString("ClearConsole", "Clear Console");
@@ -483,6 +516,11 @@ function lockUI(lock) {
 		addString("LibrariesEllipsis", "Libraries\u2026");
 		addString("Theme", "Theme");
 		addString("ThemeEllipsis", "Theme\u2026");
+		addString("BrowserNotSupported", "Unfortunately, your browser does not support this feature " + emoji.sad);
+		addString("RememberToAddFileToMenu", "Please, remember to add the file name to the list in menu.js " + emoji.happy);
+		addString("levels", "levels");
+		addString("gameWidth", "gameWidth");
+		addString("gameHeight", "gameHeight");
 	}
 
 	window.translate = function (key) { return (editorStrings[key] || key); };
