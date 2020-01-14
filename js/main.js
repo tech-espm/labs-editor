@@ -474,6 +474,7 @@ function lockUI(lock) {
 		addString("ThemeEllipsis", "Tema\u2026");
 		addString("BrowserNotSupported", "Infelizmente seu navegador não suporta essa funcionalidade " + emoji.sad);
 		addString("RememberToAddFileToMenu", "Por favor, lembre-se de adicionar o nome do arquivo à lista em menu.js " + emoji.happy);
+		addString("DragMessage", "Solte os arquivos para enviá-los");
 		addString("levels", "telas");
 		addString("gameWidth", "larguraJogo");
 		addString("gameHeight", "alturaJogo");
@@ -576,6 +577,7 @@ function lockUI(lock) {
 		addString("ThemeEllipsis", "Theme\u2026");
 		addString("BrowserNotSupported", "Unfortunately, your browser does not support this feature " + emoji.sad);
 		addString("RememberToAddFileToMenu", "Please, remember to add the file name to the list in menu.js " + emoji.happy);
+		addString("DragMessage", "Drop the files to send them");
 		addString("levels", "levels");
 		addString("gameWidth", "gameWidth");
 		addString("gameHeight", "gameHeight");

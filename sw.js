@@ -60,8 +60,12 @@ self.addEventListener("install", (event) => {
 			"/labs-editor/images/loading-grey-t.gif",
 			"/labs-editor/images/logo.png",
 			"/labs-editor/lib/ace-1.4.7/ace.js",
+			"/labs-editor/lib/ace-1.4.7/ext-keybinding_menu.js",
 			"/labs-editor/lib/ace-1.4.7/ext-language_tools.js",
+			"/labs-editor/lib/ace-1.4.7/ext-options.js",
+			"/labs-editor/lib/ace-1.4.7/ext-prompt.js",
 			"/labs-editor/lib/ace-1.4.7/ext-searchbox.js",
+			"/labs-editor/lib/ace-1.4.7/keybinding-labs.js",
 			"/labs-editor/lib/ace-1.4.7/mode-css.js",
 			"/labs-editor/lib/ace-1.4.7/mode-html.js",
 			"/labs-editor/lib/ace-1.4.7/mode-javascript.js",
@@ -148,16 +152,6 @@ function fixResponseHeaders(response) {
 self.addEventListener("fetch", (event) => {
 
 	const url = event.request.url;
-	// @@@ debug only
-	if (url.endsWith("/phaser/") ||
-		url.endsWith("/phaser/game/") ||
-		url.endsWith("/html/") ||
-		url.endsWith("/style.css?v=1.0.0") ||
-		url.endsWith("/main.js?v=1.0.0") ||
-		url.endsWith("/advanced.js?v=1.0.0")) {
-		event.respondWith(fetch(event.request));
-		return;
-	}
 
 	if (url.indexOf("/labs-editor/html/site/") >= 0) {
 		// Look for the resource in the html cache, not in our cache.
@@ -185,7 +179,8 @@ self.addEventListener("fetch", (event) => {
 									}
 									break;
 								}
-							} else {
+							} else if (state) {
+								i--;
 								state = 0;
 							}
 						}
