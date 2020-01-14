@@ -263,12 +263,6 @@ window.BlobDownloader = {
 	}
 };
 
-window.itemLabsEditorTheme = "labs-editor-theme";
-window.itemLabsEditorFileListVisible = "labs-editor-file-list-visible";
-window.itemLabsEditorConsoleVisible = "labs-editor-console-visible";
-window.itemLabsEditorHasGame = "labs-editor-has-game";
-window.itemLabsEditorGameFileList = "labs-editor-game-file-list";
-
 // Helper functions
 function _ID(id) { return document.getElementById(id); }
 function _SA(parent, name, value) { parent.setAttribute(name, value); return parent; }
@@ -284,6 +278,35 @@ function _IB(parent, newChild, refChild) { parent.insertBefore(newChild, refChil
 function _BTN(className, icon, title, parent, clickHandler) { var btn = _CE("button", className, parent); _CE("i", "fa fa-nomargin " + icon, btn); _SA(btn, "type", "button"); btn.onclick = clickHandler; if (title) _SA(btn, "title", title); return btn; }
 function _RC(parent, oldChild) { parent.removeChild(oldChild); return parent; }
 
+function loadFileDataURL(file, callback) {
+	if (loading) {
+		callback(null);
+		return;
+	}
+
+	if (!("FileReader" in window)) {
+		Notification.error(translate("ErrorNoFile"), true);
+		callback(null);
+		return;
+	}
+
+	loading = true;
+	Notification.wait();
+
+	var reader = new FileReader();
+	reader.onload = function () {
+		loading = false;
+		Notification.hide();
+		callback(reader.result);
+	};
+	reader.onerror = function () {
+		loading = false;
+		Notification.error(translate("ErrorFileLoad"), true);
+		callback(null);
+	};
+	reader.readAsDataURL(file);
+}
+
 function lockUI(lock) {
 	if (lock) {
 		editorContainer.style.pointerEvents = "none";
@@ -295,6 +318,37 @@ function lockUI(lock) {
 		bar.style.pointerEvents = "";
 	}
 }
+
+// Service Worker
+(function () {
+	var installationPrompt = null;
+
+	if (("serviceWorker" in navigator)) {
+		window.addEventListener("beforeinstallprompt", function (e) {
+			if (("preventDefault" in e))
+				e.preventDefault();
+			installationPrompt = e;
+			_ID("editorActionInstallSeparator").style.display = "";
+			_ID("editorActionInstallItem").style.display = "";
+		});
+
+		_ID("editorActionInstall").onclick = function (e) {
+			$("#editorMenuDropdown").dropdown("toggle");
+
+			_ID("editorActionInstallSeparator").style.display = "none";
+			_ID("editorActionInstallItem").style.display = "none";
+
+			if (installationPrompt) {
+				installationPrompt.prompt();
+				installationPrompt = null;
+			}
+
+			return cancelEvent(e);
+		};
+
+		navigator.serviceWorker.register("/labs-editor/sw.js");
+	}
+})();
 
 // Query String and PWA
 (function () {
@@ -360,6 +414,7 @@ function lockUI(lock) {
 		addString("CreateComment", "Criar Comentário");
 		addString("CreateDocument", "Criar Documento");
 		addString("DeleteFile", "Excluir Arquivo");
+		addString("UploadFiles", "Enviar Arquivos");
 		addString("LoadImage", "Carregar Imagem");
 		addString("SimpleMode", "Modo Simples");
 		addString("AdvancedMode", "Modo Avançado");
@@ -371,6 +426,7 @@ function lockUI(lock) {
 		addString("ErrorNewElementMustNotHaveChildren", "O novo elemento também não pode ter filhos " + emoji.sad);
 		addString("ErrorNoFile", "Seu browser não oferece suporte a acesso avançado de arquivos " + emoji.sad);
 		addString("ErrorFileTooLarge", "Por favor, escolha uma imagem com tamanho de até 1 MiB " + emoji.sad);
+		addString("ErrorAdvancedFileTooLarge", "Por favor, escolha um arquivo com tamanho de até 2 MiB " + emoji.sad);
 		addString("ErrorFileLoad", "Ocorreu um erro ao ler o arquivo " + emoji.sad);
 		addString("ErrorDownload", "Ocorreu um erro durante o download dos dados " + emoji.sad);
 		addString("ErrorInvalidFileName", "Nome de arquivo inválido " + emoji.sad);
@@ -460,6 +516,7 @@ function lockUI(lock) {
 		addString("CreateComment", "Create Comment");
 		addString("CreateDocument", "Create Document");
 		addString("DeleteFile", "Delete File");
+		addString("UploadFiles", "Upload Files");
 		addString("LoadImage", "Load Image");
 		addString("SimpleMode", "Simple Mode");
 		addString("AdvancedMode", "Advanced Mode");
@@ -471,6 +528,7 @@ function lockUI(lock) {
 		addString("ErrorNewElementMustNotHaveChildren", "The new element must also not be able to have children " + emoji.sad);
 		addString("ErrorNoFile", "Your browser does not support advanced file access " + emoji.sad);
 		addString("ErrorFileTooLarge", "Please, select an image with at most 1 MiB " + emoji.sad);
+		addString("ErrorAdvancedFileTooLarge", "Please, select an image with at most 2 MiB " + emoji.sad);
 		addString("ErrorFileLoad", "An error occurred while reading the file " + emoji.sad);
 		addString("ErrorDownload", "An error occurred while downloading data " + emoji.sad);
 		addString("ErrorInvalidFileName", "Invalid file name " + emoji.sad);

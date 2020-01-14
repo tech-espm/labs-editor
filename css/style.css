@@ -12,7 +12,7 @@ textarea {
 }
 
 .editor, .editor-html, .monospace {
-	font-family: 'Roboto Mono', monospace;
+	font-family: Consolas, 'Roboto Mono', monospace;
 	font-style: normal;
 }
 
@@ -21,7 +21,7 @@ textarea {
 }
 
 .editor-html, .monospace {
-	font-size: 12px;
+	font-size: 13px;
 }
 
 .fa-margin {
@@ -166,7 +166,7 @@ textarea {
 
 	.editor-html-file-list-item.current {
 		font-weight: bold;
-		color: #f00;
+		color: #00f;
 	}
 
 .editor-html-file-list-item-button {

@@ -8,6 +8,7 @@
 const CACHE_PREFIX = "labs-editor-static-cache";
 const CACHE_VERSION = "-v4";
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
+const HTML_CACHE_NAME = "labs-editor-html-cache";
 const GAME_CACHE_NAME = "labs-editor-game-cache";
 
 self.addEventListener("install", (event) => {
@@ -23,17 +24,24 @@ self.addEventListener("install", (event) => {
 	self.skipWaiting();
 
 	event.waitUntil(caches.open(CACHE_NAME).then((cache) => {
-		return cache.addAll([
-			// According to the spec, the service worker file
-			// is handled differently by the browser and needs
-			// not to be added to the cache. I tested it and I
-			// confirm the service worker works offline even when
-			// not present in the cache (despite the error message
-			// displayed by the browser when trying to fetch it).
-			//
-			// Also, there is no need to worry about max-age and
-			// other cache-control headers/settings, because the
-			// CacheStorage API ignores them.
+		// According to the spec, the service worker file
+		// is handled differently by the browser and needs
+		// not to be added to the cache. I tested it and I
+		// confirm the service worker works offline even when
+		// not present in the cache (despite the error message
+		// displayed by the browser when trying to fetch it).
+		//
+		// Also, there is no need to worry about max-age and
+		// other cache-control headers/settings, because the
+		// CacheStorage API ignores them.
+		//
+		// Nevertheless, even though CacheStorage API ignores
+		// them, tests showed that a in few occasions, when
+		// the browser was fetching these files, the file
+		// being added to the cache actually came from the
+		// browser's own cache... Therefore, I switched from
+		// cache.addAll() to this.
+		const files = [
 			"/labs-editor/",
 			"/labs-editor/html/",
 			"/labs-editor/phaser/",
@@ -57,6 +65,8 @@ self.addEventListener("install", (event) => {
 			"/labs-editor/lib/ace-1.4.7/mode-css.js",
 			"/labs-editor/lib/ace-1.4.7/mode-html.js",
 			"/labs-editor/lib/ace-1.4.7/mode-javascript.js",
+			"/labs-editor/lib/ace-1.4.7/mode-json.js",
+			"/labs-editor/lib/ace-1.4.7/mode-markdown.js",
 			"/labs-editor/lib/ace-1.4.7/theme-chrome.js",
 			"/labs-editor/lib/ace-1.4.7/theme-dracula.js",
 			"/labs-editor/lib/ace-1.4.7/theme-eclipse.js",
@@ -68,6 +78,7 @@ self.addEventListener("install", (event) => {
 			"/labs-editor/lib/ace-1.4.7/worker-css.js",
 			"/labs-editor/lib/ace-1.4.7/worker-html.js",
 			"/labs-editor/lib/ace-1.4.7/worker-javascript.js",
+			"/labs-editor/lib/ace-1.4.7/worker-json.js",
 			"/labs-editor/lib/ace-1.4.7/snippets/css.js",
 			"/labs-editor/lib/ace-1.4.7/snippets/html.js",
 			"/labs-editor/lib/ace-1.4.7/snippets/javascript.js",
@@ -83,10 +94,15 @@ self.addEventListener("install", (event) => {
 			"/labs-editor/lib/jquery/jquery-1.0.0.min.js",
 			"/labs-editor/phaser/game/phaser-2.6.2.min.js",
 			// Since these files' contents always change, but their names do not, I
-			// added a version number in order to try to avoid browsers' native cache
+			// added a version number in order to try to avoid browsers' own cache
 			"/labs-editor/css/style.css?v=1.0.0",
+			"/labs-editor/js/advanced.js?v=1.0.0",
 			"/labs-editor/js/main.js?v=1.0.0"
-		]);
+		];
+		const promises = new Array(files.length);
+		for (let i = files.length - 1; i >= 0; i--)
+			promises.push(cache.add(new Request(files[i], { cache: "no-store" })));
+		return Promise.all(promises);
 	}));
 });
 
@@ -105,10 +121,10 @@ self.addEventListener("activate", (event) => {
 			// our current cache storage, taking care not to delete other
 			// cache storages from the domain by checking the key prefix (we
 			// are not using map() to avoid inserting undefined into the array).
-			let oldCachesPromises = [];
+			const oldCachesPromises = [];
 
 			for (let i = keyList.length - 1; i >= 0; i--) {
-				let key = keyList[i];
+				const key = keyList[i];
 				if (key.startsWith(CACHE_PREFIX) && key !== CACHE_NAME)
 					oldCachesPromises.push(caches.delete(key));
 			}
@@ -118,16 +134,88 @@ self.addEventListener("activate", (event) => {
 	);
 });
 
+function fixResponseHeaders(response) {
+	if (!response)
+		return;
+	let headers = response.headers;
+	if (!headers) {
+		headers = new Headers();
+		response.headers = headers;
+	}
+	headers.set("Cache-Control", "private, no-store");
+}
+
 self.addEventListener("fetch", (event) => {
 
 	const url = event.request.url;
+	// @@@ debug only
+	if (url.endsWith("/phaser/") ||
+		url.endsWith("/phaser/game/") ||
+		url.endsWith("/html/") ||
+		url.endsWith("/style.css?v=1.0.0") ||
+		url.endsWith("/main.js?v=1.0.0") ||
+		url.endsWith("/advanced.js?v=1.0.0")) {
+		event.respondWith(fetch(event.request));
+		return;
+	}
 
-	if (url.indexOf("/phaser/game/") >= 0 &&
-		!url.endsWith("/phaser/game/") &&
+	if (url.indexOf("/labs-editor/html/site/") >= 0) {
+		// Look for the resource in the html cache, not in our cache.
+		event.respondWith(caches.open(HTML_CACHE_NAME).then((cache) => {
+			let url = event.request.url;
+			if (url.endsWith("/site/"))
+				url = "/labs-editor/html/site/index.html";
+			return cache.match(url).then((response) => {
+				if (url.endsWith(".html") || url.endsWith(".htm")) {
+					// Try to inject the console redirection into every HTML file
+					return response && response.arrayBuffer().then((arrayBuffer) => {
+						const search = [0x3c, 0x68, 0x65, 0x61, 0x64]; // <head
+						const a = new Uint8Array(arrayBuffer);
+						let state = 0, injectPos = -1;
+						for (let i = 0; i < a.length; i++) {
+							if (a[i] === search[state]) {
+								state++;
+								if (state >= 5) {
+									// We found "<head"! Now, look for ">"
+									for (; i < a.length; i++) {
+										if (a[i] === 0x3e) {
+											injectPos = i + 1;
+											break;
+										}
+									}
+									break;
+								}
+							} else {
+								state = 0;
+							}
+						}
+						const headers = new Headers();
+						headers.append("Cache-Control", "private, no-store");
+						const response = new Response(new Blob((injectPos < 0) ? [a] : [
+							a.slice(0, injectPos),
+							'<script type="text/javascript">console = window.parent.consoleProxy;window.onerror = function(msg, url, line, col, error) { window.parent.consoleProxy.errorHandler(msg, url, line, col, error); return true; }\u003c/script\u003e',
+							a.slice(injectPos)
+						], { type: "text/html" }), { headers: headers });
+						return response;
+					});
+				} else {
+					fixResponseHeaders(response);
+					return response;
+				}
+			});
+		}));
+		return;
+	}
+
+	if (url.indexOf("/labs-editor/phaser/game/") >= 0 &&
+		!url.endsWith("/game/") &&
 		!url.endsWith("/phaser-2.6.2.min.js")) {
 		// Look for the resource in the game cache, not in our cache.
 		event.respondWith(caches.open(GAME_CACHE_NAME).then((cache) => {
-			return cache.match(event.request);
+			return cache.match(event.request).then((response) => {
+				fixResponseHeaders(response);
+				return response;
+			});
 		}));
 		return;
 	}
@@ -153,9 +241,11 @@ self.addEventListener("fetch", (event) => {
 			// (but we will need a usable request later, for cache.put)
 			//
 			// IMPORTANT: Do not use our cache for external requests made
-			// from the game!!!
-			if (!event.request.referrer || (event.request.referrer && event.request.referrer.endsWith("/phaser/game/")))
-				return fetch(event.request);
+			// from the site/game!!!
+			if (event.request.url.indexOf("/labs-editor/") < 0) {
+				if (!event.request.referrer || (event.request.referrer && (event.request.referrer.endsWith("/html/site/") || event.request.referrer.endsWith("/phaser/game/"))))
+					return fetch(event.request);
+			}
 
 			return fetch(event.request.clone()).then((response) => {
 				// If this fetch succeeds, store it in the cache for

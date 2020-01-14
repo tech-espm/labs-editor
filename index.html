@@ -327,20 +327,6 @@
 	<script type="text/javascript">
 		"use strict";
 
-		var installationPrompt = null;
-
-		if (("serviceWorker" in navigator)) {
-			window.addEventListener("beforeinstallprompt", function (e) {
-				if (("preventDefault" in e))
-					e.preventDefault();
-				installationPrompt = e;
-				_ID("editorActionInstallSeparator").style.display = "";
-				_ID("editorActionInstallItem").style.display = "";
-			});
-
-			navigator.serviceWorker.register("sw.js");
-		}
-
 		var loading = true,
 			dirty = false,
 			valueFreeText = null,
@@ -783,35 +769,6 @@
 
 			element.elementContainerVisible = !element.elementContainerVisible;
 			element.className = (element.elementContainerVisible ? "element" : "element collapsed");
-		}
-
-		function loadFileDataURL(file, callback) {
-			if (loading) {
-				callback(null);
-				return;
-			}
-
-			if (!("FileReader" in window)) {
-				Notification.error(translate("ErrorNoFile"), true);
-				callback(null);
-				return;
-			}
-
-			loading = true;
-			Notification.wait();
-
-			var reader = new FileReader();
-			reader.onload = function () {
-				loading = false;
-				Notification.hide();
-				callback(reader.result);
-			};
-			reader.onerror = function () {
-				loading = false;
-				Notification.error(translate("ErrorFileLoad"), true);
-				callback(null);
-			};
-			reader.readAsDataURL(file);
 		}
 
 		function createImageInput(parent, addAsUrl) {
