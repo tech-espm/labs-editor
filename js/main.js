@@ -427,7 +427,9 @@ function lockUI(lock) {
 		addString("ErrorNoFile", "Seu browser não oferece suporte a acesso avançado de arquivos " + emoji.sad);
 		addString("ErrorFileTooLarge", "Por favor, escolha uma imagem com tamanho de até 1 MiB " + emoji.sad);
 		addString("ErrorAdvancedFileTooLarge", "Por favor, escolha um arquivo com tamanho de até 2 MiB " + emoji.sad);
+		addString("ErrorZipContainsFileTooLarge", "Um ou mais arquivos não foram carregados porque o tamanho deles excede 2 MiB " + emoji.sad);
 		addString("ErrorFileLoad", "Ocorreu um erro ao ler o arquivo " + emoji.sad);
+		addString("ErrorFileSave", "Ocorreu um erro ao gravar o arquivo " + emoji.sad);
 		addString("ErrorDownload", "Ocorreu um erro durante o download dos dados " + emoji.sad);
 		addString("ErrorInvalidFileName", "Nome de arquivo inválido " + emoji.sad);
 		addString("ErrorFileAlreadyExists", "Já existe um arquivo com o mesmo nome " + emoji.sad);
@@ -530,7 +532,9 @@ function lockUI(lock) {
 		addString("ErrorNoFile", "Your browser does not support advanced file access " + emoji.sad);
 		addString("ErrorFileTooLarge", "Please, select an image with at most 1 MiB " + emoji.sad);
 		addString("ErrorAdvancedFileTooLarge", "Please, select an image with at most 2 MiB " + emoji.sad);
+		addString("ErrorZipContainsFileTooLarge", "One or more files were not loaded because their size is larger than 2 MiB " + emoji.sad);
 		addString("ErrorFileLoad", "An error occurred while reading the file " + emoji.sad);
+		addString("ErrorFileSave", "An error occurred while saving the file " + emoji.sad);
 		addString("ErrorDownload", "An error occurred while downloading data " + emoji.sad);
 		addString("ErrorInvalidFileName", "Invalid file name " + emoji.sad);
 		addString("ErrorFileAlreadyExists", "There is already a file with that same name " + emoji.sad);

@@ -169,10 +169,20 @@ textarea {
 		color: #00f;
 	}
 
+.editor-html-file-list-item-two-buttons {
+	padding-right: 56px;
+}
+
 .editor-html-file-list-item-button {
 	position: absolute;
 	top: 1px;
 	right: 4px;
+}
+
+.editor-html-file-list-item-button-2 {
+	position: absolute;
+	top: 1px;
+	right: 30px;
 }
 
 .editor-html-console {
@@ -220,7 +230,6 @@ textarea {
 	bottom: 0;
 	width: 8px;
 	cursor: ew-resize;
-	background-color: #fff;
 	border-left: 1px solid #ddd;
 	border-right: 1px solid #ddd;
 	-webkit-transition: background-color ease-in-out .2s;

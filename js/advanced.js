@@ -1,6 +1,7 @@
 "use strict";
 
 // Globals
+window.maximumFileLength = (2 << 20);
 window.itemLabsEditorTheme = "labs-editor-theme";
 window.itemLabsEditorFileListVisible = "labs-editor-file-list-visible";
 window.itemLabsEditorConsoleVisible = "labs-editor-console-visible";
@@ -10,6 +11,7 @@ window.editorContainer = _ID("editorContainer");
 window.editorNeedsResize = true;
 window.editor = null;
 window.editorActionFileLoad = _ID("editorActionFileLoad");
+window.editorActionZipLoad = _ID("editorActionZipLoad");
 window.editorFileListBar = _ID("editorFileListBar");
 window.editorFileList = _ID("editorFileList");
 window.editorFileListVisible = false;
@@ -37,83 +39,196 @@ function resetEditorSession(fileName) {
 	}
 }
 
-function previewDocument(forceSave) {
+function resetEditorFiles(controlLoading, callback) {
+	if (controlLoading) {
+		loading = true;
+		Notification.wait();
+	}
+
+	resetEditorSession(defaultDocument);
+
+	editor.session.setValue(documentNewContent());
+
+	currentDocument = defaultDocument;
+	documentCacheFileList = {};
+	documentCacheFileList[defaultDocument] = defaultDocument;
+	saveDocumentCacheFileList();
+	currentDocumentDiv = _ID("documentDiv" + defaultDocument);
+	window.clearLog();
+	editor.session.getUndoManager().reset();
+
+	_SA(iframe, "src", "about:blank");
+
+	function finished() {
+		saveCurrentDocumentToCache(true, false, function () {
+			if (controlLoading) {
+				loading = false;
+				Notification.hide();
+			}
+
+			if (callback)
+				callback();
+		});
+	}
+
+	caches.delete(documentCacheName).then(finished, finished);
+}
+
+function previewDocument(forceSave, fileName) {
 	if (loading)
 		return;
 
-	saveCurrentDocumentToCache(forceSave, function () {
+	saveCurrentDocumentToCache(forceSave, true, function () {
 		clearLog();
 
-		_SA(iframe, "src", documentPathPrefix);
+		_SA(iframe, "src", (fileName && fileName !== defaultDocument) ? (documentPathPrefix + fileName) : documentPathPrefix);
 	});
 }
 
 function iconFromFileName(fileName) {
 	var i = fileName.lastIndexOf(".");
 	if (i >= 0) {
-		switch (fileName.substr(i + 1).toLowerCase()) {
-			case "htm":
-			case "html":
-			case "js":
-			case "json":
+		var ext = fileName.substr(i).toLowerCase();
+		switch (ext) {
+			case ".htm":
+			case ".html":
+			case ".js":
+			case ".json":
+			case ".xml":
 				return "fa fa-margin fa-code";
-			case "css":
+			case ".css":
 				return "fa fa-margin fa-paint-brush";
-			case "md":
+			case ".markdown":
+			case ".md":
+			case ".txt":
 				return "fa fa-margin fa-file-text-o";
-			case "jpeg":
-			case "jpg":
-			case "png":
-			case "svg":
-				return "fa fa-margin fa-image";
-			case "aac":
-			case "mp3":
-			case "ogg":
-				return "fa fa-margin fa-music";
-			case "mp4":
-				return "fa fa-margin fa-video-camera";
+			default:
+				ext = typeFromLCaseExtension(ext);
+				if (ext.startsWith("image"))
+					return "fa fa-margin fa-image";
+				if (ext.startsWith("audio"))
+					return "fa fa-margin fa-music";
+				if (ext.startsWith("video"))
+					return "fa fa-margin fa-video-camera";
+				break;
 		}
 	}
 
 	return "fa fa-margin fa-file-o";
 }
 
-function typeFromEditableFileName(fileName) {
-	var i = fileName.lastIndexOf(".");
-	if (i >= 0) {
-		switch (fileName.substr(i + 1).toLowerCase()) {
-			case "css":
-				return "text/css";
-			case "htm":
-			case "html":
-				return "text/html";
-			case "js":
-				return "text/javascript";
-			case "json":
-				return "application/json";
-			case "md":
-				return "text/markdown";
-		}
-	}
+// typeFromLCaseExtension
+(function () {
+	var mapping = {
+		".3g2": "audio/3gpp2",
+		".3gp": "audio/3gpp",
+		".7z": "application/x-7z-compressed",
+		".aac": "audio/aac",
+		".abw": "application/x-abiword",
+		".arc": "application/x-freearc",
+		".avi": "video/x-msvideo",
+		".azw": "application/vnd.amazon.ebook",
+		".bin": "application/octet-stream",
+		".bmp": "image/bmp",
+		".bz": "application/x-bzip",
+		".bz2": "application/x-bzip2",
+		".csh": "application/x-csh",
+		".css": "text/css",
+		".csv": "text/csv",
+		".doc": "application/msword",
+		".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+		".eot": "application/vnd.ms-fontobject",
+		".epub": "application/epub+zip",
+		".gif": "image/gif",
+		".gz": "application/gzip",
+		".htm": "text/html",
+		".html": "text/html",
+		".ico": "image/vnd.microsoft.icon",
+		".ics": "text/calendar",
+		".jar": "application/java-archive",
+		".jpeg": "image/jpeg",
+		".jpg": "image/jpeg",
+		".js": "text/javascript",
+		".json": "application/json",
+		".jsonld": "application/ld+json",
+		".markdown": "text/markdown",
+		".md": "text/markdown",
+		".mid": "audio/midi",
+		".midi": "audio/midi",
+		".mjs": "text/javascript",
+		".mp3": "audio/mpeg",
+		".mp4": "video/mp4",
+		".mpeg": "video/mpeg",
+		".mpkg": "application/vnd.apple.installer+xml",
+		".odp": "application/vnd.oasis.opendocument.presentation",
+		".ods": "application/vnd.oasis.opendocument.spreadsheet",
+		".odt": "application/vnd.oasis.opendocument.text",
+		".oga": "audio/ogg",
+		".ogg": "audio/ogg",
+		".ogv": "video/ogg",
+		".ogx": "application/ogg",
+		".opus": "audio/opus",
+		".otf": "font/otf",
+		".pdf": "application/pdf",
+		".php": "application/php",
+		".png": "image/png",
+		".ppt": "application/vnd.ms-powerpoint",
+		".pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+		".rar": "application/x-rar-compressed",
+		".rtf": "application/rtf",
+		".sh": "application/x-sh",
+		".svg": "image/svg+xml",
+		".swf": "application/x-shockwave-flash",
+		".tar": "application/x-tar",
+		".tif": "image/tiff",
+		".tiff": "image/tiff",
+		".ts": "video/mp2t",
+		".ttf": "font/ttf",
+		".txt": "text/plain",
+		".vsd": "application/vnd.visio",
+		".wav": "audio/wav",
+		".weba": "audio/webm",
+		".webm": "video/webm",
+		".webp": "image/webp",
+		".woff": "font/woff",
+		".woff2": "font/woff2",
+		".xhtml": "application/xhtml+xml",
+		".xls": "application/vnd.ms-excel",
+		".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+		".xml": "text/xml",
+		".xul": "application/vnd.mozilla.xul+xml",
+		".zip": "application/zip"
+	};
+	window.typeFromLCaseExtension = function (ext) {
+		return (mapping[ext] || "application/octet-stream");
+	};
+})();
 
-	return "application/octet-stream";
+function typeFromLCaseFileName(lcase) {
+	var i = lcase.lastIndexOf(".");
+	return typeFromLCaseExtension((i >= 0) ? lcase.substr(i) : null);
 }
 
 function modeFromEditableFileName(fileName) {
 	var i = fileName.lastIndexOf(".");
 	if (i >= 0) {
-		switch (fileName.substr(i + 1).toLowerCase()) {
-			case "css":
+		switch (fileName.substr(i).toLowerCase()) {
+			case ".css":
 				return "ace/mode/css";
-			case "htm":
-			case "html":
+			case ".htm":
+			case ".html":
 				return "ace/mode/html";
-			case "js":
+			case ".js":
 				return "ace/mode/javascript";
-			case "json":
+			case ".json":
 				return "ace/mode/json";
-			case "md":
+			case ".markdown":
+			case ".md":
 				return "ace/mode/markdown";
+			case ".txt":
+				return "ace/mode/plain_text";
+			case ".xml":
+				return "ace/mode/xml";
 		}
 	}
 
@@ -123,13 +238,16 @@ function modeFromEditableFileName(fileName) {
 function isFileNameEditable(fileName) {
 	var i = fileName.lastIndexOf(".");
 	if (i >= 0) {
-		switch (fileName.substr(i + 1).toLowerCase()) {
-			case "css":
-			case "htm":
-			case "html":
-			case "js":
-			case "json":
-			case "md":
+		switch (fileName.substr(i).toLowerCase()) {
+			case ".css":
+			case ".htm":
+			case ".html":
+			case ".js":
+			case ".json":
+			case ".markdown":
+			case ".md":
+			case ".txt":
+			case ".xml":
 				return true;
 		}
 	}
@@ -137,22 +255,57 @@ function isFileNameEditable(fileName) {
 	return false;
 }
 
-// Cache Functions
-function loadDocumentFromCache(fileName, showNotification) {
-	if (loading)
-		return;
+function fixDarkTheme() {
+	var bgColor = null, style = _ID("style-dark-mode");
 
-	loading = true;
-	Notification.wait();
+	switch (theme) {
+		case "ace/theme/dracula":
+			bgColor = "#282a36";
+			break;
+		case "ace/theme/mono_industrial":
+			bgColor = "#222c28";
+			break;
+		case "ace/theme/monokai":
+			bgColor = "#272822";
+			break;
+	}
+
+	if (bgColor) {
+		document.body.style.backgroundColor = bgColor;
+		if (!style)
+			_SA(_SA(_SA(_CE("link", null, document.head), "id", "style-dark-mode"), "rel", "stylesheet"), "href", "../css/style-dark.css?v=1.0.0")
+	} else {
+		document.body.style.backgroundColor = "";
+		if (style)
+			document.head.removeChild(style);
+	}
+}
+
+// Cache Functions
+function loadDocumentFromCache(fileName, showNotification, controlLoading, callback) {
+	if (controlLoading) {
+		if (loading)
+			return;
+
+		loading = true;
+		Notification.wait();
+	}
 
 	function loadError(reason) {
-		loading = false;
+		if (controlLoading)
+			loading = false;
+
 		Notification.error(translate("ErrorFileLoad"));
+
+		if (callback)
+			callback();
 	}
 
 	function finishLoading(value) {
-		loading = false;
-		if (showNotification && documentRequiresReminderNotification)
+		if (controlLoading)
+			loading = false;
+
+		if (showNotification && documentRequiresReminderNotification && fileName.endsWith(defaultDocumentExtension))
 			Notification.success(translate("RememberToAddFileToMenu"), true);
 		else
 			Notification.hide();
@@ -167,6 +320,9 @@ function loadDocumentFromCache(fileName, showNotification) {
 		editor.session.setValue(value);
 		editor.session.getUndoManager().reset();
 		editor.focus();
+
+		if (callback)
+			callback();
 	}
 
 	caches.open(documentCacheName).then(function (cache) {
@@ -174,9 +330,9 @@ function loadDocumentFromCache(fileName, showNotification) {
 			if (!response)
 				finishLoading("");
 			else
-				response.text().then(finishLoading).catch(loadError);
-		}).catch(loadError);
-	}).catch(loadError);
+				response.text().then(finishLoading, loadError);
+		}, loadError);
+	}, loadError);
 }
 
 function deleteFileFromCache(fileName, callback) {
@@ -190,7 +346,7 @@ function deleteFileFromCache(fileName, callback) {
 
 			if (callback)
 				callback();
-		}).catch(function (reason) {
+		}, function (reason) {
 			console.error(reason);
 
 			loading = false;
@@ -209,7 +365,7 @@ function saveFileToCache(blob, fileName, newFile, controlLoading, callback) {
 	}
 
 	caches.open(documentCacheName).then(function (cache) {
-		var lcase = fileName.toLowerCase(), actualFileName = fileName;
+		var actualFileName = fileName.trim(), lcase = actualFileName.toLowerCase();
 		if (newFile && (lcase in documentCacheFileList))
 			actualFileName = documentCacheFileList[lcase];
 
@@ -220,7 +376,7 @@ function saveFileToCache(blob, fileName, newFile, controlLoading, callback) {
 
 		var headers = new Headers();
 		headers.append("Cache-Control", "private, no-store");
-		var response = new Response(blob, { headers: headers });
+		var response = new Response((!blob.type || blob.type === "text/html" || blob.type === "application/octet-stream") ? blob.slice(0, blob.size, typeFromLCaseFileName(lcase)) : blob, { headers: headers });
 
 		cache.put(request, response).then(function () {
 			if (controlLoading) {
@@ -235,7 +391,7 @@ function saveFileToCache(blob, fileName, newFile, controlLoading, callback) {
 
 			if (callback)
 				callback();
-		}).catch(function (reason) {
+		}, function (reason) {
 			console.error(reason);
 
 			if (controlLoading) {
@@ -275,10 +431,10 @@ function saveFilesToCache(e, files) {
 		i = -1;
 	}
 
-	function finishLoading(error) {
+	function finishSaving(error) {
 		loading = false;
 		if (error)
-			Notification.error(error, true)
+			Notification.error(error, true);
 		else
 			Notification.hide();
 		if (files)
@@ -291,7 +447,7 @@ function saveFilesToCache(e, files) {
 		var j, file, fileName;
 
 		if (i >= files.length) {
-			finishLoading(null);
+			finishSaving(null);
 			return;
 		}
 		file = files[i];
@@ -300,8 +456,8 @@ function saveFilesToCache(e, files) {
 			return;
 		}
 
-		if (file.size > (2 << 20)) {
-			finishLoading(translate("ErrorAdvancedFileTooLarge"));
+		if (file.size > maximumFileLength) {
+			finishSaving(translate("ErrorAdvancedFileTooLarge"));
 			return;
 		}
 
@@ -325,15 +481,12 @@ function saveFilesToCache(e, files) {
 	return cancelEvent(e);
 }
 
-function saveCurrentDocumentToCache(forceSave, callback) {
-	if (loading)
-		return;
-
+function saveCurrentDocumentToCache(forceSave, controlLoading, callback) {
 	if (forceSave || !editor.session.getUndoManager().isClean()) {
 		saveFileToCache(new Blob([
 			new Uint8Array([0xEF, 0xBB, 0xBF]), // UTF-8 BOM
 			editor.session.getValue()
-		], { type: typeFromEditableFileName(currentDocument) }), currentDocument, false, true, function () {
+		], { type: typeFromLCaseFileName(currentDocument) }), currentDocument, false, controlLoading, function () {
 			editor.session.getUndoManager().markClean();
 
 			if (callback)
@@ -345,14 +498,17 @@ function saveCurrentDocumentToCache(forceSave, callback) {
 }
 
 function updateDocumentCacheFileList() {
-	var i, fileName, div, button, fileList = [];
+	var i, isDefault = false, hasPlayButton = false, hasTwoButtons = false, fileName, div, button, fileList = [];
 	for (fileName in documentCacheFileList)
-		fileList.push(documentCacheFileList[fileName]);
+		fileList.push({
+			lcase: fileName,
+			fileName: documentCacheFileList[fileName]
+		});
 
 	fileList.sort(function (a, b) {
-		var adef = a.endsWith(defaultDocumentExtension);
-		if (adef === b.endsWith(defaultDocumentExtension))
-			return (a < b ? -1 : 1);
+		var adef = a.lcase.endsWith(defaultDocumentExtension);
+		if (adef === b.lcase.endsWith(defaultDocumentExtension))
+			return (a.lcase < b.lcase ? -1 : 1);
 		return (adef ? -1 : 1);
 	});
 
@@ -369,7 +525,7 @@ function updateDocumentCacheFileList() {
 
 		if (isFileNameEditable(fileName)) {
 			if (fileName !== currentDocument)
-				saveCurrentDocumentToCache(false, function () { loadDocumentFromCache(fileName, false); });
+				saveCurrentDocumentToCache(false, true, function () { loadDocumentFromCache(fileName, false, true, null); });
 		} else {
 			window.open(documentPathPrefix + fileName);
 		}
@@ -396,32 +552,38 @@ function updateDocumentCacheFileList() {
 		return cancelEvent(e);
 	}
 
+	function preview() {
+		previewDocument(false, _GA(this, "data-name"));
+	}
+
 	for (i = 0; i < fileList.length; i++) {
-		fileName = fileList[i];
+		fileName = fileList[i].fileName;
+		isDefault = (fileName === defaultDocument);
+		hasPlayButton = (fileName === defaultDocument || (documentCanPreviewAllDefaultFiles && fileName.endsWith(defaultDocumentExtension)));
+		hasTwoButtons = (!isDefault && hasPlayButton);
 		if (currentDocument === fileName) {
-			div = _CE("div", "editor-html-file-list-item current");
+			div = _CE("div", "editor-html-file-list-item current" + (hasTwoButtons ? " editor-html-file-list-item-two-buttons" : ""));
 			currentDocumentDiv = div;
 		} else {
-			div = _CE("div", "editor-html-file-list-item");
+			div = _CE("div", "editor-html-file-list-item" + (hasTwoButtons ? " editor-html-file-list-item-two-buttons" : ""));
 		}
 		_SA(_SA(_SA(div, "id", "documentDiv" + fileName), "title", fileName), "data-name", fileName);
 		div.onclick = loadFileFromDiv;
 		_CE("i", iconFromFileName(fileName), div);
 		_TXT(fileName, div);
-		if (fileName === defaultDocument) {
-			button = _CE("button", "btn btn-outline btn-success btn-xs editor-html-file-list-item-button", div);
-			button.onclick = function () {
-				previewDocument(false);
-			};
-			_SA(button, "data-name", fileName);
-			_SA(button, "title", translate("PreviewPage"));
-			_CE("i", "fa fa-play", button);
-		} else {
-			button = _CE("button", "btn btn-outline btn-danger btn-xs editor-html-file-list-item-button", div);
+		if (!isDefault) {
+			button = _CE("button", "btn btn-outline btn-danger btn-xs " + (hasTwoButtons ? "editor-html-file-list-item-button-2" : "editor-html-file-list-item-button"), div);
 			button.onclick = deleteFileFromDiv;
 			_SA(button, "data-name", fileName);
 			_SA(button, "title", translate("Delete"));
 			_CE("i", "fa fa-times", button);
+		}
+		if (hasPlayButton) {
+			button = _CE("button", "btn btn-outline btn-success btn-xs editor-html-file-list-item-button", div);
+			button.onclick = preview;
+			_SA(button, "data-name", fileName);
+			_SA(button, "title", translate("PreviewPage"));
+			_CE("i", "fa fa-play", button);
 		}
 		_AC(editorFileList, div);
 	}
@@ -457,7 +619,133 @@ function loadFilesFromCache() {
 
 	loadDocumentCacheFileList();
 
-	loadDocumentFromCache(defaultDocument, false);
+	loadDocumentFromCache(defaultDocument, false, true, null);
+}
+
+function loadFilesFromZip(zipFile) {
+	loading = true;
+	Notification.wait();
+
+	function finishLoading(error) {
+		loadDocumentFromCache(defaultDocument, false, false, function () {
+			loading = false;
+			if (error)
+				Notification.error(error, true);
+			else
+				Notification.hide();
+			editorActionZipLoad.value = "";
+		});
+	}
+
+	function loadError(reason) {
+		finishSaving(translate("ErrorFileSave"));
+	}
+
+	JSZip.loadAsync(zipFile).then(function (zip) {
+		resetEditorFiles(false, function () {
+			var i = -1, lengthError = false, zipEntries = [];
+
+			zip.forEach(function (relativePath, zipEntry) {
+				if (documentExtraZipFiles && documentExtraZipFiles.length) {
+					var j, lcase = zipEntry.name.toLowerCase();
+					for (j = documentExtraZipFiles.length - 1; j >= 0; j--) {
+						if (lcase === documentExtraZipFiles[j].nameInZip)
+							return;
+					}
+				}
+				if (zipEntry._data.uncompressedSize > maximumFileLength)
+					lengthError = true;
+				else
+					zipEntries.push(zipEntry);
+			});
+
+			function loadNextZipEntry() {
+				i++;
+
+				if (i >= zipEntries.length) {
+					finishLoading(lengthError ? translate("ErrorZipContainsFileTooLarge") : null);
+					return;
+				}
+
+				zipEntries[i].async("blob").then(function (blob) {
+					saveFileToCache(blob, zipEntries[i].name, true, false, loadNextZipEntry);
+				}, loadError);
+			}
+
+			loadNextZipEntry();
+		});
+	}, loadError);
+}
+
+function saveFilesToZip(zipFileName) {
+	loading = true;
+	Notification.wait();
+
+	saveCurrentDocumentToCache(false, false, function () {
+		var i, files = [], zip = new JSZip();
+
+		if (documentExtraZipFiles && documentExtraZipFiles.length)
+			files.push.apply(files, documentExtraZipFiles)
+
+		for (i in documentCacheFileList) {
+			files.push({
+				path: null, // Load from cache
+				nameInZip: documentCacheFileList[i]
+			});
+		}
+
+		function finishSaving(error) {
+			loading = false;
+			if (error)
+				Notification.error(error, true);
+			else
+				Notification.hide();
+		}
+
+		function saveError(reason) {
+			finishSaving(translate("ErrorFileSave"));
+		}
+
+		i = -1;
+
+		function saveNextFile() {
+			i++;
+
+			var file, fileName;
+
+			function saveResponse(response) {
+				if (!response)
+					saveNextFile();
+				else
+					response.blob().then(function (blob) {
+						zip.file(fileName, blob, { binary: true });
+						saveNextFile();
+					}, saveError);
+			}
+
+			if (i >= files.length) {
+				zip.generateAsync({ type: "blob" }).then(function (content) {
+					BlobDownloader.download(zipFileName, content);
+					finishSaving(null);
+				}, saveError);
+				return;
+			}
+			file = files[i];
+			fileName = file.nameInZip;
+
+			if (!file.path) {
+				// Load from cache
+				caches.open(documentCacheName).then(function (cache) {
+					cache.match(documentPathPrefix + fileName).then(saveResponse, saveError);
+				}, saveError);
+			} else {
+				// Load from request
+				fetch(new Request(file.path, { cache: "no-store" })).then(saveResponse, saveError);
+			}
+		}
+
+		saveNextFile();
+	});
 }
 
 // Initial
@@ -505,6 +793,8 @@ function loadFilesFromCache() {
 		enableLiveAutocompletion: true,
 		keyboardHandler: "ace/keyboard/labs"
 	});
+
+	fixDarkTheme();
 
 	window.resizeWindow();
 
@@ -581,31 +871,7 @@ function loadFilesFromCache() {
 	};
 
 	function newDocument() {
-		resetEditorSession(defaultDocument);
-
-		editor.session.setValue(documentNewContent());
-
-		currentDocument = defaultDocument;
-		documentCacheFileList = {};
-		documentCacheFileList[defaultDocument] = defaultDocument;
-		saveDocumentCacheFileList();
-		currentDocumentDiv = _ID("documentDiv" + defaultDocument);
-		window.clearLog();
-		editor.session.getUndoManager().reset();
-
-		_SA(iframe, "src", "about:blank");
-
-		function finished() {
-			loading = false;
-			Notification.hide();
-
-			saveCurrentDocumentToCache(true);
-		}
-
-		loading = true;
-		Notification.wait();
-
-		caches.delete(documentCacheName).then(finished).catch(finished);
+		resetEditorFiles(true, null);
 	}
 
 	_ID("editorPlay").onclick = function () {
@@ -617,7 +883,7 @@ function loadFilesFromCache() {
 		if (!localStorage.getItem(itemLabsEditorHasDocument))
 			localStorage.setItem(itemLabsEditorHasDocument, "1");
 
-		previewDocument(false);
+		previewDocument(false, null);
 	};
 
 	_ID("editorActionNew").onclick = function (e) {
@@ -640,10 +906,10 @@ function loadFilesFromCache() {
 
 		$("#editorMenuDropdown").dropdown("toggle");
 
-		//if (!confirmClose())
-		//	return cancelEvent(e);
+		if (!confirmClose())
+			return cancelEvent(e);
 
-		//editorActionFileLoad.click();
+		editorActionZipLoad.click();
 
 		return cancelEvent(e);
 	};
@@ -654,10 +920,10 @@ function loadFilesFromCache() {
 
 		$("#editorMenuDropdown").dropdown("toggle");
 
-		//$("#modalSave").modal({
-		//	keyboard: true,
-		//	backdrop: true
-		//});
+		$("#modalSave").modal({
+			keyboard: true,
+			backdrop: true
+		});
 
 		return cancelEvent(e);
 	};
@@ -782,33 +1048,56 @@ function loadFilesFromCache() {
 			return;
 		}
 
-		if (!editorActionFileLoad.files.length || !editorActionFileLoad.files[0])
+		if (!editorActionFileLoad.files.length || !editorActionFileLoad.files[0]) {
+			editorActionFileLoad.value = "";
 			return;
+		}
 
 		saveFilesToCache(null, editorActionFileLoad.files);
 	};
 
-	modalSaveOk.onclick = function () {
-		var fileName = trim(modalSaveFileName.value);
-		if (!fileName)
+	editorActionZipLoad.onchange = function () {
+		if (loading) {
+			editorActionZipLoad.value = "";
 			return;
+		}
 
-		if (!BlobDownloader.supported) {
+		if (!("files" in editorActionZipLoad)) {
+			editorActionZipLoad.value = "";
 			Notification.error(translate("ErrorNoFile"), true);
 			return;
 		}
 
-		if (fileName.toLowerCase().indexOf(".htm") < 0)
-			fileName += ".html";
+		var zipFile;
+
+		if (!editorActionZipLoad.files.length || !(zipFile = editorActionZipLoad.files[0])) {
+			editorActionZipLoad.value = "";
+			return;
+		}
+
+		if (!zipFile.name.toLowerCase().endsWith(".zip")) {
+			editorActionZipLoad.value = "";
+			Notification.error(translate("ErrorInvalidFileName"), true);
+			return;
+		}
+
+		loadFilesFromZip(zipFile);
+	};
+
+	modalSaveOk.onclick = function () {
+		if (loading)
+			return;
+
+		var fileName = trim(modalSaveFileName.value);
+		if (!fileName)
+			return;
+
+		if (fileName.toLowerCase().indexOf(".zip") < 0)
+			fileName += ".zip";
 
 		$("#modalSave").modal("hide");
 
-		BlobDownloader.download(fileName, new Blob([
-			new Uint8Array([0xEF, 0xBB, 0xBF]), // UTF-8 BOM
-			editor.session.getValue()
-		], { type: "text/html;charset=utf-8" }));
-
-		editor.session.getUndoManager().markClean();
+		saveFilesToZip(fileName);
 	};
 
 	modalDeleteFileOk.onclick = function () {
@@ -825,7 +1114,7 @@ function loadFilesFromCache() {
 			delete documentCacheFileList[fileName.toLowerCase()];
 			saveDocumentCacheFileList();
 
-			loadDocumentFromCache(defaultDocument, false);
+			loadDocumentFromCache(defaultDocument, false, true, null);
 		});
 	};
 
@@ -840,6 +1129,7 @@ function loadFilesFromCache() {
 		// Force lower case extensions
 		var lcase = fileName.toLowerCase(), i = lcase.lastIndexOf("."), ext, fileNameNoExtension, defaultType = false;
 		if (i < 0) {
+			ext = defaultDocumentExtension;
 			fileNameNoExtension = fileName;
 			fileName += defaultDocumentExtension;
 			lcase += defaultDocumentExtension;
@@ -864,10 +1154,10 @@ function loadFilesFromCache() {
 		saveFileToCache(new Blob([
 			new Uint8Array([0xEF, 0xBB, 0xBF]), // UTF-8 BOM
 			(defaultType ? documentNewDocumentContent(fileNameNoExtension) : "\n")
-		], { type: typeFromEditableFileName(fileName) }), fileName, true, true, function () {
+		], { type: typeFromLCaseExtension(ext) }), fileName, true, true, function () {
 			$("#modalCreateDocument").modal("hide");
 
-			loadDocumentFromCache(fileName, true);
+			loadDocumentFromCache(fileName, true, true, null);
 		});
 	};
 
@@ -877,6 +1167,8 @@ function loadFilesFromCache() {
 		localStorage.setItem(itemLabsEditorTheme, theme);
 
 		editor.setTheme(theme);
+
+		fixDarkTheme();
 
 		$("#modalTheme").modal("hide");
 	};

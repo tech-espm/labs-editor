@@ -175,7 +175,7 @@
 				<li role="separator" class="divider"></li>
 				<li><a href="#" data-string="text|ThemeEllipsis" id="editorActionTheme"><i class="fa fa-margin fa-paint-brush"></i></a></li>
 			</ul>
-			<div class="nav-tabs-file-load"><input id="editorActionFileLoad" tabindex="-1" type="file" multiple="multiple" /></div>
+			<div class="nav-tabs-file-load"><input id="editorActionFileLoad" tabindex="-1" type="file" multiple="multiple" /><input id="editorActionZipLoad" tabindex="-1" type="file" accept="application/zip" /></div>
 		</div>
 		<div id="editor" class="editor-html"></div>
 		<div id="editorFileListBar" class="editor-html-file-list-bar">
@@ -189,6 +189,7 @@
 	<iframe class="editor-iframe" id="iframe" frameborder="0"></iframe>
 
 	<script type="text/javascript" src="../lib/jquery/jquery-1.0.0.min.js"></script>
+	<script type="text/javascript" src="../lib/jszip/jszip-1.0.0.min.js"></script>
 	<script type="text/javascript" src="../lib/bootstrap/js/bootstrap-1.0.0.min.js"></script>
 	<script type="text/javascript" src="../lib/ace-1.4.7/ace.js"></script>
 	<script type="text/javascript" src="../lib/ace-1.4.7/ext-searchbox.js"></script>
@@ -200,13 +201,23 @@
 		// Globals
 		window.itemLabsEditorHasDocument = "labs-editor-has-game";
 		window.itemLabsEditorDocumentFileList = "labs-editor-game-file-list";
-		window.defaultDocumentType = "text/javascript";
 		window.defaultDocumentMode = "ace/mode/javascript";
 		window.defaultDocumentExtension = ".js";
 		window.defaultDocument = "menu.js";
 		window.documentPathPrefix = "/labs-editor/phaser/game/";
 		window.documentCacheName = "labs-editor-game-cache";
 		window.documentRequiresReminderNotification = true;
+		window.documentCanPreviewAllDefaultFiles = false;
+		window.documentExtraZipFiles = [
+			{
+				path: "/labs-editor/phaser/game/",
+				nameInZip: "index.html"
+			},
+			{
+				path: "/labs-editor/phaser/game/phaser-2.6.2.min.js",
+				nameInZip: "phaser-2.6.2.min.js"
+			}
+		];
 
 		function documentNewContent() {
 			return 'var ' + translate("levels") + ' = ["menu"];\nvar ' + translate("gameWidth") + ' = 800;\nvar ' + translate("gameHeight") + ' = 600;\n\nfunction menu() {\n\t\n\tthis.preload = function () {\n\t\t\n\t\tgame.stage.backgroundColor = "#0066ff";\n\t\t\n\t};\n\t\n\tthis.create = function () {\n\t\t\n\t};\n\t\n\tthis.update = function () {\n\t\t\n\t};\n\t\n}\n';

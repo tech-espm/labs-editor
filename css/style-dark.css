@@ -1,0 +1,48 @@
+.editor-container {
+	color: #ccc;
+}
+
+.editor-bar {
+	border-left: 1px solid #676767;
+}
+
+	.editor-bar:hover, .editor-bar-drag {
+		background-color: #676767;
+	}
+
+.editor-html, .editor-html-console, .editor-html-file-list-bar, .editor-html-file-list {
+	border-top: 1px solid #676767;
+}
+
+.editor-html-file-list-bar, .editor-html-file-list, .editor-bar {
+	border-right: 1px solid #676767;
+}
+
+.editor-html-file-list-item, .editor-html-console-message, .editor-toolbar {
+	border-bottom: 1px solid #676767;
+}
+
+	.editor-html-file-list-item:hover, .editor-html-file-list-item:focus {
+		background-color: #444;
+	}
+
+	.editor-html-file-list-item:active {
+		background-color: #676767;
+	}
+
+	.editor-html-file-list-item.current {
+		color: #5cf;
+	}
+
+.editor-html-console-message-error {
+	color: #f77;
+}
+
+.editor-container .btn-primary.btn-outline {
+	color: #5cf;
+}
+
+.editor-container .btn-primary.active, .editor-container .btn-primary.focus, .editor-container .btn-primary:active, .editor-container .btn-primary:focus, .editor-container .btn-primary:hover, .editor-container .open > .dropdown-toggle.btn-primary {
+	background-color: #5cf;
+	color: #fff;
+}

@@ -71,6 +71,9 @@ self.addEventListener("install", (event) => {
 			"/labs-editor/lib/ace-1.4.7/mode-javascript.js",
 			"/labs-editor/lib/ace-1.4.7/mode-json.js",
 			"/labs-editor/lib/ace-1.4.7/mode-markdown.js",
+			"/labs-editor/lib/ace-1.4.7/mode-plain_text.js",
+			"/labs-editor/lib/ace-1.4.7/mode-text.js",
+			"/labs-editor/lib/ace-1.4.7/mode-xml.js",
 			"/labs-editor/lib/ace-1.4.7/theme-chrome.js",
 			"/labs-editor/lib/ace-1.4.7/theme-dracula.js",
 			"/labs-editor/lib/ace-1.4.7/theme-eclipse.js",
@@ -83,6 +86,7 @@ self.addEventListener("install", (event) => {
 			"/labs-editor/lib/ace-1.4.7/worker-html.js",
 			"/labs-editor/lib/ace-1.4.7/worker-javascript.js",
 			"/labs-editor/lib/ace-1.4.7/worker-json.js",
+			"/labs-editor/lib/ace-1.4.7/worker-xml.js",
 			"/labs-editor/lib/ace-1.4.7/snippets/css.js",
 			"/labs-editor/lib/ace-1.4.7/snippets/html.js",
 			"/labs-editor/lib/ace-1.4.7/snippets/javascript.js",
@@ -96,10 +100,12 @@ self.addEventListener("install", (event) => {
 			"/labs-editor/lib/font-awesome/fonts/fontawesome-webfont.woff?v=4.7.0",
 			"/labs-editor/lib/font-awesome/fonts/fontawesome-webfont.woff2?v=4.7.0",
 			"/labs-editor/lib/jquery/jquery-1.0.0.min.js",
+			"/labs-editor/lib/jszip/jszip-1.0.0.min.js",
 			"/labs-editor/phaser/game/phaser-2.6.2.min.js",
 			// Since these files' contents always change, but their names do not, I
 			// added a version number in order to try to avoid browsers' own cache
 			"/labs-editor/css/style.css?v=1.0.0",
+			"/labs-editor/css/style-dark.css?v=1.0.0",
 			"/labs-editor/js/advanced.js?v=1.0.0",
 			"/labs-editor/js/main.js?v=1.0.0"
 		];
@@ -152,6 +158,18 @@ function fixResponseHeaders(response) {
 self.addEventListener("fetch", (event) => {
 
 	const url = event.request.url;
+	// @@@ debug only
+	if (url.endsWith("/phaser/") ||
+		url.endsWith("/phaser/game/") ||
+		url.endsWith("/html/") ||
+		url.endsWith("/keybinding-labs.js") ||
+		url.endsWith("/style.css?v=1.0.0") ||
+		url.endsWith("/style-dark.css?v=1.0.0") ||
+		url.endsWith("/main.js?v=1.0.0") ||
+		url.endsWith("/advanced.js?v=1.0.0")) {
+		event.respondWith(fetch(event.request));
+		return;
+	}
 
 	if (url.indexOf("/labs-editor/html/site/") >= 0) {
 		// Look for the resource in the html cache, not in our cache.
@@ -253,7 +271,7 @@ self.addEventListener("fetch", (event) => {
 				// clone of the response to the cache.
 				cache.put(event.request, response.clone());
 				return response;
-			}).catch(() => {
+			}, () => {
 				// The request was neither in our cache nor was it
 				// available from the network (maybe we are offline).
 				// Therefore, try to fulfill requests for favicons with

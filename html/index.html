@@ -215,7 +215,7 @@
 				<li><a href="#" data-string="text|ThemeEllipsis" id="editorActionTheme"><i class="fa fa-margin fa-paint-brush"></i></a></li>
 				<li><a href="#" data-string="text|LibrariesEllipsis" id="editorActionLibraries"><i class="fa fa-margin fa-code"></i></a></li>
 			</ul>
-			<div class="nav-tabs-file-load"><input id="editorActionFileLoad" tabindex="-1" type="file" multiple="multiple" /></div>
+			<div class="nav-tabs-file-load"><input id="editorActionFileLoad" tabindex="-1" type="file" multiple="multiple" /><input id="editorActionZipLoad" tabindex="-1" type="file" accept="application/zip" /></div>
 		</div>
 		<div id="editor" class="editor-html"></div>
 		<div id="editorFileListBar" class="editor-html-file-list-bar">
@@ -229,6 +229,7 @@
 	<iframe class="editor-iframe" id="iframe" frameborder="0"></iframe>
 
 	<script type="text/javascript" src="../lib/jquery/jquery-1.0.0.min.js"></script>
+	<script type="text/javascript" src="../lib/jszip/jszip-1.0.0.min.js"></script>
 	<script type="text/javascript" src="../lib/bootstrap/js/bootstrap-1.0.0.min.js"></script>
 	<script type="text/javascript" src="../lib/ace-1.4.7/ace.js"></script>
 	<script type="text/javascript" src="../lib/ace-1.4.7/ext-searchbox.js"></script>
@@ -240,13 +241,14 @@
 		// Globals
 		window.itemLabsEditorHasDocument = "labs-editor-has-html";
 		window.itemLabsEditorDocumentFileList = "labs-editor-html-file-list";
-		window.defaultDocumentType = "text/html";
 		window.defaultDocumentMode = "ace/mode/html";
 		window.defaultDocumentExtension = ".html";
 		window.defaultDocument = "index.html";
 		window.documentPathPrefix = "/labs-editor/html/site/";
 		window.documentCacheName = "labs-editor-html-cache";
 		window.documentRequiresReminderNotification = false;
+		window.documentCanPreviewAllDefaultFiles = true;
+		window.documentExtraZipFiles = null;
 
 		function documentNewContent() {
 			return '<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml" lang="' +
