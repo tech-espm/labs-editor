@@ -59,6 +59,7 @@ self.addEventListener("install", (event) => {
 			"/labs-editor/favicons/favicon-512x512.png",
 			"/labs-editor/images/loading-grey-t.gif",
 			"/labs-editor/images/logo.png",
+			"/labs-editor/images/logo-dark.png",
 			"/labs-editor/lib/ace-1.4.7/ace.js",
 			"/labs-editor/lib/ace-1.4.7/ext-keybinding_menu.js",
 			"/labs-editor/lib/ace-1.4.7/ext-language_tools.js",
