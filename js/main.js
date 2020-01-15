@@ -385,6 +385,7 @@ function lockUI(lock) {
 		addString("Load", "Abrir");
 		addString("Save", "Salvar");
 		addString("PreviewPage", "Visualizar Página");
+		addString("StopPreview", "Parar Visualização");
 		addString("FileName", "Nome do Arquivo");
 		addString("LoadEllipsis", "Abrir\u2026");
 		addString("SaveEllipsis", "Salvar\u2026");
@@ -490,6 +491,7 @@ function lockUI(lock) {
 		addString("Load", "Load");
 		addString("Save", "Save");
 		addString("PreviewPage", "Preview Page");
+		addString("StopPreview", "Stop Preview");
 		addString("FileName", "File Name");
 		addString("LoadEllipsis", "Load\u2026");
 		addString("SaveEllipsis", "Save\u2026");

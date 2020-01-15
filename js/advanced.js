@@ -886,6 +886,13 @@ function saveFilesToZip(zipFileName) {
 		previewDocument(false, null);
 	};
 
+	_ID("editorStop").onclick = function () {
+		if (loading)
+			return;
+
+		_SA(iframe, "src", "about:blank");
+	};
+
 	_ID("editorActionNew").onclick = function (e) {
 		if (loading)
 			return cancelEvent(e);
