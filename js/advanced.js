@@ -39,7 +39,7 @@ function resetEditorSession(fileName) {
 	}
 }
 
-function resetEditorFiles(controlLoading, callback) {
+function resetEditorFiles(controlLoading, initialContents, callback) {
 	if (controlLoading) {
 		loading = true;
 		Notification.wait();
@@ -47,7 +47,7 @@ function resetEditorFiles(controlLoading, callback) {
 
 	resetEditorSession(defaultDocument);
 
-	editor.session.setValue(documentNewContent());
+	editor.session.setValue(initialContents || documentNewContent());
 
 	currentDocument = defaultDocument;
 	documentCacheFileList = {};
@@ -58,6 +58,8 @@ function resetEditorFiles(controlLoading, callback) {
 	editor.session.getUndoManager().reset();
 
 	_SA(iframe, "src", "about:blank");
+	if (!documentHasBackground)
+		iframe.style.backgroundColor = "";
 
 	function finished() {
 		saveCurrentDocumentToCache(true, false, function () {
@@ -65,6 +67,8 @@ function resetEditorFiles(controlLoading, callback) {
 				loading = false;
 				Notification.hide();
 			}
+
+			editor.focus();
 
 			if (callback)
 				callback();
@@ -81,6 +85,8 @@ function previewDocument(forceSave, fileName) {
 	saveCurrentDocumentToCache(forceSave, true, function () {
 		clearLog();
 
+		if (!documentHasBackground)
+			iframe.style.backgroundColor = "#fff";
 		_SA(iframe, "src", (fileName && fileName !== defaultDocument) ? (documentPathPrefix + fileName) : documentPathPrefix);
 	});
 }
@@ -644,7 +650,7 @@ function loadFilesFromZip(zipFile) {
 	}
 
 	JSZip.loadAsync(zipFile).then(function (zip) {
-		resetEditorFiles(false, function () {
+		resetEditorFiles(false, null, function () {
 			var i = -1, lengthError = false, zipEntries = [];
 
 			zip.forEach(function (relativePath, zipEntry) {
@@ -872,8 +878,8 @@ function saveFilesToZip(zipFileName) {
 			modalCreateDocumentOk.click();
 	};
 
-	function newDocument() {
-		resetEditorFiles(true, null);
+	function newWorkspace() {
+		resetEditorFiles(true, null, null);
 	}
 
 	_ID("editorPlay").onclick = function () {
@@ -893,6 +899,8 @@ function saveFilesToZip(zipFileName) {
 			return;
 
 		_SA(iframe, "src", "about:blank");
+		if (!documentHasBackground)
+			iframe.style.backgroundColor = "";
 	};
 
 	_ID("editorActionNew").onclick = function (e) {
@@ -904,7 +912,7 @@ function saveFilesToZip(zipFileName) {
 		if (!confirmClose())
 			return cancelEvent(e);
 
-		newDocument();
+		newWorkspace();
 
 		return cancelEvent(e);
 	};
@@ -1185,7 +1193,7 @@ function saveFilesToZip(zipFileName) {
 	if (localStorage.getItem(itemLabsEditorHasDocument))
 		loadFilesFromCache();
 	else
-		newDocument();
+		newWorkspace();
 
 	if (localStorage.getItem(itemLabsEditorFileListVisible))
 		toggleFileList();

@@ -247,6 +247,7 @@
 		window.documentCacheName = "labs-editor-html-cache";
 		window.documentRequiresReminderNotification = false;
 		window.documentCanPreviewAllDefaultFiles = true;
+		window.documentHasBackground = false;
 		window.documentExtraZipFiles = null;
 
 		function documentNewContent() {
@@ -271,6 +272,40 @@
 			$("#modalLibraries").on("shown.bs.modal", function () {
 				modalLibrariesText.focus();
 			});
+
+			_ID("editorActionLoadExample").onclick = function (e) {
+				if (loading)
+					return cancelEvent(e);
+
+				$("#editorMenuDropdown").dropdown("toggle");
+
+				if (!confirmClose())
+					return cancelEvent(e);
+
+				loading = true;
+				Notification.wait();
+
+				function loadError(reason) {
+					loading = false;
+					Notification.error(translate("ErrorFileLoad"), true);
+				}
+
+				fetch(new Request(translate("ExampleFileHTML"), { cache: "no-store" })).then(function (response) {
+					if (!response || response.status !== 200) {
+						loadError(null);
+						return;
+					}
+
+					response.text().then(function (value) {
+						resetEditorFiles(false, value, function () {
+							loading = false;
+							Notification.hide();
+						});
+					}, loadError);
+				}, loadError);
+
+				return cancelEvent(e);
+			};
 
 			_ID("editorActionLibraries").onclick = function (e) {
 				if (loading)
