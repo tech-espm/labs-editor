@@ -159,11 +159,18 @@ function fixResponseHeaders(response) {
 self.addEventListener("fetch", (event) => {
 
 	const url = event.request.url;
+
+	// Refer to the comments inside the cache to understand this if!
+	if (url.indexOf("/labs-editor/") < 0)
+		return fetch(event.request);
+
 	// @@@ debug only
-	if (url.endsWith("/phaser/") ||
+	if (url.endsWith("/labs-editor/") ||
+		url.endsWith("/phaser/") ||
 		url.endsWith("/phaser/game/") ||
 		url.endsWith("/html/") ||
 		url.endsWith("/keybinding-labs.js") ||
+		url.endsWith("/theme-labs.js") ||
 		url.endsWith("/style.css?v=1.0.0") ||
 		url.endsWith("/style-dark.css?v=1.0.0") ||
 		url.endsWith("/main.js?v=1.0.0") ||
@@ -254,12 +261,25 @@ self.addEventListener("fetch", (event) => {
 			// consume this stream, rendering event.request unusable
 			// (but we will need a usable request later, for cache.put)
 			//
-			// IMPORTANT: Do not use our cache for external requests made
-			// from the site/game!!!
-			if (event.request.url.indexOf("/labs-editor/") < 0) {
-				if (!event.request.referrer || (event.request.referrer && (event.request.referrer.endsWith("/html/site/") || event.request.referrer.endsWith("/phaser/game/"))))
-					return fetch(event.request);
-			}
+			// IMPORTANT: Unlike a regular app, where we know all the
+			// requests that can be made, we cannot cache any external
+			// requests here, regardless of the referrer. Because if
+			// the user adds a CSS file pointing to a external font,
+			// for example, the referrer will be *the* CSS file, and
+			// not the page, like /html/site/. Unfortunately, that
+			// prevents us from caching the Google Font we use in our
+			// UI... :(
+			//
+			// For that reason, this if was moved outside the cache,
+			// to improve performance.
+			//if (event.request.url.indexOf("/labs-editor/") < 0) {
+			//	if (!event.request.referrer ||
+			//		(event.request.referrer &&
+			//			(event.request.referrer.endsWith("/html/site/") ||
+			//			event.request.referrer.endsWith("/phaser/game/") ||
+			//			event.request.referrer.endsWith("/labs-editor/empty.html"))))
+			//	return fetch(event.request);
+			//}
 
 			return fetch(event.request.clone()).then((response) => {
 				// If this fetch succeeds, store it in the cache for
