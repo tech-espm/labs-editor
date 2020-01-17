@@ -471,6 +471,8 @@ function lockUI(lock) {
 		addString("ShowConsole", "Exibir Console");
 		addString("HideConsole", "Ocultar Console");
 		addString("ClearConsole", "Limpar Console");
+		addString("PreviewInAnotherWindow", "Visualizar em Outra Janela");
+		addString("PreviewInTheSameWindow", "Visualizar na Mesma Janela");
 		addString("Libraries", "Bibliotecas");
 		addString("LibrariesEllipsis", "Bibliotecas\u2026");
 		addString("Theme", "Tema");
@@ -577,6 +579,8 @@ function lockUI(lock) {
 		addString("ShowConsole", "Show Console");
 		addString("HideConsole", "Hide Console");
 		addString("ClearConsole", "Clear Console");
+		addString("PreviewInAnotherWindow", "Preview in Another Window");
+		addString("PreviewInTheSameWindow", "Preview in This Widow");
 		addString("Libraries", "Libraries");
 		addString("LibrariesEllipsis", "Libraries\u2026");
 		addString("Theme", "Theme");
@@ -618,11 +622,29 @@ function lockUI(lock) {
 // Resize
 (function () {
 	var bar = _ID("bar"),
+		barVisible = true,
 		barDrag = false,
 		barDragX = 0,
 		barX = (window.innerWidth >> 1);
 
+	window.setBarVisibility = function (visible) {
+		barVisible = visible;
+		if (visible) {
+			bar.style.display = "block";
+			iframe.style.display = "";
+			resizeWindow();
+		} else {
+			bar.style.display = "none";
+			iframe.style.display = "none";
+			editorContainer.style.width = "100%";
+			if (editorNeedsResize)
+				editor.resize();
+		}
+	};
+
 	window.resizeWindow = function () {
+		if (!barVisible)
+			return;
 		var width = (window.innerWidth | 0);
 		var editorWidth = barX, iframeWidth = width - editorWidth - 8;
 		if (iframeWidth < 150) {

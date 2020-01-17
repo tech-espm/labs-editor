@@ -3,10 +3,12 @@
 // Globals
 window.maximumFileLength = (2 << 20);
 window.itemLabsEditorTheme = "labs-editor-theme";
+window.itemLabsEditorPopupPreview = "labs-editor-popup-preview";
 window.itemLabsEditorFileListVisible = "labs-editor-file-list-visible";
 window.itemLabsEditorConsoleVisible = "labs-editor-console-visible";
 window.loading = false;
 window.theme = null;
+window.editorPopupWindowName = "labs-editor-popup-window";
 window.editorContainer = _ID("editorContainer");
 window.editorNeedsResize = true;
 window.editor = null;
@@ -17,6 +19,8 @@ window.editorFileList = _ID("editorFileList");
 window.editorFileListVisible = false;
 window.editorConsole = _ID("editorConsole");
 window.editorConsoleVisible = false;
+window.editorPopupPreview = false;
+window.editorPopupWindow = null;
 window.iframe = _ID("iframe");
 window.currentEditorMode = null;
 window.currentDocument = defaultDocument;
@@ -45,6 +49,8 @@ function resetEditorFiles(controlLoading, initialContents, callback) {
 		Notification.wait();
 	}
 
+	closePreview();
+
 	resetEditorSession(defaultDocument);
 
 	editor.session.setValue(initialContents || documentNewContent());
@@ -56,10 +62,6 @@ function resetEditorFiles(controlLoading, initialContents, callback) {
 	currentDocumentDiv = _ID("documentDiv" + defaultDocument);
 	window.clearLog();
 	editor.session.getUndoManager().reset();
-
-	_SA(iframe, "src", "about:blank");
-	if (!documentHasBackground)
-		iframe.style.backgroundColor = "";
 
 	function finished() {
 		saveCurrentDocumentToCache(true, false, function () {
@@ -85,10 +87,33 @@ function previewDocument(forceSave, fileName) {
 	saveCurrentDocumentToCache(forceSave, true, function () {
 		clearLog();
 
-		if (!documentHasBackground)
-			iframe.style.backgroundColor = "#fff";
-		_SA(iframe, "src", (fileName && fileName !== defaultDocument) ? (documentPathPrefix + fileName) : documentPathPrefix);
+		var url = ((fileName && fileName !== defaultDocument) ? (documentPathPrefix + fileName) : documentPathPrefix);
+
+		if (editorPopupPreview) {
+			editorPopupWindow = window.open(url, editorPopupWindowName);
+		} else {
+			if (!documentHasBackground)
+				iframe.style.backgroundColor = "#fff";
+			_SA(iframe, "src", url);
+		}
 	});
+}
+
+function closePreview() {
+	if (editorPopupPreview) {
+		try {
+			if (editorPopupWindow)
+				editorPopupWindow.close();
+		} catch (ex) {
+			// Just ignore...
+		} finally {
+			editorPopupWindow = null;
+		}
+	} else {
+		_SA(iframe, "src", "about:blank");
+		if (!documentHasBackground)
+			iframe.style.backgroundColor = "";
+	}
 }
 
 function iconFromFileName(fileName) {
@@ -343,22 +368,28 @@ function loadDocumentFromCache(fileName, showNotification, controlLoading, callb
 	}, loadError);
 }
 
-function deleteFileFromCache(fileName, callback) {
-	loading = true;
-	Notification.wait();
+function deleteFileFromCache(fileName, controlLoading, callback) {
+	if (controlLoading) {
+		loading = true;
+		Notification.wait();
+	}
 
 	caches.open(documentCacheName).then(function (cache) {
 		cache.delete(documentPathPrefix + fileName).then(function () {
-			loading = false;
-			Notification.hide();
+			if (controlLoading) {
+				loading = false;
+				Notification.hide();
+			}
 
 			if (callback)
 				callback();
 		}, function (reason) {
 			console.error(reason);
 
-			loading = false;
-			Notification.hide();
+			if (controlLoading) {
+				loading = false;
+				Notification.hide();
+			}
 
 			if (callback)
 				callback();
@@ -811,6 +842,22 @@ function saveFilesToZip(zipFileName) {
 
 		editor.focus();
 
+		// Workaround to remove a 1-pixel flick in the
+		// first time the window is actually resized...
+
+		var w = editorContainer.style.width;
+
+		editor.resize();
+
+		if (w === "100%") {
+			editorContainer.style.width = "99%";
+			editor.resize();
+		} else {
+			editorContainer.style.width = (parseInt(w) - 1) + "px";
+			editor.resize();
+		}
+
+		editorContainer.style.width = w;
 		editor.resize();
 	}, 250);
 })();
@@ -846,7 +893,8 @@ function saveFilesToZip(zipFileName) {
 
 // Common Actions
 (function () {
-	var editorActionToggleFileListLabel = _ID("editorActionToggleFileListLabel"),
+	var editorTogglePopupPreview = _ID("editorTogglePopupPreview"),
+		editorActionToggleFileListLabel = _ID("editorActionToggleFileListLabel"),
 		editorActionToggleConsoleLabel = _ID("editorActionToggleConsoleLabel"),
 		modalSaveFileName = _ID("modalSaveFileName"),
 		modalSaveOk = _ID("modalSaveOk"),
@@ -894,13 +942,33 @@ function saveFilesToZip(zipFileName) {
 		previewDocument(false, null);
 	};
 
-	_ID("editorStop").onclick = function () {
-		if (loading)
-			return;
+	_ID("editorStop").onclick = closePreview;
 
-		_SA(iframe, "src", "about:blank");
-		if (!documentHasBackground)
-			iframe.style.backgroundColor = "";
+	function togglePopupPreview() {
+		closePreview();
+
+		editorPopupPreview = !editorPopupPreview;
+
+		setBarVisibility(!editorPopupPreview);
+
+		if (editorPopupPreview)
+			_SA(editorTogglePopupPreview, "title", translate("PreviewInAnotherWindow")).innerHTML = '<span class="fa fa-window-restore"></span>';
+		else
+			_SA(editorTogglePopupPreview, "title", translate("PreviewInTheSameWindow")).innerHTML = '<span class="fa fa-window-maximize"></span>';
+	}
+
+	editorTogglePopupPreview.onclick = function (e) {
+		if (loading)
+			return cancelEvent(e);
+
+		togglePopupPreview();
+
+		if (editorPopupPreview)
+			localStorage.setItem(itemLabsEditorPopupPreview, "1");
+		else
+			localStorage.removeItem(itemLabsEditorPopupPreview);
+
+		return cancelEvent(e);
 	};
 
 	_ID("editorActionNew").onclick = function (e) {
@@ -1127,11 +1195,26 @@ function saveFilesToZip(zipFileName) {
 
 		$("#modalDeleteFile").modal("hide");
 
-		deleteFileFromCache(fileName, function () {
-			delete documentCacheFileList[fileName.toLowerCase()];
-			saveDocumentCacheFileList();
+		loading = true;
+		Notification.wait();
 
-			loadDocumentFromCache(defaultDocument, false, true, null);
+		saveCurrentDocumentToCache(false, false, function () {
+			deleteFileFromCache(fileName, false, function () {
+				delete documentCacheFileList[fileName.toLowerCase()];
+				saveDocumentCacheFileList();
+
+				if (fileName === currentDocument) {
+					loadDocumentFromCache(defaultDocument, false, false, function () {
+						loading = false;
+						Notification.hide();
+					});
+				} else {
+					loading = false;
+					Notification.hide();
+
+					editor.focus();
+				}
+			});
 		});
 	};
 
@@ -1194,6 +1277,9 @@ function saveFilesToZip(zipFileName) {
 		loadFilesFromCache();
 	else
 		newWorkspace();
+
+	if (localStorage.getItem(itemLabsEditorPopupPreview))
+		togglePopupPreview();
 
 	if (localStorage.getItem(itemLabsEditorFileListVisible))
 		toggleFileList();
