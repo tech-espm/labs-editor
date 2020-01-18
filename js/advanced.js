@@ -1251,13 +1251,21 @@ function saveFilesToZip(zipFileName) {
 			return;
 		}
 
-		saveFileToCache(new Blob([
-			new Uint8Array([0xEF, 0xBB, 0xBF]), // UTF-8 BOM
-			(defaultType ? documentNewDocumentContent(fileNameNoExtension) : "\n")
-		], { type: typeFromLCaseExtension(ext) }), fileName, true, true, function () {
-			$("#modalCreateDocument").modal("hide");
+		loading = true;
+		Notification.wait();
 
-			loadDocumentFromCache(fileName, true, true, null);
+		saveCurrentDocumentToCache(false, false, function () {
+			saveFileToCache(new Blob([
+				new Uint8Array([0xEF, 0xBB, 0xBF]), // UTF-8 BOM
+				(defaultType ? documentNewDocumentContent(fileNameNoExtension) : "\n")
+			], { type: typeFromLCaseExtension(ext) }), fileName, true, false, function () {
+				$("#modalCreateDocument").modal("hide");
+
+				loadDocumentFromCache(fileName, true, false, function () {
+					loading = false;
+					Notification.hide();
+				});
+			});
 		});
 	};
 
