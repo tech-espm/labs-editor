@@ -164,21 +164,6 @@ self.addEventListener("fetch", (event) => {
 	if (url.indexOf("/labs-editor/") < 0)
 		return fetch(event.request);
 
-	// @@@ debug only
-	if (url.endsWith("/labs-editor/") ||
-		url.endsWith("/phaser/") ||
-		url.endsWith("/phaser/game/") ||
-		url.endsWith("/html/") ||
-		url.endsWith("/keybinding-labs.js") ||
-		url.endsWith("/theme-labs.js") ||
-		url.endsWith("/style.css?v=1.0.0") ||
-		url.endsWith("/style-dark.css?v=1.0.0") ||
-		url.endsWith("/main.js?v=1.0.0") ||
-		url.endsWith("/advanced.js?v=1.0.0")) {
-		event.respondWith(fetch(event.request));
-		return;
-	}
-
 	if (url.indexOf("/labs-editor/html/site/") >= 0) {
 		// Look for the resource in the html cache, not in our cache.
 		event.respondWith(caches.open(HTML_CACHE_NAME).then((cache) => {
