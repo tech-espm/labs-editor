@@ -256,6 +256,8 @@ function modeFromEditableFileName(fileName) {
 			case ".markdown":
 			case ".md":
 				return "ace/mode/markdown";
+			case ".svg":
+				return "ace/mode/svg";
 			case ".txt":
 				return "ace/mode/plain_text";
 			case ".xml":
@@ -277,6 +279,7 @@ function isFileNameEditable(fileName) {
 			case ".json":
 			case ".markdown":
 			case ".md":
+			case ".svg":
 			case ".txt":
 			case ".xml":
 				return true;
@@ -598,7 +601,7 @@ function updateDocumentCacheFileList() {
 	for (i = 0; i < fileList.length; i++) {
 		fileName = fileList[i].fileName;
 		isDefault = (fileName === defaultDocument);
-		hasPlayButton = (fileName === defaultDocument || (documentCanPreviewAllDefaultFiles && fileName.endsWith(defaultDocumentExtension)));
+		hasPlayButton = (fileName === defaultDocument || (documentCanPreviewAllDefaultFiles && fileName.endsWith(defaultDocumentExtension)) || fileName.endsWith(".svg"));
 		hasTwoButtons = (!isDefault && hasPlayButton);
 		if (currentDocument === fileName) {
 			div = _CE("div", "editor-html-file-list-item current" + (hasTwoButtons ? " editor-html-file-list-item-two-buttons" : ""));
