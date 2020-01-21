@@ -1,6 +1,7 @@
 "use strict";
 
 // Globals
+window.EditSession = ace.require("ace/edit_session");
 window.maximumFileLength = (2 << 20);
 window.itemLabsEditorTheme = "labs-editor-theme";
 window.itemLabsEditorPopupPreview = "labs-editor-popup-preview";
@@ -43,6 +44,39 @@ function resetEditorSession(fileName) {
 	}
 }
 
+function cleanupEditorFiles() {
+	if (documentCacheFileList) {
+		var i, file;
+		for (i in documentCacheFileList) {
+			if (!(file = documentCacheFileList[i]) || !file.editSession)
+				continue;
+			file.editSession = null;
+		}
+	}
+	documentCacheFileList = {};
+}
+
+function addEditorFile(lcase, fileName) {
+	if (!(lcase in documentCacheFileList))
+		documentCacheFileList[lcase] = {
+			fileName: fileName,
+			editSession: null
+		};
+}
+
+function getEditorFileName(lcase) {
+	var file;
+	return ((file = documentCacheFileList[lcase]) && file.fileName);
+}
+
+function deleteEditorFile(lcase) {
+	var file;
+	if (!(file = documentCacheFileList[lcase]))
+		return;
+	file.editSession = null;
+	delete documentCacheFileList[lcase];
+}
+
 function resetEditorFiles(controlLoading, initialContents, callback) {
 	if (controlLoading) {
 		loading = true;
@@ -56,8 +90,8 @@ function resetEditorFiles(controlLoading, initialContents, callback) {
 	editor.session.setValue(initialContents || documentNewContent());
 
 	currentDocument = defaultDocument;
-	documentCacheFileList = {};
-	documentCacheFileList[defaultDocument] = defaultDocument;
+	cleanupEditorFiles();
+	addEditorFile(defaultDocument, defaultDocument);
 	saveDocumentCacheFileList();
 	currentDocumentDiv = _ID("documentDiv" + defaultDocument);
 	window.clearLog();
@@ -409,7 +443,7 @@ function saveFileToCache(blob, fileName, newFile, controlLoading, callback) {
 	caches.open(documentCacheName).then(function (cache) {
 		var actualFileName = fileName.trim(), lcase = actualFileName.toLowerCase();
 		if (newFile && (lcase in documentCacheFileList))
-			actualFileName = documentCacheFileList[lcase];
+			actualFileName = getEditorFileName(lcase);
 
 		// The spec says there is no need to worry about max-age
 		// and other cache-control headers/settings, because the
@@ -427,7 +461,7 @@ function saveFileToCache(blob, fileName, newFile, controlLoading, callback) {
 			}
 
 			if (newFile) {
-				documentCacheFileList[lcase] = actualFileName;
+				addEditorFile(lcase, actualFileName);
 				saveDocumentCacheFileList();
 			}
 
@@ -544,7 +578,7 @@ function updateDocumentCacheFileList() {
 	for (fileName in documentCacheFileList)
 		fileList.push({
 			lcase: fileName,
-			fileName: documentCacheFileList[fileName]
+			fileName: getEditorFileName(fileName)
 		});
 
 	fileList.sort(function (a, b) {
@@ -632,24 +666,34 @@ function updateDocumentCacheFileList() {
 }
 
 function loadDocumentCacheFileList() {
-	documentCacheFileList = null;
+	var i, array;
 
 	try {
-		documentCacheFileList = JSON.parse(localStorage.getItem(itemLabsEditorDocumentFileList));
+		array = JSON.parse(localStorage.getItem(itemLabsEditorDocumentFileList));
 	} catch (ex) {
 		// Just ignore...
 	}
 
-	if (!documentCacheFileList || !(defaultDocument in documentCacheFileList)) {
-		documentCacheFileList = {};
-		documentCacheFileList[defaultDocument] = defaultDocument;
+	cleanupEditorFiles();
+
+	if (array) {
+		for (i = array.length - 1; i >= 0; i--)
+			addEditorFile(array[i].toLowerCase(), array[i]);
 	}
+
+	if (!(defaultDocument in documentCacheFileList))
+		addEditorFile(defaultDocument, defaultDocument);
 
 	updateDocumentCacheFileList();
 }
 
 function saveDocumentCacheFileList() {
-	localStorage.setItem(itemLabsEditorDocumentFileList, JSON.stringify(documentCacheFileList));
+	var i, array = [];
+
+	for (i in documentCacheFileList)
+		array.push(documentCacheFileList[i].fileName);
+
+	localStorage.setItem(itemLabsEditorDocumentFileList, JSON.stringify(array));
 
 	updateDocumentCacheFileList();
 }
@@ -732,7 +776,7 @@ function saveFilesToZip(zipFileName) {
 		for (i in documentCacheFileList) {
 			files.push({
 				path: null, // Load from cache
-				nameInZip: documentCacheFileList[i]
+				nameInZip: getEditorFileName(i)
 			});
 		}
 
@@ -1203,7 +1247,7 @@ function saveFilesToZip(zipFileName) {
 
 		saveCurrentDocumentToCache(false, false, function () {
 			deleteFileFromCache(fileName, false, function () {
-				delete documentCacheFileList[fileName.toLowerCase()];
+				deleteEditorFile(fileName.toLowerCase());
 				saveDocumentCacheFileList();
 
 				if (fileName === currentDocument) {
