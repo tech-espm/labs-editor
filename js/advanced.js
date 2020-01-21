@@ -87,7 +87,7 @@ function fixDarkTheme() {
 		_SA(_ID("editorImgLogo"), "src", "../images/logo-dark.png");
 		document.body.style.backgroundColor = bgColor;
 		if (!style)
-			_SA(_SA(_SA(_CE("link", null, document.head), "id", "style-dark-mode"), "rel", "stylesheet"), "href", "../css/style-dark.css?v=1.0.0")
+			_SA(_SA(_SA(_CE("link", null, document.head), "id", "style-dark-mode"), "rel", "stylesheet"), "href", "../css/style-dark.css?v=1.0.1")
 	} else {
 		_SA(_ID("editorImgLogo"), "src", "../images/logo.png");
 		document.body.style.backgroundColor = "";
