@@ -73,6 +73,7 @@ self.addEventListener("install", (event) => {
 			"/labs-editor/lib/ace-1.4.7/mode-json.js",
 			"/labs-editor/lib/ace-1.4.7/mode-markdown.js",
 			"/labs-editor/lib/ace-1.4.7/mode-plain_text.js",
+			"/labs-editor/lib/ace-1.4.7/mode-svg.js",
 			"/labs-editor/lib/ace-1.4.7/mode-text.js",
 			"/labs-editor/lib/ace-1.4.7/mode-xml.js",
 			"/labs-editor/lib/ace-1.4.7/theme-chrome.js",
@@ -156,6 +157,52 @@ function fixResponseHeaders(response) {
 	headers.set("Cache-Control", "private, no-store");
 }
 
+function injectConsole(response) {
+	return response && response.arrayBuffer().then((arrayBuffer) => {
+		const search = [0x3c, 0x68, 0x65, 0x61, 0x64]; // <head
+		const a = new Uint8Array(arrayBuffer);
+		let state = 0, injectPos = -1;
+		for (let i = 0; i < a.length; i++) {
+			if (a[i] === search[state]) {
+				state++;
+				if (state >= 5) {
+					// We found "<head"! Now, look for ">"
+					for (; i < a.length; i++) {
+						if (a[i] === 0x3e) {
+							injectPos = i + 1;
+							break;
+						}
+					}
+					break;
+				}
+			} else if (state) {
+				i--;
+				state = 0;
+			}
+		}
+		const headers = new Headers();
+		headers.append("Cache-Control", "private, no-store");
+		const response = new Response(new Blob((injectPos < 0) ? [a] : [
+			a.slice(0, injectPos),
+			'<script type="text/javascript">if (window.parent && window.parent.consoleProxy) { console = window.parent.consoleProxy; window.onerror = function (msg, url, line, col, error) { window.parent.consoleProxy.errorHandler(msg, url, line, col, error); return true; } } else if (window.opener && window.opener.consoleProxy) { console = window.opener.consoleProxy; window.onerror = function (msg, url, line, col, error) { window.opener.consoleProxy.errorHandler(msg, url, line, col, error); return true; } }\u003c/script\u003e',
+			a.slice(injectPos)
+		], { type: "text/html" }), { headers: headers });
+		return response;
+	});
+}
+
+function cacheMatchAndFixResponse(url, cache) {
+	return cache.match(url).then((response) => {
+		if (url.endsWith(".html") || url.endsWith(".htm")) {
+			// Try to inject the console redirection into every HTML file
+			return injectConsole(response);
+		} else {
+			fixResponseHeaders(response);
+			return response;
+		}
+	});
+}
+
 self.addEventListener("fetch", (event) => {
 
 	const url = event.request.url;
@@ -167,48 +214,7 @@ self.addEventListener("fetch", (event) => {
 	if (url.indexOf("/labs-editor/html/site/") >= 0) {
 		// Look for the resource in the html cache, not in our cache.
 		event.respondWith(caches.open(HTML_CACHE_NAME).then((cache) => {
-			let url = event.request.url;
-			if (url.endsWith("/site/"))
-				url = "/labs-editor/html/site/index.html";
-			return cache.match(url).then((response) => {
-				if (url.endsWith(".html") || url.endsWith(".htm")) {
-					// Try to inject the console redirection into every HTML file
-					return response && response.arrayBuffer().then((arrayBuffer) => {
-						const search = [0x3c, 0x68, 0x65, 0x61, 0x64]; // <head
-						const a = new Uint8Array(arrayBuffer);
-						let state = 0, injectPos = -1;
-						for (let i = 0; i < a.length; i++) {
-							if (a[i] === search[state]) {
-								state++;
-								if (state >= 5) {
-									// We found "<head"! Now, look for ">"
-									for (; i < a.length; i++) {
-										if (a[i] === 0x3e) {
-											injectPos = i + 1;
-											break;
-										}
-									}
-									break;
-								}
-							} else if (state) {
-								i--;
-								state = 0;
-							}
-						}
-						const headers = new Headers();
-						headers.append("Cache-Control", "private, no-store");
-						const response = new Response(new Blob((injectPos < 0) ? [a] : [
-							a.slice(0, injectPos),
-							'<script type="text/javascript">console = window.parent.consoleProxy;window.onerror = function(msg, url, line, col, error) { window.parent.consoleProxy.errorHandler(msg, url, line, col, error); return true; }\u003c/script\u003e',
-							a.slice(injectPos)
-						], { type: "text/html" }), { headers: headers });
-						return response;
-					});
-				} else {
-					fixResponseHeaders(response);
-					return response;
-				}
-			});
+			return cacheMatchAndFixResponse(url.endsWith("/site/") ? "/labs-editor/html/site/index.html" : url, cache);
 		}));
 		return;
 	}
@@ -218,10 +224,7 @@ self.addEventListener("fetch", (event) => {
 		!url.endsWith("/phaser-2.6.2.min.js")) {
 		// Look for the resource in the game cache, not in our cache.
 		event.respondWith(caches.open(GAME_CACHE_NAME).then((cache) => {
-			return cache.match(event.request).then((response) => {
-				fixResponseHeaders(response);
-				return response;
-			});
+			return cacheMatchAndFixResponse(url, cache);
 		}));
 		return;
 	}
@@ -238,7 +241,7 @@ self.addEventListener("fetch", (event) => {
 		return cache.match(event.request).then((response) => {
 			// Return the resource if it has been found.
 			if (response)
-				return response;
+				return (url.endsWith("/game/") ? injectConsole(response) : response);
 
 			// When the resource was not found in the cache,
 			// try to fetch it from the network. We are cloning the
@@ -271,19 +274,18 @@ self.addEventListener("fetch", (event) => {
 				// later! (This means we probably forgot to add a file
 				// to the cache during the installation phase)
 
-				// Just as requests, responses are streams and we will
-				// need two usable streams: one to be used by the cache
-				// and one to be returned to the browser! So, we send a
-				// clone of the response to the cache.
-				if (response && response.status === 200)
-					cache.put(event.request, response.clone());
-				return response;
+				// We are fetching the request from the cache because
+				// we cannot change the headers in a response returned
+				// by fetch().
+				return ((response && response.status === 200) ? cache.put(event.request, response).then(() => {
+					return cacheMatchAndFixResponse(url, cache);
+				}) : response);
 			}, () => {
 				// The request was neither in our cache nor was it
 				// available from the network (maybe we are offline).
 				// Therefore, try to fulfill requests for favicons with
 				// the largest favicon we have available in our cache.
-				if (event.request.url.toString().indexOf("favicon") >= 0)
+				if (url.indexOf("favicon") >= 0)
 					return cache.match("/labs-editor/favicons/favicon-512x512.png");
 
 				// The resource was not in our cache, was not available
