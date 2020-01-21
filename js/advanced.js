@@ -1,7 +1,7 @@
 "use strict";
+"use strict";
 
 // Globals
-window.EditSession = ace.require("ace/edit_session");
 window.maximumFileLength = (2 << 20);
 window.itemLabsEditorTheme = "labs-editor-theme";
 window.itemLabsEditorPopupPreview = "labs-editor-popup-preview";
@@ -23,7 +23,6 @@ window.editorConsoleVisible = false;
 window.editorPopupPreview = false;
 window.editorPopupWindow = null;
 window.iframe = _ID("iframe");
-window.currentEditorMode = null;
 window.currentDocument = defaultDocument;
 window.currentDocumentDiv = null;
 window.documentCacheFileList = null;
@@ -31,87 +30,6 @@ window.documentCacheFileList = null;
 // Helper Functions
 function confirmClose() {
 	return ((editor.session.getUndoManager().isClean() && !localStorage.getItem(itemLabsEditorHasDocument)) || confirm(translate("ConfirmClose")));
-}
-
-function resetEditorSession(fileName) {
-	var mode = modeFromEditableFileName(fileName);
-	if (currentEditorMode !== mode) {
-		editor.session.setMode(mode);
-		currentEditorMode = mode;
-		editor.session.setTabSize(4);
-		editor.session.setUseSoftTabs(false);
-		editor.session.setUseWrapMode(false);
-	}
-}
-
-function cleanupEditorFiles() {
-	if (documentCacheFileList) {
-		var i, file;
-		for (i in documentCacheFileList) {
-			if (!(file = documentCacheFileList[i]) || !file.editSession)
-				continue;
-			file.editSession = null;
-		}
-	}
-	documentCacheFileList = {};
-}
-
-function addEditorFile(lcase, fileName) {
-	if (!(lcase in documentCacheFileList))
-		documentCacheFileList[lcase] = {
-			fileName: fileName,
-			editSession: null
-		};
-}
-
-function getEditorFileName(lcase) {
-	var file;
-	return ((file = documentCacheFileList[lcase]) && file.fileName);
-}
-
-function deleteEditorFile(lcase) {
-	var file;
-	if (!(file = documentCacheFileList[lcase]))
-		return;
-	file.editSession = null;
-	delete documentCacheFileList[lcase];
-}
-
-function resetEditorFiles(controlLoading, initialContents, callback) {
-	if (controlLoading) {
-		loading = true;
-		Notification.wait();
-	}
-
-	closePreview();
-
-	resetEditorSession(defaultDocument);
-
-	editor.session.setValue(initialContents || documentNewContent());
-
-	currentDocument = defaultDocument;
-	cleanupEditorFiles();
-	addEditorFile(defaultDocument, defaultDocument);
-	saveDocumentCacheFileList();
-	currentDocumentDiv = _ID("documentDiv" + defaultDocument);
-	window.clearLog();
-	editor.session.getUndoManager().reset();
-
-	function finished() {
-		saveCurrentDocumentToCache(true, false, function () {
-			if (controlLoading) {
-				loading = false;
-				Notification.hide();
-			}
-
-			editor.focus();
-
-			if (callback)
-				callback();
-		});
-	}
-
-	caches.delete(documentCacheName).then(finished, finished);
 }
 
 function previewDocument(forceSave, fileName) {
@@ -150,38 +68,35 @@ function closePreview() {
 	}
 }
 
-function iconFromFileName(fileName) {
-	var i = fileName.lastIndexOf(".");
-	if (i >= 0) {
-		var ext = fileName.substr(i).toLowerCase();
-		switch (ext) {
-			case ".htm":
-			case ".html":
-			case ".js":
-			case ".json":
-			case ".xml":
-				return "fa fa-margin fa-code";
-			case ".css":
-				return "fa fa-margin fa-paint-brush";
-			case ".markdown":
-			case ".md":
-			case ".txt":
-				return "fa fa-margin fa-file-text-o";
-			default:
-				ext = typeFromLCaseExtension(ext);
-				if (ext.startsWith("image"))
-					return "fa fa-margin fa-image";
-				if (ext.startsWith("audio"))
-					return "fa fa-margin fa-music";
-				if (ext.startsWith("video"))
-					return "fa fa-margin fa-video-camera";
-				break;
-		}
+function fixDarkTheme() {
+	var bgColor = null, style = _ID("style-dark-mode");
+
+	switch (theme) {
+		case "ace/theme/dracula":
+			bgColor = "#282a36";
+			break;
+		case "ace/theme/mono_industrial":
+			bgColor = "#222c28";
+			break;
+		case "ace/theme/monokai":
+			bgColor = "#272822";
+			break;
 	}
 
-	return "fa fa-margin fa-file-o";
+	if (bgColor) {
+		_SA(_ID("editorImgLogo"), "src", "../images/logo-dark.png");
+		document.body.style.backgroundColor = bgColor;
+		if (!style)
+			_SA(_SA(_SA(_CE("link", null, document.head), "id", "style-dark-mode"), "rel", "stylesheet"), "href", "../css/style-dark.css?v=1.0.0")
+	} else {
+		_SA(_ID("editorImgLogo"), "src", "../images/logo.png");
+		document.body.style.backgroundColor = "";
+		if (style)
+			document.head.removeChild(style);
+	}
 }
 
+// File List Functions
 // typeFromLCaseExtension
 (function () {
 	var mapping = {
@@ -269,6 +184,38 @@ function iconFromFileName(fileName) {
 	};
 })();
 
+function iconFromFileName(fileName) {
+	var i = fileName.lastIndexOf(".");
+	if (i >= 0) {
+		var ext = fileName.substr(i).toLowerCase();
+		switch (ext) {
+			case ".htm":
+			case ".html":
+			case ".js":
+			case ".json":
+			case ".xml":
+				return "fa fa-margin fa-code";
+			case ".css":
+				return "fa fa-margin fa-paint-brush";
+			case ".markdown":
+			case ".md":
+			case ".txt":
+				return "fa fa-margin fa-file-text-o";
+			default:
+				ext = typeFromLCaseExtension(ext);
+				if (ext.startsWith("image"))
+					return "fa fa-margin fa-image";
+				if (ext.startsWith("audio"))
+					return "fa fa-margin fa-music";
+				if (ext.startsWith("video"))
+					return "fa fa-margin fa-video-camera";
+				break;
+		}
+	}
+
+	return "fa fa-margin fa-file-o";
+}
+
 function typeFromLCaseFileName(lcase) {
 	var i = lcase.lastIndexOf(".");
 	return typeFromLCaseExtension((i >= 0) ? lcase.substr(i) : null);
@@ -323,36 +270,104 @@ function isFileNameEditable(fileName) {
 	return false;
 }
 
-function fixDarkTheme() {
-	var bgColor = null, style = _ID("style-dark-mode");
+// Session + File Functions
+function activateSession(lcase, fileName) {
+	var file, session;
+	if (!(file = documentCacheFileList[lcase]) || !(session = file.session))
+		return;
+	currentDocument = fileName;
+	editor.setSession(session);
+	editor.focus();
+}
 
-	switch (theme) {
-		case "ace/theme/dracula":
-			bgColor = "#282a36";
-			break;
-		case "ace/theme/mono_industrial":
-			bgColor = "#222c28";
-			break;
-		case "ace/theme/monokai":
-			bgColor = "#272822";
-			break;
+function createSession(lcase, contents) {
+	var file, session, mode = modeFromEditableFileName(lcase);
+	if (!mode)
+		return;
+	if (!(file = documentCacheFileList[lcase]))
+		return;
+	session = ace.createEditSession(contents);
+	session.setMode(mode);
+	session.setTabSize(4);
+	session.setUseSoftTabs(false);
+	session.setUseWrapMode(false);
+	session.getUndoManager().reset();
+	file.session = session;
+}
+
+function cleanupEditorFiles() {
+	if (documentCacheFileList) {
+		var i, file;
+		for (i in documentCacheFileList) {
+			if (!(file = documentCacheFileList[i]) || !file.session)
+				continue;
+			file.session = null;
+		}
+	}
+	documentCacheFileList = {};
+}
+
+function addEditorFile(lcase, fileName) {
+	if (!(lcase in documentCacheFileList))
+		documentCacheFileList[lcase] = {
+			fileName: fileName,
+			session: null
+		};
+}
+
+function getEditorFileName(lcase) {
+	var file;
+	return ((file = documentCacheFileList[lcase]) && file.fileName);
+}
+
+function getEditorSession(lcase) {
+	var file;
+	return ((file = documentCacheFileList[lcase]) && file.session);
+}
+
+function deleteEditorFile(lcase) {
+	var file;
+	if (!(file = documentCacheFileList[lcase]))
+		return;
+	file.session = null;
+	delete documentCacheFileList[lcase];
+}
+
+function resetEditorFiles(controlLoading, initialContents, callback) {
+	if (controlLoading) {
+		loading = true;
+		Notification.wait();
 	}
 
-	if (bgColor) {
-		_SA(_ID("editorImgLogo"), "src", "../images/logo-dark.png");
-		document.body.style.backgroundColor = bgColor;
-		if (!style)
-			_SA(_SA(_SA(_CE("link", null, document.head), "id", "style-dark-mode"), "rel", "stylesheet"), "href", "../css/style-dark.css?v=1.0.0")
-	} else {
-		_SA(_ID("editorImgLogo"), "src", "../images/logo.png");
-		document.body.style.backgroundColor = "";
-		if (style)
-			document.head.removeChild(style);
+	closePreview();
+
+	cleanupEditorFiles();
+	addEditorFile(defaultDocument, defaultDocument);
+	createSession(defaultDocument, initialContents || documentNewContent());
+	activateSession(defaultDocument, defaultDocument);
+	saveDocumentCacheFileList();
+	currentDocumentDiv = _ID("documentDiv" + defaultDocument);
+	window.clearLog();
+
+	function finished() {
+		saveCurrentDocumentToCache(true, false, function () {
+			if (controlLoading) {
+				loading = false;
+				Notification.hide();
+			}
+
+			editor.focus();
+
+			if (callback)
+				callback();
+		});
 	}
+
+	caches.delete(documentCacheName).then(finished, finished);
 }
 
 // Cache Functions
-function loadDocumentFromCache(fileName, showNotification, controlLoading, callback) {
+function loadDocumentFromCache(fileName, showNotification, controlLoading, ignoreSession, callback) {
 	if (controlLoading) {
 		if (loading)
 			return;
@@ -360,6 +375,8 @@ function loadDocumentFromCache(fileName, showNotification, controlLoading, callb
 		loading = true;
 		Notification.wait();
 	}
+
+	var lcase = fileName.toLowerCase(), session = (ignoreSession ? null : getEditorSession(lcase));
 
 	function loadError(reason) {
 		if (controlLoading)
@@ -380,29 +397,32 @@ function loadDocumentFromCache(fileName, showNotification, controlLoading, callb
 		else
 			Notification.hide();
 
-		resetEditorSession(fileName);
-
 		if (currentDocumentDiv)
 			currentDocumentDiv.className = "editor-html-file-list-item";
 		currentDocumentDiv = _ID("documentDiv" + fileName);
 		currentDocumentDiv.className = "editor-html-file-list-item current";
-		currentDocument = fileName;
-		editor.session.setValue(value);
-		editor.session.getUndoManager().reset();
-		editor.focus();
+
+		if (!session)
+			createSession(lcase, value);
+
+		activateSession(lcase, fileName);
 
 		if (callback)
 			callback();
 	}
 
-	caches.open(documentCacheName).then(function (cache) {
-		cache.match(documentPathPrefix + fileName).then(function (response) {
-			if (!response)
-				finishLoading("");
-			else
-				response.text().then(finishLoading, loadError);
+	if (session) {
+		finishLoading(null);
+	} else {
+		caches.open(documentCacheName).then(function (cache) {
+			cache.match(documentPathPrefix + fileName).then(function (response) {
+				if (!response)
+					finishLoading("");
+				else
+					response.text().then(finishLoading, loadError);
+			}, loadError);
 		}, loadError);
-	}, loadError);
+	}
 }
 
 function deleteFileFromCache(fileName, controlLoading, callback) {
@@ -601,7 +621,7 @@ function updateDocumentCacheFileList() {
 
 		if (isFileNameEditable(fileName)) {
 			if (fileName !== currentDocument)
-				saveCurrentDocumentToCache(false, true, function () { loadDocumentFromCache(fileName, false, true, null); });
+				saveCurrentDocumentToCache(false, true, function () { loadDocumentFromCache(fileName, false, true, false, null); });
 		} else {
 			window.open(documentPathPrefix + fileName);
 		}
@@ -693,6 +713,8 @@ function saveDocumentCacheFileList() {
 	for (i in documentCacheFileList)
 		array.push(documentCacheFileList[i].fileName);
 
+	if (!localStorage.getItem(itemLabsEditorHasDocument))
+		localStorage.setItem(itemLabsEditorHasDocument, "1");
 	localStorage.setItem(itemLabsEditorDocumentFileList, JSON.stringify(array));
 
 	updateDocumentCacheFileList();
@@ -705,7 +727,7 @@ function loadFilesFromCache() {
 
 	loadDocumentCacheFileList();
 
-	loadDocumentFromCache(defaultDocument, false, true, null);
+	loadDocumentFromCache(defaultDocument, false, true, true, null);
 }
 
 function loadFilesFromZip(zipFile) {
@@ -713,7 +735,7 @@ function loadFilesFromZip(zipFile) {
 	Notification.wait();
 
 	function finishLoading(error) {
-		loadDocumentFromCache(defaultDocument, false, false, function () {
+		loadDocumentFromCache(defaultDocument, false, false, true, function () {
 			loading = false;
 			if (error)
 				Notification.error(error, true);
@@ -983,9 +1005,6 @@ function saveFilesToZip(zipFileName) {
 
 		window.clearLog();
 
-		if (!localStorage.getItem(itemLabsEditorHasDocument))
-			localStorage.setItem(itemLabsEditorHasDocument, "1");
-
 		previewDocument(false, null);
 	};
 
@@ -1251,7 +1270,7 @@ function saveFilesToZip(zipFileName) {
 				saveDocumentCacheFileList();
 
 				if (fileName === currentDocument) {
-					loadDocumentFromCache(defaultDocument, false, false, function () {
+					loadDocumentFromCache(defaultDocument, false, false, false, function () {
 						loading = false;
 						Notification.hide();
 					});
@@ -1308,7 +1327,7 @@ function saveFilesToZip(zipFileName) {
 			], { type: typeFromLCaseExtension(ext) }), fileName, true, false, function () {
 				$("#modalCreateDocument").modal("hide");
 
-				loadDocumentFromCache(fileName, true, false, function () {
+				loadDocumentFromCache(fileName, true, false, true, function () {
 					loading = false;
 					Notification.hide();
 				});
