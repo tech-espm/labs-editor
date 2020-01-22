@@ -184,6 +184,25 @@ function fixDarkTheme() {
 	};
 })();
 
+function contentFromLCaseExtension(ext) {
+	switch (ext) {
+		case ".css":
+			return 'body {\n\tcolor: black;\n}\n';
+		case ".htm":
+		case ".html":
+			return '<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml" lang="' +
+				window.language +
+				'">\n<head>\n\t<meta charset="utf-8" />\n\t<meta name="viewport" content="width=device-width, initial-scale=1" />\n\t\n\t<title>' +
+				translate("PageTitle") +
+				'</title>\n\t\n\t<style type="text/css">\n\t\t\n\t</style>\n</head>\n<body>\n\t\n</body>\n</html>\n';
+		case ".svg":
+			return '<?xml version="1.0" encoding="utf-8"?>\n<svg\n\txmlns="http://www.w3.org/2000/svg"\n\tversion="1.1"\n\tviewBox="0 0 800 600">\n\t\n</svg>\n';
+		case ".xml":
+			return '<?xml version="1.0" encoding="utf-8"?>\n';
+	}
+	return "\n";
+}
+
 function iconFromFileName(fileName) {
 	var i = fileName.lastIndexOf(".");
 	if (i >= 0) {
@@ -1323,7 +1342,7 @@ function saveFilesToZip(zipFileName) {
 		saveCurrentDocumentToCache(false, false, function () {
 			saveFileToCache(new Blob([
 				new Uint8Array([0xEF, 0xBB, 0xBF]), // UTF-8 BOM
-				(defaultType ? documentNewDocumentContent(fileNameNoExtension) : "\n")
+				(defaultType ? documentNewContent(fileNameNoExtension) : contentFromLCaseExtension(ext))
 			], { type: typeFromLCaseExtension(ext) }), fileName, true, false, function () {
 				$("#modalCreateDocument").modal("hide");
 
@@ -1366,7 +1385,20 @@ function saveFilesToZip(zipFileName) {
 (function () {
 	var messageVisible = false, dragTimeout = 0;
 
+	function isDataTransferValid(dataTransfer) {
+		if (dataTransfer.items) {
+			if (dataTransfer.items.length === 1 && dataTransfer.items[0].kind !== "file")
+				return false;
+		} else if (!dataTransfer.files || !dataTransfer.files.length) {
+			return false;
+		}
+		return true;
+	}
+
 	window.addEventListener("dragover", function (e) {
+		if (!isDataTransferValid(e.dataTransfer))
+			return;
+
 		if (!loading) {
 			if (dragTimeout) {
 				clearTimeout(dragTimeout);
@@ -1381,6 +1413,9 @@ function saveFilesToZip(zipFileName) {
 	}, true);
 
 	window.addEventListener("dragleave", function (e) {
+		if (!isDataTransferValid(e.dataTransfer))
+			return;
+
 		if (messageVisible) {
 			if (dragTimeout)
 				clearTimeout(dragTimeout);
@@ -1394,6 +1429,9 @@ function saveFilesToZip(zipFileName) {
 	}, true);
 
 	window.addEventListener("drop", function (e) {
+		if (!isDataTransferValid(e.dataTransfer))
+			return;
+
 		if (dragTimeout) {
 			clearTimeout(dragTimeout);
 			dragTimeout = 0;

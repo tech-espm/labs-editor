@@ -220,12 +220,10 @@
 			}
 		];
 
-		function documentNewContent() {
-			return 'var ' + translate("levels") + ' = ["menu"];\nvar ' + translate("gameWidth") + ' = 800;\nvar ' + translate("gameHeight") + ' = 600;\n\nfunction menu() {\n\t\n\tthis.preload = function () {\n\t\t\n\t\tgame.stage.backgroundColor = "#0066ff";\n\t\t\n\t};\n\t\n\tthis.create = function () {\n\t\t\n\t};\n\t\n\tthis.update = function () {\n\t\t\n\t};\n\t\n}\n';
-		}
-
-		function documentNewDocumentContent(fileNameNoExtension) {
-			return 'function ' + fileNameNoExtension + '() {\n\t\n\tthis.preload = function () {\n\t\t\n\t};\n\t\n\tthis.create = function () {\n\t\t\n\t};\n\t\n\tthis.update = function () {\n\t\t\n\t};\n\t\n}\n';
+		function documentNewContent(fileNameNoExtension) {
+			return ((!fileNameNoExtension || fileNameNoExtension === "menu") ?
+				('var ' + translate("levels") + ' = ["menu"];\nvar ' + translate("gameWidth") + ' = 800;\nvar ' + translate("gameHeight") + ' = 600;\n\nfunction menu() {\n\t\n\tthis.preload = function () {\n\t\t\n\t\tgame.stage.backgroundColor = "#0066ff";\n\t\t\n\t};\n\t\n\tthis.create = function () {\n\t\t\n\t};\n\t\n\tthis.update = function () {\n\t\t\n\t};\n\t\n}\n') :
+				('function ' + fileNameNoExtension + '() {\n\t\n\tthis.preload = function () {\n\t\t\n\t};\n\t\n\tthis.create = function () {\n\t\t\n\t};\n\t\n\tthis.update = function () {\n\t\t\n\t};\n\t\n}\n'));
 		}
 	</script>
 	<script type="text/javascript" src="../js/advanced.js?v=1.0.1"></script>

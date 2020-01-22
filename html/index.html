@@ -180,6 +180,10 @@
 &lt;!-- Velocity.js 1.5 --&gt;
 &lt;script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.5.2/velocity.min.js"&gt;&lt;/script&gt;
 &lt;script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.5.2/velocity.ui.min.js"&gt;&lt;/script&gt;
+
+&lt;!-- React 16 --&gt;
+&lt;script type="text/javascript" src="https://unpkg.com/react@16/umd/react.production.min.js"&gt;&lt;/script&gt;
+&lt;script type="text/javascript" src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"&gt;&lt;/script&gt;
 </textarea>
 				</div>
 				<div class="modal-footer">
@@ -256,14 +260,8 @@
 		window.documentExtraZipFiles = null;
 
 		function documentNewContent() {
-			return '<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml" lang="' +
-				window.language +
-				'">\n<head>\n\t<meta charset="utf-8" />\n\t<meta name="viewport" content="width=device-width, initial-scale=1" />\n\t\n\t<title>' +
-				translate("PageTitle") +
-				'</title>\n\t\n\t<style type="text/css">\n\t\t\n\t</style>\n</head>\n<body>\n\t\n</body>\n</html>\n';
+			return contentFromLCaseExtension(".html");
 		}
-
-		window.documentNewDocumentContent = documentNewContent;
 	</script>
 	<script type="text/javascript" src="../js/advanced.js?v=1.0.1"></script>
 
