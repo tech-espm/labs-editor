@@ -185,6 +185,12 @@ textarea {
 	right: 30px;
 }
 
+.editor-html-file-list-item-ellipsis {
+	font-size: 14px;
+	line-height: 18px;
+	width: 10px;
+}
+
 .editor-html-console {
 	display: none;
 	position: absolute;

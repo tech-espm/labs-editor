@@ -384,6 +384,7 @@ function lockUI(lock) {
 		addString("New", "Novo");
 		addString("Load", "Abrir");
 		addString("Save", "Salvar");
+		addString("Options", "Opções");
 		addString("PreviewPage", "Visualizar Página");
 		addString("StopPreview", "Parar Visualização");
 		addString("FileName", "Nome do Arquivo");
@@ -402,6 +403,8 @@ function lockUI(lock) {
 		addString("AttributeHelp", "Ajuda do Atributo");
 		addString("Move", "Mover");
 		addString("Duplicate", "Duplicar");
+		addString("Rename", "Renomear");
+		addString("RenameEllipsis", "Renomear\u2026");
 		addString("Delete", "Excluir");
 		addString("ElementName", "Nome do Elemento");
 		addString("FindElement", "Localizar Elemento");
@@ -431,6 +434,7 @@ function lockUI(lock) {
 		addString("ErrorZipContainsFileTooLarge", "Um ou mais arquivos não foram carregados porque o tamanho deles excede 2 MiB " + emoji.sad);
 		addString("ErrorFileLoad", "Ocorreu um erro ao ler o arquivo " + emoji.sad);
 		addString("ErrorFileSave", "Ocorreu um erro ao gravar o arquivo " + emoji.sad);
+		addString("ErrorFileDelete", "Ocorreu um erro ao excluir o arquivo " + emoji.sad);
 		addString("ErrorDownload", "Ocorreu um erro durante o download dos dados " + emoji.sad);
 		addString("ErrorInvalidFileName", "Nome de arquivo inválido " + emoji.sad);
 		addString("ErrorFileAlreadyExists", "Já existe um arquivo com o mesmo nome " + emoji.sad);
@@ -492,6 +496,7 @@ function lockUI(lock) {
 		addString("New", "New");
 		addString("Load", "Load");
 		addString("Save", "Save");
+		addString("Options", "Options");
 		addString("PreviewPage", "Preview Page");
 		addString("StopPreview", "Stop Preview");
 		addString("FileName", "File Name");
@@ -510,6 +515,8 @@ function lockUI(lock) {
 		addString("AttributeHelp", "Attribute Help");
 		addString("Move", "Move");
 		addString("Duplicate", "Duplicate");
+		addString("Rename", "Rename");
+		addString("RenameEllipsis", "Rename\u2026");
 		addString("Delete", "Delete");
 		addString("ElementName", "Element Name");
 		addString("FindElement", "Find Element");
@@ -539,6 +546,7 @@ function lockUI(lock) {
 		addString("ErrorZipContainsFileTooLarge", "One or more files were not loaded because their size is larger than 2 MiB " + emoji.sad);
 		addString("ErrorFileLoad", "An error occurred while reading the file " + emoji.sad);
 		addString("ErrorFileSave", "An error occurred while saving the file " + emoji.sad);
+		addString("ErrorFileDelete", "An error occurred while deleting the file " + emoji.sad);
 		addString("ErrorDownload", "An error occurred while downloading data " + emoji.sad);
 		addString("ErrorInvalidFileName", "Invalid file name " + emoji.sad);
 		addString("ErrorFileAlreadyExists", "There is already a file with that same name " + emoji.sad);

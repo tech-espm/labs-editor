@@ -6,7 +6,7 @@
 // whenever it detects a change in the source code of the
 // service worker).
 const CACHE_PREFIX = "labs-editor-static-cache";
-const CACHE_VERSION = "-v5";
+const CACHE_VERSION = "-v7";
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
 const HTML_CACHE_NAME = "labs-editor-html-cache";
 const GAME_CACHE_NAME = "labs-editor-game-cache";
@@ -106,10 +106,11 @@ self.addEventListener("install", (event) => {
 			"/labs-editor/phaser/game/phaser-2.6.2.min.js",
 			// Since these files' contents always change, but their names do not, I
 			// added a version number in order to try to avoid browsers' own cache
-			"/labs-editor/css/style.css?v=1.0.1",
-			"/labs-editor/css/style-dark.css?v=1.0.1",
-			"/labs-editor/js/advanced.js?v=1.0.1",
-			"/labs-editor/js/main.js?v=1.0.1"
+			"/labs-editor/css/style.css?v=1.0.2",
+			"/labs-editor/css/style-dark.css?v=1.0.2",
+			"/labs-editor/js/advanced.js?v=1.0.2",
+			"/labs-editor/js/advanced-ui.js?v=1.0.2",
+			"/labs-editor/js/main.js?v=1.0.2"
 		];
 		const promises = new Array(files.length);
 		for (let i = files.length - 1; i >= 0; i--)
@@ -210,6 +211,24 @@ self.addEventListener("fetch", (event) => {
 	// Refer to the comments inside the cache to understand this if!
 	if (url.indexOf("/labs-editor/") < 0)
 		return fetch(event.request);
+
+	// @@@ debug only
+	if (url.endsWith("/labs-editor/") ||
+		url.endsWith("/phaser/") ||
+		url.endsWith("/html/") ||
+		url.endsWith("/keybinding-labs.js") ||
+		url.endsWith("/theme-labs.js") ||
+		url.endsWith("/style.css?v=1.0.2") ||
+		url.endsWith("/style-dark.css?v=1.0.2") ||
+		url.endsWith("/main.js?v=1.0.2") ||
+		url.endsWith("/advanced.js?v=1.0.2") ||
+		url.endsWith("/advanced-ui.js?v=1.0.2")) {
+		event.respondWith(fetch(event.request));
+		return;
+	} else if (url.endsWith("/phaser/game/")) {
+		event.respondWith(fetch(event.request).then(injectConsole));
+		return;
+	}
 
 	if (url.indexOf("/labs-editor/html/site/") >= 0) {
 		// Look for the resource in the html cache, not in our cache.

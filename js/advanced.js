@@ -1,5 +1,4 @@
 "use strict";
-"use strict";
 
 // Globals
 window.maximumFileLength = (2 << 20);
@@ -11,6 +10,7 @@ window.loading = false;
 window.theme = null;
 window.editorPopupWindowName = "labs-editor-popup-window";
 window.editorContainer = _ID("editorContainer");
+window.editorMenuDropdown = _ID("editorMenuDropdown");
 window.editorNeedsResize = true;
 window.editor = null;
 window.editorActionFileLoad = _ID("editorActionFileLoad");
@@ -25,6 +25,7 @@ window.editorPopupWindow = null;
 window.iframe = _ID("iframe");
 window.currentDocument = defaultDocument;
 window.currentDocumentDiv = null;
+window.documentInvalidFileNameChars = /[\\\/\?\*\|]/;
 window.documentCacheFileList = null;
 
 // Helper Functions
@@ -87,7 +88,7 @@ function fixDarkTheme() {
 		_SA(_ID("editorImgLogo"), "src", "../images/logo-dark.png");
 		document.body.style.backgroundColor = bgColor;
 		if (!style)
-			_SA(_SA(_SA(_CE("link", null, document.head), "id", "style-dark-mode"), "rel", "stylesheet"), "href", "../css/style-dark.css?v=1.0.1")
+			_SA(_SA(_SA(_CE("link", null, document.head), "id", "style-dark-mode"), "rel", "stylesheet"), "href", "../css/style-dark.css?v=1.0.2")
 	} else {
 		_SA(_ID("editorImgLogo"), "src", "../images/logo.png");
 		document.body.style.backgroundColor = "";
@@ -120,6 +121,7 @@ function fixDarkTheme() {
 		".eot": "application/vnd.ms-fontobject",
 		".epub": "application/epub+zip",
 		".gif": "image/gif",
+		".gitignore": "text/plain",
 		".gz": "application/gzip",
 		".htm": "text/html",
 		".html": "text/html",
@@ -208,18 +210,19 @@ function iconFromFileName(fileName) {
 	if (i >= 0) {
 		var ext = fileName.substr(i).toLowerCase();
 		switch (ext) {
+			case ".css":
+				return "fa fa-margin fa-paint-brush";
+			case ".gitignore":
+			case ".markdown":
+			case ".md":
+			case ".txt":
+				return "fa fa-margin fa-file-text-o";
 			case ".htm":
 			case ".html":
 			case ".js":
 			case ".json":
 			case ".xml":
 				return "fa fa-margin fa-code";
-			case ".css":
-				return "fa fa-margin fa-paint-brush";
-			case ".markdown":
-			case ".md":
-			case ".txt":
-				return "fa fa-margin fa-file-text-o";
 			default:
 				ext = typeFromLCaseExtension(ext);
 				if (ext.startsWith("image"))
@@ -246,6 +249,9 @@ function modeFromEditableFileName(fileName) {
 		switch (fileName.substr(i).toLowerCase()) {
 			case ".css":
 				return "ace/mode/css";
+			case ".gitignore":
+			case ".txt":
+				return "ace/mode/plain_text";
 			case ".htm":
 			case ".html":
 				return "ace/mode/html";
@@ -258,8 +264,6 @@ function modeFromEditableFileName(fileName) {
 				return "ace/mode/markdown";
 			case ".svg":
 				return "ace/mode/svg";
-			case ".txt":
-				return "ace/mode/plain_text";
 			case ".xml":
 				return "ace/mode/xml";
 		}
@@ -273,6 +277,7 @@ function isFileNameEditable(fileName) {
 	if (i >= 0) {
 		switch (fileName.substr(i).toLowerCase()) {
 			case ".css":
+			case ".gitignore":
 			case ".htm":
 			case ".html":
 			case ".js":
@@ -352,6 +357,15 @@ function deleteEditorFile(lcase) {
 	delete documentCacheFileList[lcase];
 }
 
+function renameEditorFile(oldLCase, newLCase, newFileName) {
+	var file;
+	if (!(file = documentCacheFileList[oldLCase]))
+		return;
+	delete documentCacheFileList[oldLCase];
+	file.fileName = newFileName;
+	documentCacheFileList[newLCase] = file;
+}
+
 function resetEditorFiles(controlLoading, initialContents, callback) {
 	if (controlLoading) {
 		loading = true;
@@ -398,13 +412,15 @@ function loadDocumentFromCache(fileName, showNotification, controlLoading, ignor
 	var lcase = fileName.toLowerCase(), session = (ignoreSession ? null : getEditorSession(lcase));
 
 	function loadError(reason) {
-		if (controlLoading)
+		if (controlLoading) {
 			loading = false;
+			Notification.error(translate("ErrorFileLoad"));
+		}
 
-		Notification.error(translate("ErrorFileLoad"));
+		editor.focus();
 
 		if (callback)
-			callback();
+			callback(translate("ErrorFileLoad"));
 	}
 
 	function finishLoading(value) {
@@ -450,25 +466,32 @@ function deleteFileFromCache(fileName, controlLoading, callback) {
 		Notification.wait();
 	}
 
+	function finishDeleting(error) {
+		if (controlLoading) {
+			loading = false;
+			if (error)
+				Notification.error(error, true);
+			else
+				Notification.hide();
+		}
+
+		editor.focus();
+
+		if (callback)
+			callback(error);
+	}
+
 	caches.open(documentCacheName).then(function (cache) {
 		cache.delete(documentPathPrefix + fileName).then(function () {
-			if (controlLoading) {
-				loading = false;
-				Notification.hide();
-			}
+			deleteEditorFile(fileName.toLowerCase());
+			saveDocumentCacheFileList();
 
-			if (callback)
-				callback();
+			if (fileName === currentDocument)
+				loadDocumentFromCache(defaultDocument, false, false, false, finishDeleting);
+			else
+				finishDeleting();
 		}, function (reason) {
-			console.error(reason);
-
-			if (controlLoading) {
-				loading = false;
-				Notification.hide();
-			}
-
-			if (callback)
-				callback();
+			finishDeleting(translate("ErrorFileDelete"));
 		});
 	});
 }
@@ -507,16 +530,55 @@ function saveFileToCache(blob, fileName, newFile, controlLoading, callback) {
 			if (callback)
 				callback();
 		}, function (reason) {
-			console.error(reason);
-
 			if (controlLoading) {
 				loading = false;
-				Notification.hide();
+				Notification.error(translate("ErrorFileSave"), true);
 			}
 
+			editor.focus();
+
 			if (callback)
-				callback();
+				callback(translate("ErrorFileSave"));
 		});
+	});
+}
+
+function remaneFileInCache(oldFileName, newFileName, controlLoading, callback) {
+	if (controlLoading) {
+		loading = true;
+		Notification.wait();
+	}
+
+	function finishRenaming(error) {
+		if (controlLoading) {
+			loading = false;
+			Notification.error(error);
+		}
+
+		if (callback)
+			callback(error);
+	}
+
+	function saveError(reason) {
+		finishRenaming(translate("ErrorFileSave"));
+	}
+
+	caches.open(documentCacheName).then(function (cache) {
+		cache.match(documentPathPrefix + oldFileName).then(function (response) {
+			if (!response) {
+				saveError();
+				return;
+			}
+
+			cache.put(documentPathPrefix + newFileName, response).then(function () {
+				renameEditorFile(oldFileName.toLowerCase(), newFileName.toLowerCase(), newFileName);
+				if (currentDocument === oldFileName)
+					currentDocument = newFileName;
+				saveDocumentCacheFileList();
+
+				deleteFileFromCache(oldFileName, false, finishRenaming);
+			}, saveError);
+		}, saveError);
 	});
 }
 
@@ -612,23 +674,9 @@ function saveCurrentDocumentToCache(forceSave, controlLoading, callback) {
 	}
 }
 
-function updateDocumentCacheFileList() {
-	var i, isDefault = false, hasPlayButton = false, hasTwoButtons = false, fileName, div, button, fileList = [];
-	for (fileName in documentCacheFileList)
-		fileList.push({
-			lcase: fileName,
-			fileName: getEditorFileName(fileName)
-		});
-
-	fileList.sort(function (a, b) {
-		var adef = a.lcase.endsWith(defaultDocumentExtension);
-		if (adef === b.lcase.endsWith(defaultDocumentExtension))
-			return (a.lcase < b.lcase ? -1 : 1);
-		return (adef ? -1 : 1);
-	});
-
-	while (editorFileList.firstChild)
-		editorFileList.removeChild(editorFileList.firstChild);
+// updateDocumentCacheFileList
+(function () {
+	var lastButton = null, lastFileName = null, menu = _SA(_CE("ul", "dropdown-menu"));
 
 	function loadFileFromDiv() {
 		if (loading)
@@ -646,18 +694,29 @@ function updateDocumentCacheFileList() {
 		}
 	}
 
-	function deleteFileFromDiv(e) {
-		if (loading)
+	function renameFileFromMenu(e) {
+		if (loading || !lastFileName || lastFileName === defaultDocument)
 			return cancelEvent(e);
 
-		var fileName = _GA(this, "data-name");
+		_ID("modalRenameFileName").value = lastFileName;
 
-		if (!fileName || fileName === defaultDocument)
+		_SA(_ID("modalRenameFileOk"), "data-name", lastFileName);
+
+		$("#modalRenameFile").modal({
+			keyboard: true,
+			backdrop: true
+		});
+
+		return cancelEvent(e);
+	}
+
+	function deleteFileFromMenu(e) {
+		if (loading || !lastFileName || lastFileName === defaultDocument)
 			return cancelEvent(e);
 
-		_ID("modalDeleteFileLabel").textContent = translate("ConfirmDelete") + fileName + "?";
+		_ID("modalDeleteFileLabel").textContent = translate("ConfirmDelete") + lastFileName + "?";
 
-		_SA(modalDeleteFileOk, "data-name", fileName);
+		_SA(_ID("modalDeleteFileOk"), "data-name", lastFileName);
 
 		$("#modalDeleteFile").modal({
 			keyboard: true,
@@ -671,38 +730,110 @@ function updateDocumentCacheFileList() {
 		previewDocument(false, _GA(this, "data-name"));
 	}
 
-	for (i = 0; i < fileList.length; i++) {
-		fileName = fileList[i].fileName;
-		isDefault = (fileName === defaultDocument);
-		hasPlayButton = (fileName === defaultDocument || (documentCanPreviewAllDefaultFiles && fileName.endsWith(defaultDocumentExtension)) || fileName.endsWith(".svg"));
-		hasTwoButtons = (!isDefault && hasPlayButton);
-		if (currentDocument === fileName) {
-			div = _CE("div", "editor-html-file-list-item current" + (hasTwoButtons ? " editor-html-file-list-item-two-buttons" : ""));
-			currentDocumentDiv = div;
-		} else {
-			div = _CE("div", "editor-html-file-list-item" + (hasTwoButtons ? " editor-html-file-list-item-two-buttons" : ""));
-		}
-		_SA(_SA(_SA(div, "id", "documentDiv" + fileName), "title", fileName), "data-name", fileName);
-		div.onclick = loadFileFromDiv;
-		_CE("i", iconFromFileName(fileName), div);
-		_TXT(fileName, div);
-		if (!isDefault) {
-			button = _CE("button", "btn btn-outline btn-danger btn-xs " + (hasTwoButtons ? "editor-html-file-list-item-button-2" : "editor-html-file-list-item-button"), div);
-			button.onclick = deleteFileFromDiv;
-			_SA(button, "data-name", fileName);
-			_SA(button, "title", translate("Delete"));
-			_CE("i", "fa fa-times", button);
-		}
-		if (hasPlayButton) {
-			button = _CE("button", "btn btn-outline btn-success btn-xs editor-html-file-list-item-button", div);
-			button.onclick = preview;
-			_SA(button, "data-name", fileName);
-			_SA(button, "title", translate("PreviewPage"));
-			_CE("i", "fa fa-play", button);
-		}
-		_AC(editorFileList, div);
+	function closeMenu() {
+		if (!lastButton)
+			return;
+
+		_SA(lastButton, "aria-expanded", "false");
+		lastButton = null;
+
+		editorContainer.removeChild(menu);
+
+		menu.style.display = "";
+		menu.style.left = "";
+		menu.style.top = "";
+		menu.style.right = "";
+		menu.style.bottom = "";
 	}
-}
+
+	function showMenu(e) {
+		if (_GA(editorMenuDropdown, "aria-expanded") === "true")
+			$(editorMenuDropdown).dropdown("toggle");
+
+		closeMenu();
+
+		var fileName = _GA(this, "data-name"), rect;
+
+		if (!fileName || fileName === defaultDocument)
+			return cancelEvent(e);
+
+		lastButton = this;
+		lastFileName = fileName;
+
+		_SA(lastButton, "aria-expanded", "true");
+		rect = this.getBoundingClientRect();
+		menu.style.width = "auto";
+		menu.style.left = rect.left + "px";
+		menu.style.top = rect.top + "px";
+		editorContainer.appendChild(menu);
+		menu.style.display = "block";
+
+		return cancelEvent(e);
+	}
+
+	document.body.addEventListener("click", closeMenu, true);
+
+	(function () {
+		var a;
+
+		a = _SA(_CE("a", null, _CE("li", null, menu)), "href", "#");
+		_CE("i", "fa fa-margin fa-edit", a);
+		_TXT(translate("RenameEllipsis"), a);
+		a.onclick = renameFileFromMenu;
+
+		a = _SA(_CE("a", null, _CE("li", null, menu)), "href", "#");
+		_CE("i", "fa fa-margin fa-times", a);
+		_TXT(translate("Delete"), a);
+		a.onclick = deleteFileFromMenu;
+	})();
+
+	window.updateDocumentCacheFileList = function () {
+		var i, isDefault = false, hasPlayButton = false, hasTwoButtons = false, fileName, div, button, fileList = [];
+		for (fileName in documentCacheFileList)
+			fileList.push({
+				lcase: fileName,
+				fileName: getEditorFileName(fileName)
+			});
+
+		fileList.sort(function (a, b) {
+			var adef = a.lcase.endsWith(defaultDocumentExtension);
+			if (adef === b.lcase.endsWith(defaultDocumentExtension))
+				return (a.lcase < b.lcase ? -1 : 1);
+			return (adef ? -1 : 1);
+		});
+
+		while (editorFileList.firstChild)
+			editorFileList.removeChild(editorFileList.firstChild);
+
+		for (i = 0; i < fileList.length; i++) {
+			fileName = fileList[i].fileName;
+			isDefault = (fileName === defaultDocument);
+			hasPlayButton = (fileName === defaultDocument || (documentCanPreviewAllDefaultFiles && fileName.endsWith(defaultDocumentExtension)) || fileName.endsWith(".svg"));
+			hasTwoButtons = (!isDefault && hasPlayButton);
+			if (currentDocument === fileName) {
+				div = _CE("div", "editor-html-file-list-item current" + (hasTwoButtons ? " editor-html-file-list-item-two-buttons" : ""));
+				currentDocumentDiv = div;
+			} else {
+				div = _CE("div", "editor-html-file-list-item" + (hasTwoButtons ? " editor-html-file-list-item-two-buttons" : ""));
+			}
+			_SA(_SA(_SA(div, "id", "documentDiv" + fileName), "title", fileName), "data-name", fileName);
+			div.onclick = loadFileFromDiv;
+			_CE("i", iconFromFileName(fileName), div);
+			_TXT(fileName, div);
+			if (hasPlayButton) {
+				button = _SA(_SA(_SA(_CE("button", "btn btn-outline btn-success btn-xs " + (hasTwoButtons ? "editor-html-file-list-item-button-2" : "editor-html-file-list-item-button"), div), "type", "button"), "data-name", fileName), "title", translate("PreviewPage"));
+				button.onclick = preview;
+				_CE("i", "fa fa-play", button);
+			}
+			if (!isDefault) {
+				button = _SA(_SA(_SA(_SA(_SA(_CE("button", "btn btn-outline btn-default btn-xs editor-html-file-list-item-button", div), "type", "button"), "data-name", fileName), "title", translate("Options")), "aria-haspopup", "true"), "aria-expanded", "false");
+				button.onclick = showMenu;
+				_CE("i", "fa fa-ellipsis-v editor-html-file-list-item-ellipsis", button);
+			}
+			_AC(editorFileList, div);
+		}
+	}
+})();
 
 function loadDocumentCacheFileList() {
 	var i, array;
@@ -753,11 +884,11 @@ function loadFilesFromZip(zipFile) {
 	loading = true;
 	Notification.wait();
 
-	function finishLoading(error) {
-		loadDocumentFromCache(defaultDocument, false, false, true, function () {
+	function finishLoading(zipError) {
+		loadDocumentFromCache(defaultDocument, false, false, true, function (error) {
 			loading = false;
-			if (error)
-				Notification.error(error, true);
+			if (zipError || error)
+				Notification.error(zipError || error, true);
 			else
 				Notification.hide();
 			editorActionZipLoad.value = "";
@@ -986,6 +1117,8 @@ function saveFilesToZip(zipFileName) {
 		editorActionToggleConsoleLabel = _ID("editorActionToggleConsoleLabel"),
 		modalSaveFileName = _ID("modalSaveFileName"),
 		modalSaveOk = _ID("modalSaveOk"),
+		modalRenameFileName = _ID("modalRenameFileName"),
+		modalRenameFileOk = _ID("modalRenameFileOk"),
 		modalDeleteFileOk = _ID("modalDeleteFileOk"),
 		modalCreateDocumentFileName = _ID("modalCreateDocumentFileName"),
 		modalCreateDocumentOk = _ID("modalCreateDocumentOk"),
@@ -994,6 +1127,10 @@ function saveFilesToZip(zipFileName) {
 
 	$("#modalSave").on("shown.bs.modal", function () {
 		modalSaveFileName.focus();
+	});
+
+	$("#modalRenameFile").on("shown.bs.modal", function () {
+		modalRenameFileName.focus();
 	});
 
 	$("#modalCreateDocument").on("shown.bs.modal", function () {
@@ -1007,6 +1144,11 @@ function saveFilesToZip(zipFileName) {
 	modalSaveFileName.onkeydown = function (e) {
 		if (e.key === "Enter" || e.keyCode === 13)
 			modalSaveOk.click();
+	};
+
+	modalRenameFileName.onkeydown = function (e) {
+		if (e.key === "Enter" || e.keyCode === 13)
+			modalRenameFileOk.click();
 	};
 
 	modalCreateDocumentFileName.onkeydown = function (e) {
@@ -1060,7 +1202,7 @@ function saveFilesToZip(zipFileName) {
 		if (loading)
 			return cancelEvent(e);
 
-		$("#editorMenuDropdown").dropdown("toggle");
+		$(editorMenuDropdown).dropdown("toggle");
 
 		if (!confirmClose())
 			return cancelEvent(e);
@@ -1074,7 +1216,7 @@ function saveFilesToZip(zipFileName) {
 		if (loading)
 			return cancelEvent(e);
 
-		$("#editorMenuDropdown").dropdown("toggle");
+		$(editorMenuDropdown).dropdown("toggle");
 
 		if (!confirmClose())
 			return cancelEvent(e);
@@ -1088,7 +1230,7 @@ function saveFilesToZip(zipFileName) {
 		if (loading)
 			return cancelEvent(e);
 
-		$("#editorMenuDropdown").dropdown("toggle");
+		$(editorMenuDropdown).dropdown("toggle");
 
 		$("#modalSave").modal({
 			keyboard: true,
@@ -1118,7 +1260,7 @@ function saveFilesToZip(zipFileName) {
 		if (loading)
 			return cancelEvent(e);
 
-		$("#editorMenuDropdown").dropdown("toggle");
+		$(editorMenuDropdown).dropdown("toggle");
 
 		toggleFileList();
 
@@ -1150,7 +1292,7 @@ function saveFilesToZip(zipFileName) {
 		if (loading)
 			return cancelEvent(e);
 
-		$("#editorMenuDropdown").dropdown("toggle");
+		$(editorMenuDropdown).dropdown("toggle");
 
 		toggleConsole();
 
@@ -1166,7 +1308,7 @@ function saveFilesToZip(zipFileName) {
 		if (loading)
 			return cancelEvent(e);
 
-		$("#editorMenuDropdown").dropdown("toggle");
+		$(editorMenuDropdown).dropdown("toggle");
 
 		window.clearLog();
 
@@ -1177,7 +1319,7 @@ function saveFilesToZip(zipFileName) {
 		if (loading)
 			return cancelEvent(e);
 
-		$("#editorMenuDropdown").dropdown("toggle");
+		$(editorMenuDropdown).dropdown("toggle");
 
 		modalThemeSelect.value = theme;
 
@@ -1270,11 +1412,59 @@ function saveFilesToZip(zipFileName) {
 		saveFilesToZip(fileName);
 	};
 
+	modalRenameFileOk.onclick = function () {
+		if (loading)
+			return;
+
+		var oldFileName = _GA(this, "data-name"), newFileName = trim(modalRenameFileName.value), ext, newLCase;
+		if (!oldFileName || !newFileName)
+			return;
+
+		newLCase = newFileName.toLowerCase();
+		ext = oldFileName.substr(oldFileName.lastIndexOf("."));
+
+		if (documentInvalidFileNameChars.test(newLCase)) {
+			Notification.error(translate("ErrorInvalidFileName"), true);
+			return;
+		}
+
+		// Force lower case extensions
+		if (newLCase.endsWith(ext)) {
+			newFileName = newFileName.substr(0, newFileName.length - ext.length) + ext;
+		} else if (newFileName.indexOf(".") < 0) {
+			newFileName += ext;
+			newLCase += ext;
+		}
+
+		if (oldFileName.toLowerCase() === newLCase)
+			return;
+
+		if ((newLCase in documentCacheFileList)) {
+			Notification.error(translate("ErrorFileAlreadyExists"), true);
+			return;
+		}
+
+		$("#modalRenameFile").modal("hide");
+
+		loading = true;
+		Notification.wait();
+
+		saveCurrentDocumentToCache(false, false, function () {
+			remaneFileInCache(oldFileName, newFileName, false, function (error) {
+				loading = false;
+				if (error)
+					Notification.error(error, true);
+				else
+					Notification.hide();
+			});
+		});
+	};
+
 	modalDeleteFileOk.onclick = function () {
 		if (loading)
 			return;
 
-		var fileName = _GA(modalDeleteFileOk, "data-name");
+		var fileName = _GA(this, "data-name");
 		if (!fileName)
 			return;
 
@@ -1284,21 +1474,12 @@ function saveFilesToZip(zipFileName) {
 		Notification.wait();
 
 		saveCurrentDocumentToCache(false, false, function () {
-			deleteFileFromCache(fileName, false, function () {
-				deleteEditorFile(fileName.toLowerCase());
-				saveDocumentCacheFileList();
-
-				if (fileName === currentDocument) {
-					loadDocumentFromCache(defaultDocument, false, false, false, function () {
-						loading = false;
-						Notification.hide();
-					});
-				} else {
-					loading = false;
+			deleteFileFromCache(fileName, false, function (error) {
+				loading = false;
+				if (error)
+					Notification.error(error, true);
+				else
 					Notification.hide();
-
-					editor.focus();
-				}
 			});
 		});
 	};
@@ -1326,7 +1507,7 @@ function saveFilesToZip(zipFileName) {
 			defaultType = (ext === defaultDocumentExtension);
 		}
 
-		if (/\W/.test(fileNameNoExtension) || !modeFromEditableFileName(fileName)) {
+		if (documentIsFileNameInvalid(fileNameNoExtension) || !modeFromEditableFileName(fileName)) {
 			Notification.error(translate("ErrorInvalidFileName"), true);
 			return;
 		}
@@ -1346,9 +1527,12 @@ function saveFilesToZip(zipFileName) {
 			], { type: typeFromLCaseExtension(ext) }), fileName, true, false, function () {
 				$("#modalCreateDocument").modal("hide");
 
-				loadDocumentFromCache(fileName, true, false, true, function () {
+				loadDocumentFromCache(fileName, true, false, true, function (error) {
 					loading = false;
-					Notification.hide();
+					if (error)
+						Notification.error(error, true);
+					else
+						Notification.hide();
 				});
 			});
 		});
