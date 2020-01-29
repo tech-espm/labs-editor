@@ -6,7 +6,7 @@
 // whenever it detects a change in the source code of the
 // service worker).
 const CACHE_PREFIX = "labs-editor-static-cache";
-const CACHE_VERSION = "-v7";
+const CACHE_VERSION = "-v8";
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
 const HTML_CACHE_NAME = "labs-editor-html-cache";
 const GAME_CACHE_NAME = "labs-editor-game-cache";
@@ -108,7 +108,7 @@ self.addEventListener("install", (event) => {
 			// added a version number in order to try to avoid browsers' own cache
 			"/labs-editor/css/style.css?v=1.0.2",
 			"/labs-editor/css/style-dark.css?v=1.0.2",
-			"/labs-editor/js/advanced.js?v=1.0.2",
+			"/labs-editor/js/advanced.js?v=1.0.3",
 			"/labs-editor/js/advanced-ui.js?v=1.0.2",
 			"/labs-editor/js/main.js?v=1.0.2"
 		];

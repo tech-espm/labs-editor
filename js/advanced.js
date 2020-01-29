@@ -332,7 +332,11 @@ function cleanupEditorFiles() {
 }
 
 function addEditorFile(lcase, fileName) {
-	if (!(lcase in documentCacheFileList))
+	// Force to reset the session if the file already exists
+	var file = documentCacheFileList[lcase];
+	if (file)
+		file.session = null;
+	else
 		documentCacheFileList[lcase] = {
 			fileName: fileName,
 			session: null
@@ -502,11 +506,11 @@ function saveFileToCache(blob, fileName, newFile, controlLoading, callback) {
 		Notification.wait();
 	}
 
-	caches.open(documentCacheName).then(function (cache) {
-		var actualFileName = fileName.trim(), lcase = actualFileName.toLowerCase();
-		if (newFile && (lcase in documentCacheFileList))
-			actualFileName = getEditorFileName(lcase);
+	var actualFileName = fileName.trim(), lcase = actualFileName.toLowerCase();
+	if (newFile && (lcase in documentCacheFileList))
+		actualFileName = getEditorFileName(lcase);
 
+	caches.open(documentCacheName).then(function (cache) {
 		// The spec says there is no need to worry about max-age
 		// and other cache-control headers/settings, because the
 		// CacheStorage API ignores them... But... Just in case...
@@ -541,6 +545,8 @@ function saveFileToCache(blob, fileName, newFile, controlLoading, callback) {
 				callback(translate("ErrorFileSave"));
 		});
 	});
+
+	return actualFileName;
 }
 
 function remaneFileInCache(oldFileName, newFileName, controlLoading, callback) {
@@ -586,7 +592,7 @@ function saveFilesToCache(e, files) {
 	loading = true;
 	Notification.wait();
 
-	var i = -1, file, dt = (e ? e.dataTransfer : null);
+	var i = -1, file, dt = (e ? e.dataTransfer : null), reloadCurrent = false;
 
 	if (dt) {
 		files = [];
@@ -608,14 +614,21 @@ function saveFilesToCache(e, files) {
 		i = -1;
 	}
 
-	function finishSaving(error) {
-		loading = false;
-		if (error)
-			Notification.error(error, true);
-		else
-			Notification.hide();
-		if (files)
-			editorActionFileLoad.value = "";
+	function finishSaving(saveError) {
+		if (reloadCurrent) {
+			reloadCurrent = false;
+			loadDocumentFromCache(currentDocument, false, false, true, function (error) {
+				finishSaving(saveError || error);
+			});
+		} else {
+			loading = false;
+			if (saveError)
+				Notification.error(saveError, true);
+			else
+				Notification.hide();
+			if (files)
+				editorActionFileLoad.value = "";
+		}
 	}
 
 	function saveNextFile() {
@@ -650,7 +663,8 @@ function saveFilesToCache(e, files) {
 		if (j >= 0)
 			fileName = fileName.substr(0, j) + fileName.substr(j).toLowerCase();
 
-		saveFileToCache(file, fileName, true, false, saveNextFile);
+		if (currentDocument === saveFileToCache(file, fileName, true, false, saveNextFile))
+			reloadCurrent = true;
 	}
 
 	saveNextFile();
