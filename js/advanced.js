@@ -1071,27 +1071,31 @@ function saveFilesToZip(zipFileName) {
 	window.resizeWindow();
 
 	setTimeout(function () {
-		document.body.style.visibility = "";
-
-		editor.focus();
-
 		// Workaround to remove a 1-pixel flick in the
 		// first time the window is actually resized...
+
+		editor.focus();
 
 		var w = editorContainer.style.width;
 
 		editor.resize();
 
 		if (w === "100%") {
-			editorContainer.style.width = "99%";
+			editorContainer.style.width = "105%";
 			editor.resize();
 		} else {
-			editorContainer.style.width = (parseInt(w) - 1) + "px";
+			editorContainer.style.width = (parseInt(w) + 5) + "px";
 			editor.resize();
 		}
 
-		editorContainer.style.width = w;
-		editor.resize();
+		setTimeout(function () {
+			document.body.style.visibility = "";
+
+			editor.focus();
+
+			editorContainer.style.width = w;
+			editor.resize();
+		}, 50);
 	}, 250);
 })();
 
