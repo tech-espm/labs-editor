@@ -1060,7 +1060,7 @@ function saveFilesToZip(zipFileName) {
 		showGutter: true,
 		displayIndentGuides: false,
 		scrollPastEnd: false,
-		fixedWidthGutter: false,
+		fixedWidthGutter: true,
 		theme: theme,
 		enableLiveAutocompletion: true,
 		keyboardHandler: "ace/keyboard/labs"
@@ -1071,31 +1071,11 @@ function saveFilesToZip(zipFileName) {
 	window.resizeWindow();
 
 	setTimeout(function () {
-		// Workaround to remove a 1-pixel flick in the
-		// first time the window is actually resized...
+		document.body.style.visibility = "";
 
 		editor.focus();
 
-		var w = editorContainer.style.width;
-
 		editor.resize();
-
-		if (w === "100%") {
-			editorContainer.style.width = "105%";
-			editor.resize();
-		} else {
-			editorContainer.style.width = (parseInt(w) + 5) + "px";
-			editor.resize();
-		}
-
-		setTimeout(function () {
-			document.body.style.visibility = "";
-
-			editor.focus();
-
-			editorContainer.style.width = w;
-			editor.resize();
-		}, 50);
 	}, 250);
 })();
 

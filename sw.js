@@ -208,8 +208,10 @@ self.addEventListener("fetch", (event) => {
 
 	const url = event.request.url;
 
-	// Refer to the comments inside the cache to understand this if!
-	if (url.indexOf("/labs-editor/") < 0)
+	// Refer to the comments inside the cache to understand this condition!
+	if (url.indexOf("/labs-editor/") < 0 ||
+		// Do not cache the examples!
+		url.indexOf("/examples/") >= 0)
 		return fetch(event.request);
 
 	if (url.indexOf("/labs-editor/html/site/") >= 0) {

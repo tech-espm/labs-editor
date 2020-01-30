@@ -450,3 +450,13 @@ textarea {
 	width: 0;
 	position: absolute;
 }
+
+/*
+	Ace Editor Gutter Fix (1-pixel flicker)
+*/
+.ace_gutter, .ace_gutter-layer {
+	min-width: 64px;
+}
+.ace_scroller, .ace_scrollbar-h {
+	left: 64px !important;
+}

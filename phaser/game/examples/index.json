@@ -1,0 +1,104 @@
+{
+	"files": [
+		{
+			"name": "Creating images",
+			"namePt": "Criando imagens",
+			"prefix": "image"
+		},
+		{
+			"name": "Creating and manipulating images",
+			"namePt": "Criando e manipulando imagens",
+			"prefix": "image-attr"
+		},
+		{
+			"name": "Clicking on images",
+			"namePt": "Clicando sobre imagens",
+			"prefix": "image-click"
+		},
+		{
+			"name": "Creating backgrounds",
+			"namePt": "Criando planos de fundo",
+			"prefix": "tilesprite"
+		},
+		{
+			"name": "Creating sprites",
+			"namePt": "Criando sprites",
+			"prefix": "sprite"
+		},
+		{
+			"name": "Creating and manipulating sprites",
+			"namePt": "Criando e manipulando sprites",
+			"prefix": "sprite-attr"
+		},
+		{
+			"name": "Clicking on sprites",
+			"namePt": "Clicando sobre sprites",
+			"prefix": "sprite-click"
+		},
+		{
+			"name": "Animating sprites",
+			"namePt": "Animando sprites",
+			"prefix": "sprite-anim"
+		},
+		{
+			"name": "Applying physics to sprites",
+			"namePt": "Aplicando física aos sprites",
+			"prefix": "sprite-phys"
+		},
+		{
+			"name": "Controlling sprite physics with the keyboard",
+			"namePt": "Controlando a física de sprites com o teclado",
+			"prefix": "sprite-kbd"
+		},
+		{
+			"name": "Controlling sprite physics with the keyboard (2)",
+			"namePt": "Controlando a física de sprites com o teclado (2)",
+			"prefix": "sprite-kbdacc"
+		},
+		{
+			"name": "Controlling and animating sprites",
+			"namePt": "Controlando e animando sprites",
+			"prefix": "sprite-kbdanim"
+		},
+		{
+			"name": "Handling keys",
+			"namePt": "Tratando teclas",
+			"prefix": "sprite-kbdevt"
+		},
+		{
+			"name": "Handling keys (2)",
+			"namePt": "Tratando teclas (2)",
+			"prefix": "sprite-kbdpoll"
+		},
+		{
+			"name": "Handling keys with timing",
+			"namePt": "Tratando teclas com temporização",
+			"prefix": "sprite-kbdtime"
+		},
+		{
+			"name": "Handling mouse position and buttons",
+			"namePt": "Tratando botões e posição do mouse",
+			"prefix": "sprite-mouseevt"
+		},
+		{
+			"name": "Handling mouse position and buttons (2)",
+			"namePt": "Tratando botões e posição do mouse (2)",
+			"prefix": "sprite-mousepoll"
+		},
+		{
+			"name": "Controlling and animating sprites (with jump)",
+			"namePt": "Controlando e animando sprites (com pulo)",
+			"prefix": "sprite-kbdjump"
+		},
+		{
+			"name": "Controlling and animating sprites (with shots)",
+			"namePt": "Controlando e animando sprites (com tiros)",
+			"prefix": "sprite-kbdshot"
+		},
+		{
+			"name": "Controlling and animating sprites (with shots and targets)",
+			"namePt": "Controlando e animando sprites (com tiros e alvos)",
+			"prefix": "sprite-kbdshottarget"
+		}
+	]
+}

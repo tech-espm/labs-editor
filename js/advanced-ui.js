@@ -106,7 +106,7 @@ $(document.body).prepend(
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-outline btn-default" data-dismiss="modal" data-string="text|Cancel"><i class="fa fa-margin fa-times"></i></button>
-				<button type="button" class="btn btn-primary" id="modalThemeOk" data-string="text|Save"><i class="fa fa-margin fa-check"></i></button>
+				<button type="button" class="btn btn-primary" id="modalThemeOk" data-string="text|OK"><i class="fa fa-margin fa-check"></i></button>
 			</div>
 		</div>
 	</div>
