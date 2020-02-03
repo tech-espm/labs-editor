@@ -1,4 +1,4 @@
-
+Ôªø
 function menu() {
 	
 	var setas;
@@ -12,21 +12,21 @@ function menu() {
 		// Define a cor do fundo para azul claro.
 		game.stage.backgroundColor = "#0066ff";
 		
-		// Carrega imagem dos tiros (o primeiro par‚metro È como
-		// nÛs iremos chamar a imagem no nosso jogo).
+		// Carrega imagem dos tiros (o primeiro par√¢metro √© como
+		// n√≥s iremos chamar a imagem no nosso jogo).
 		game.load.image("tiro", "examples/assets/bullet0.png");
 		
-		// Carrega a imagem de um sprite (o primeiro par‚metro È como
-		// nÛs iremos chamar a imagem no nosso jogo, e os dois ˙ltimos
-		// s„o a largura e a altura de cada quadro na imagem, em pixels).
+		// Carrega a imagem de um sprite (o primeiro par√¢metro √© como
+		// n√≥s iremos chamar a imagem no nosso jogo, e os dois √∫ltimos
+		// s√£o a largura e a altura de cada quadro na imagem, em pixels).
 		//
-		// Para entender mehor, convÈm abrir a imagem em uma aba nova:
+		// Para entender mehor, conv√©m abrir a imagem em uma aba nova:
 		// http://tech-espm.github.io/labs-editor/phaser/game/examples/assets/dude.png
 		game.load.spritesheet("dude", "examples/assets/dude.png", 32, 48);
 		
-		// Para que o tiro n„o ocorra apenas no momento em que a
-		// tecla foi pressionada, mas tambÈm n„o aconteÁa em todos
-		// os quadros, vamos utilizar o hor·rio do jogo, dado em
+		// Para que o tiro n√£o ocorra apenas no momento em que a
+		// tecla foi pressionada, mas tamb√©m n√£o aconte√ßa em todos
+		// os quadros, vamos utilizar o hor√°rio do jogo, dado em
 		// milissegundos, como cadenciador.
 		horaParaOProximoTiro = game.time.now;
 		
@@ -37,103 +37,103 @@ function menu() {
 		// Cria um objeto para tratar as teclas direcionais
 		// do teclado (cima, baixo, esquerda, direita).
 		//
-		// Mais atributos e mÈtodos de entrada (game.input.xxx):
+		// Mais atributos e m√©todos de entrada (game.input.xxx):
 		// https://phaser.io/docs/2.6.2/Phaser.Input.html
 		//
-		// Mais atributos e mÈtodos do teclado (game.input.keyboard.xxx):
+		// Mais atributos e m√©todos do teclado (game.input.keyboard.xxx):
 		// http://phaser.io/docs/2.6.2/Phaser.Keyboard.html
 		setas = game.input.keyboard.createCursorKeys();
 		
-		// Cria um objeto para tratar a barra de espaÁos, mas
-		// *n„o* atribui uma funÁ„o para ser executada quando a
+		// Cria um objeto para tratar a barra de espa√ßos, mas
+		// *n√£o* atribui uma fun√ß√£o para ser executada quando a
 		// tecla for pressionada.
 		//
-		// Mais teclas disponÌveis:
+		// Mais teclas dispon√≠veis:
 		// https://phaser.io/docs/2.6.2/Phaser.KeyCode.html
 		//
-		// Mais atributos e mÈtodos das teclas (tecla.xxx):
+		// Mais atributos e m√©todos das teclas (tecla.xxx):
 		// https://phaser.io/docs/2.6.2/Phaser.Key.html
 		teclaTiro = game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
 		
 		// Adiciona o sprite na coordenada (20, 100) da tela,
-		// lembrando que (0, 0) est· no canto superior esquerdo!
+		// lembrando que (0, 0) est√° no canto superior esquerdo!
 		//
-		// DiferenÁa entre sprites e imagens no Phaser 2: imagens
-		// n„o podem ter animaÁ„o nem fÌsica!
+		// Diferen√ßa entre sprites e imagens no Phaser 2: imagens
+		// n√£o podem ter anima√ß√£o nem f√≠sica!
 		//
 		// Como iremos trabalhar com o sprite depois, precisamos
-		// armazenar em uma vari·vel.
+		// armazenar em uma vari√°vel.
 		dude = game.add.sprite(20, 100, "dude");
 		
-		// Habilita o motor de fÌsica tradicional.
+		// Habilita o motor de f√≠sica tradicional.
 		game.physics.arcade.enable(dude);
 		
-		// Cria trÍs animaÁıes chamadas "esquerda", "parado" e "direita"
+		// Cria tr√™s anima√ß√µes chamadas "esquerda", "parado" e "direita"
 		// para o sprite, com seus respectivos quadros, a uma velocidade
 		// de 8 quadros por segundo, repetindo para sempre.
 		dude.animations.add("esquerda", [0, 1, 2, 3], 8, true);
 		dude.animations.add("parado", [4], 1, true);
 		dude.animations.add("direita", [5, 6, 7, 8], 8, true);
-		// Inicia a animaÁ„o "parado".
+		// Inicia a anima√ß√£o "parado".
 		dude.animations.play("parado");
 		
 		// Previne que o sprite saia da tela.
 		dude.body.collideWorldBounds = true;
-		// Configura a gravidade (em pixels/s≤) aplicada ao sprite,
+		// Configura a gravidade (em pixels/s¬≤) aplicada ao sprite,
 		// lembrando que valores positivos apontam para baixo!
 		dude.body.gravity.y = 800;
 		// Configura o fator de rebatimento do sprite, definido
-		// como o percentual da velocidade que ele ter· quando
-		// colidir com algum obst·culo.
+		// como o percentual da velocidade que ele ter√° quando
+		// colidir com algum obst√°culo.
 		dude.body.bounce.x = 0.5;
 		dude.body.bounce.y = 0.5;
-		// Configura a velocidade horizontal m·xima do sprite,
-		// porque agora iremos trabalhar com a aceleraÁ„o do
+		// Configura a velocidade horizontal m√°xima do sprite,
+		// porque agora iremos trabalhar com a acelera√ß√£o do
 		// sprite, sem alterar sua velocidade diretamente.
 		dude.body.maxVelocity.x = 1000;
-		// Configura o arrasto/desaceleraÁ„o horizontal do sprite.
+		// Configura o arrasto/desacelera√ß√£o horizontal do sprite.
 		dude.body.drag.x = 2000;
 		
 		// Outros atributos comuns de body:
 		// dude.body.velocity.x (em pixels/s)
 		// dude.body.velocity.y (em pixels/s)
-		// dude.body.acceleration.x (em pixels/s≤)
-		// dude.body.acceleration.y (em pixels/s≤)
-		// dude.body.drag.y (arrasto/desaceleraÁ„o em pixels/s≤)
+		// dude.body.acceleration.x (em pixels/s¬≤)
+		// dude.body.acceleration.y (em pixels/s¬≤)
+		// dude.body.drag.y (arrasto/desacelera√ß√£o em pixels/s¬≤)
 		// dude.body.maxVelocity.y (em pixels/s)
 		//
-		// Mais atributos e mÈtodos de body (dude.body.xxx):
+		// Mais atributos e m√©todos de body (dude.body.xxx):
 		// https://phaser.io/docs/2.6.2/Phaser.Physics.Arcade.Body.html
 		//
-		// Mais informaÁıes relacionados ‡ fÌsica de arcade:
+		// Mais informa√ß√µes relacionados √† f√≠sica de arcade:
 		// https://phaser.io/docs/2.6.2/index#arcadephysics
 		
 		// O Phaser 2 possui o conceito de grupo de objetos, que
-		// s„o objetos com comportamentos e significados similares.
-		// Os grupos s„o utilizados para facilitar a execuÁ„o de
-		// tarefas repetidas sobre v·rios objetos diferentes, mas
+		// s√£o objetos com comportamentos e significados similares.
+		// Os grupos s√£o utilizados para facilitar a execu√ß√£o de
+		// tarefas repetidas sobre v√°rios objetos diferentes, mas
 		// que possuem mesma funcionalidade no jogo.
 		//
-		// Mais atributos e mÈtodos dos grupos (tiros.xxx):
+		// Mais atributos e m√©todos dos grupos (tiros.xxx):
 		// https://phaser.io/docs/2.6.2/Phaser.Group.html
 		tiros = game.add.group();
-		// Todos os objetos do grupo devem ter fÌsica.
+		// Todos os objetos do grupo devem ter f√≠sica.
 		tiros.enableBody = true;
 		tiros.physicsBodyType = Phaser.Physics.ARCADE;
-		// Vamos deixar 5 tiros j· criados. Esse valor ser·
-		// a quantidade m·xima de tiros na tela em um dado
+		// Vamos deixar 5 tiros j√° criados. Esse valor ser√°
+		// a quantidade m√°xima de tiros na tela em um dado
 		// momento.
 		for (var i = 0; i < 5; i++) {
 			// Cria um novo tiro na coordenada (0, 0) da tela,
-			// o que n„o importa, porque o tiro n„o aparecer·
-			// ainda, nem ter· a fÌsica processada (exists = false
+			// o que n√£o importa, porque o tiro n√£o aparecer√°
+			// ainda, nem ter√° a f√≠sica processada (exists = false
 			// e visible = false).
 			var tiro = tiros.create(0, 0, "tiro");
 			tiro.exists = false;
 			tiro.visible = false;
-			// Quando o tiro sair da tela ele deve ser destruÌdo.
-			// Caso contr·rio, ele ficaria ativo para sempre, mesmo
-			// n„o estando mais visÌvel!
+			// Quando o tiro sair da tela ele deve ser destru√≠do.
+			// Caso contr√°rio, ele ficaria ativo para sempre, mesmo
+			// n√£o estando mais vis√≠vel!
 			tiro.checkWorldBounds = true;
 			tiro.events.onOutOfBounds.add(destruirTiro);
 		}
@@ -143,13 +143,13 @@ function menu() {
 	this.update = function () {
 		
 		// Controle de movimentos simples. Se a seta esquerda estiver
-		// pressionada, aplica uma aceleraÁ„o negativa (esquerda) ao
+		// pressionada, aplica uma acelera√ß√£o negativa (esquerda) ao
 		// o sprite. Se a seta direita estiver pressionada, aplica uma
-		// aceleraÁ„o positiva (direita) ao sprite. Se nenhuma tecla
-		// estiver pressionada, remove a aceleraÁ„o do sprite, deixando
-		// que o arrasto/desaceleraÁ„o (drag) pare o sprite.
+		// acelera√ß√£o positiva (direita) ao sprite. Se nenhuma tecla
+		// estiver pressionada, remove a acelera√ß√£o do sprite, deixando
+		// que o arrasto/desacelera√ß√£o (drag) pare o sprite.
 		//
-		// AlÈm disso, define a animaÁ„o correta do sprite dependendo
+		// Al√©m disso, define a anima√ß√£o correta do sprite dependendo
 		// da seta que estiver pressionada.
 		if (setas.left.isDown) {
 			dude.body.acceleration.x = -3000;
@@ -164,25 +164,25 @@ function menu() {
 			}
 		}
 		
-		// PoderÌamos tambÈm alterar a animaÁ„o do sprite n„o apenas com
-		// base no teclado, mas com base em sua velocidade, ou uma combinaÁ„o
+		// Poder√≠amos tamb√©m alterar a anima√ß√£o do sprite n√£o apenas com
+		// base no teclado, mas com base em sua velocidade, ou uma combina√ß√£o
 		// de ambos! :)
 		
 		var agora = game.time.now;
 		
-		// Neste exemplo, o tiro ser· executada sempre que a tecla
-		// estiver pressionada, mas apenas se j· tiver passado o
+		// Neste exemplo, o tiro ser√° executada sempre que a tecla
+		// estiver pressionada, mas apenas se j√° tiver passado o
 		// intervalo de tempo desejado. No nosso caso, um novo tiro
 		// deve ser liberado a cada 100 milissegundos.
 		if (teclaTiro.isDown && agora >= horaParaOProximoTiro) {
-			// NÛs criamos 5 tiros, assim, sÛ poder„o existir no
-			// m·ximo 5 tiros na tela, em qualquer momento!
+			// N√≥s criamos 5 tiros, assim, s√≥ poder√£o existir no
+			// m√°ximo 5 tiros na tela, em qualquer momento!
 			var tiro = tiros.getFirstExists(false);
 			
 			if (tiro) {
-				// Caso exista ao menos um tiro disponÌvel,
+				// Caso exista ao menos um tiro dispon√≠vel,
 				// devemos posicionar o sprite do tiro na
-				// posic„o correta, com a velocidade correta.
+				// posic√£o correta, com a velocidade correta.
 				tiro.reset(dude.x + 6, dude.y - 8);
 				tiro.body.velocity.y = -500;
 				
@@ -193,9 +193,9 @@ function menu() {
 	};
 	
 	function destruirTiro(tiro) {
-		// Quando o tiro sair da tela ele deve ser destruÌdo.
-		// Caso contr·rio, ele ficaria ativo para sempre, mesmo
-		// n„o estando mais visÌvel!
+		// Quando o tiro sair da tela ele deve ser destru√≠do.
+		// Caso contr√°rio, ele ficaria ativo para sempre, mesmo
+		// n√£o estando mais vis√≠vel!
 		tiro.kill();
 	}
 	

@@ -56,9 +56,33 @@
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,600|Roboto+Mono:400,700" />
 	<link rel="stylesheet" href="../lib/bootstrap/css/bootstrap-1.0.22.min.css" />
 	<link rel="stylesheet" href="../lib/font-awesome/css/font-awesome-1.0.2.min.css" />
-	<link rel="stylesheet" href="../css/style.css?v=1.0.2" />
+	<link rel="stylesheet" href="../css/style.css?v=1.0.3" />
 </head>
 <body style="visibility: hidden">
+
+	<div class="modal fade" tabindex="-1" role="dialog" id="modalExamples">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" data-string="aria-label|Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" data-string="text|Examples"></h4>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-xs-6 col-sm-4">
+							<div id="modalExamplesList" class="list-group no-margin-bottom"></div>
+						</div>
+						<div class="col-xs-6 col-sm-8">
+							<textarea class="form-control monospace" id="modalExamplesText" spellcheck="false" rows="20" wrap="off"></textarea>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-outline btn-default" data-dismiss="modal" data-string="text|Close"><i class="fa fa-margin fa-times"></i></button>
+				</div>
+			</div>
+		</div>
+	</div>
 
 	<div class="editor-container" id="editorContainer">
 		<a class="nav-tabs-logo" href="https://github.com/tech-espm/labs-editor" target="_blank"><img id="editorImgLogo" width="75" src="../images/logo.png" style="border: none;" /></a>
@@ -76,6 +100,8 @@
 				<li role="separator" class="divider"></li>
 				<li><a href="#" data-string="text|LoadEllipsis" id="editorActionLoad"><i class="fa fa-margin fa-folder-open-o"></i></a></li>
 				<li><a href="#" data-string="text|SaveEllipsis" id="editorActionSave"><i class="fa fa-margin fa-cloud-download"></i></a></li>
+				<li role="separator" class="divider"></li>
+				<li><a href="#" data-string="text|ExamplesEllipsis" id="editorActionExamples"><i class="fa fa-margin fa-lightbulb-o"></i></a></li>
 				<li id="editorActionInstallSeparator" role="separator" class="divider" style="display: none;"></li>
 				<li id="editorActionInstallItem" style="display: none;"><a href="#" id="editorActionInstall" data-string="text|InstallPhaser"><i class="fa fa-margin fa-download"></i></a></li>
 				<li role="separator" class="divider"></li>
@@ -105,7 +131,7 @@
 	<script type="text/javascript" src="../lib/ace-1.4.7/ext-searchbox.js"></script>
 	<script type="text/javascript" src="../lib/ace-1.4.7/ext-language_tools.js"></script>
 	<script type="text/javascript" src="../js/advanced-ui.js?v=1.0.2"></script>
-	<script type="text/javascript" src="../js/main.js?v=1.0.2"></script>
+	<script type="text/javascript" src="../js/main.js?v=1.0.3"></script>
 	<script type="text/javascript">
 		"use strict";
 
@@ -131,9 +157,11 @@
 			}
 		];
 
+		window.defaultMenuHeader = 'var ' + translate("levels") + ' = ["menu"];\nvar ' + translate("gameWidth") + ' = 800;\nvar ' + translate("gameHeight") + ' = 600;\n';
+
 		function documentNewContent(fileNameNoExtension) {
 			return ((!fileNameNoExtension || fileNameNoExtension === "menu") ?
-				('var ' + translate("levels") + ' = ["menu"];\nvar ' + translate("gameWidth") + ' = 800;\nvar ' + translate("gameHeight") + ' = 600;\n\nfunction menu() {\n\t\n\tthis.preload = function () {\n\t\t\n\t\tgame.stage.backgroundColor = "#0066ff";\n\t\t\n\t};\n\t\n\tthis.create = function () {\n\t\t\n\t};\n\t\n\tthis.update = function () {\n\t\t\n\t};\n\t\n}\n') :
+				(defaultMenuHeader + '\nfunction menu() {\n\t\n\tthis.preload = function () {\n\t\t\n\t\tgame.stage.backgroundColor = "#0066ff";\n\t\t\n\t};\n\t\n\tthis.create = function () {\n\t\t\n\t};\n\t\n\tthis.update = function () {\n\t\t\n\t};\n\t\n}\n') :
 				('function ' + fileNameNoExtension + '() {\n\t\n\tthis.preload = function () {\n\t\t\n\t};\n\t\n\tthis.create = function () {\n\t\t\n\t};\n\t\n\tthis.update = function () {\n\t\t\n\t};\n\t\n}\n'));
 		}
 
@@ -148,7 +176,121 @@
 
 		// Actions Menu
 		(function () {
+			var modalExamplesList = _ID("modalExamplesList");
+			var modalExamplesText = _ID("modalExamplesText");
+			var exampleFileSuffix = translate("ExampleFileSuffix");
+			var modalExamplesListLoaded = false;
+			var lastActiveLink = null;
+			var localExamples = {};
 
+			$("#modalExamples").on("shown.bs.modal", function () {
+				modalExamplesText.focus();
+			});
+
+			_ID("editorActionExamples").onclick = function (e) {
+				if (loading)
+					return cancelEvent(e);
+
+				$("#editorMenuDropdown").dropdown("toggle");
+
+				if (modalExamplesListLoaded) {
+					$("#modalExamples").modal({
+						keyboard: true,
+						backdrop: true
+					});
+					return;
+				}
+
+				loading = true;
+				Notification.wait();
+
+				function loadError(reason) {
+					loading = false;
+					Notification.error(translate("ErrorDownload"));
+				}
+
+				function loadExample(e) {
+					if (loading)
+						return cancelEvent(e);
+
+					var name = _GA(this, "data-prefix") + exampleFileSuffix, a = this;
+
+					function activateLink(value) {
+						if (lastActiveLink)
+							lastActiveLink.className = "list-group-item";
+						lastActiveLink = a;
+						a.className = "list-group-item active";
+						modalExamplesText.value = value;
+						modalExamplesText.selectionStart = 0;
+						modalExamplesText.selectionEnd = 0;
+						modalExamplesText.focus();
+					}
+
+					if ((name in localExamples)) {
+						activateLink(localExamples[name]);
+						return cancelEvent(e);
+					}
+
+					loading = true;
+					Notification.wait();
+
+					fetch(new Request("/labs-editor/phaser/game/examples/code/" + name + ".js", { cache: "no-store" })).then(function (response) {
+						if (!response || response.status !== 200) {
+							loadError(null);
+							return;
+						}
+
+						response.text().then(function (value) {
+							value = defaultMenuHeader + value;
+							localExamples[name] = value;
+							activateLink(value);
+
+							loading = false;
+							Notification.hide();
+						}, loadError);
+					}, loadError);
+
+					return cancelEvent(e);
+				}
+
+				fetch(new Request("/labs-editor/phaser/game/examples/index.json", { cache: "no-store" })).then(function (response) {
+					if (!response || response.status !== 200) {
+						loadError(null);
+						return;
+					}
+
+					response.text().then(function (value) {
+						var i, list, a, name = "name" + exampleFileSuffix;
+						try {
+							list = JSON.parse(value);
+						} catch (ex) {
+							list = null;
+						}
+
+						if (!list || !list.files || !list.files.length) {
+							loadError(null);
+							return;
+						}
+
+						for (i = 0; i < list.files.length; i++) {
+							_TXT(list.files[i][name], a = _SA(_SA(_CE("a", "list-group-item", modalExamplesList), "href", "#"), "data-prefix", list.files[i].prefix));
+							a.onclick = loadExample;
+						}
+
+						modalExamplesListLoaded = true;
+
+						loading = false;
+						Notification.hide();
+
+						$("#modalExamples").modal({
+							keyboard: true,
+							backdrop: true
+						});
+					}, loadError);
+				}, loadError);
+
+				return cancelEvent(e);
+			};
 		})();
 	</script>
 </body>

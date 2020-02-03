@@ -1,4 +1,4 @@
-{
+Ôªø{
 	"files": [
 		{
 			"name": "Creating images",
@@ -42,17 +42,17 @@
 		},
 		{
 			"name": "Applying physics to sprites",
-			"namePt": "Aplicando fÌsica aos sprites",
+			"namePt": "Aplicando f√≠sica aos sprites",
 			"prefix": "sprite-phys"
 		},
 		{
 			"name": "Controlling sprite physics with the keyboard",
-			"namePt": "Controlando a fÌsica de sprites com o teclado",
+			"namePt": "Controlando a f√≠sica de sprites com o teclado",
 			"prefix": "sprite-kbd"
 		},
 		{
 			"name": "Controlling sprite physics with the keyboard (2)",
-			"namePt": "Controlando a fÌsica de sprites com o teclado (2)",
+			"namePt": "Controlando a f√≠sica de sprites com o teclado (2)",
 			"prefix": "sprite-kbdacc"
 		},
 		{
@@ -72,17 +72,17 @@
 		},
 		{
 			"name": "Handling keys with timing",
-			"namePt": "Tratando teclas com temporizaÁ„o",
+			"namePt": "Tratando teclas com temporiza√ß√£o",
 			"prefix": "sprite-kbdtime"
 		},
 		{
 			"name": "Handling mouse position and buttons",
-			"namePt": "Tratando botıes e posiÁ„o do mouse",
+			"namePt": "Tratando bot√µes e posi√ß√£o do mouse",
 			"prefix": "sprite-mouseevt"
 		},
 		{
 			"name": "Handling mouse position and buttons (2)",
-			"namePt": "Tratando botıes e posiÁ„o do mouse (2)",
+			"namePt": "Tratando bot√µes e posi√ß√£o do mouse (2)",
 			"prefix": "sprite-mousepoll"
 		},
 		{

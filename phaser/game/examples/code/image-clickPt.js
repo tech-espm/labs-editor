@@ -1,4 +1,4 @@
-
+Ôªø
 function menu() {
 	
 	var dude;
@@ -8,8 +8,8 @@ function menu() {
 		// Define a cor do fundo para azul claro.
 		game.stage.backgroundColor = "#0066ff";
 		
-		// Carrega uma imagem (o primeiro par‚metro È como
-		// nÛs iremos chamar a imagem no nosso jogo).
+		// Carrega uma imagem (o primeiro par√¢metro √© como
+		// n√≥s iremos chamar a imagem no nosso jogo).
 		game.load.image("phaser-dude", "examples/assets/phaser-dude.png");
 		
 	};
@@ -17,10 +17,10 @@ function menu() {
 	this.create = function () {
 		
 		// Adiciona a imagem na coordenada (20, 100) da tela,
-		// lembrando que (0, 0) est· no canto superior esquerdo!
+		// lembrando que (0, 0) est√° no canto superior esquerdo!
 		//
 		// Como iremos trabalhar com a imagem depois, precisamos
-		// armazenar em uma vari·vel.
+		// armazenar em uma vari√°vel.
 		dude = game.add.image(20, 100, "phaser-dude");
 		
 		// Habilita que a imagem seja clicada.
@@ -28,7 +28,7 @@ function menu() {
 		// Altera o cursor do mouse quando ele estiver sobre
 		// a imagem.
 		dude.input.useHandCursor = true;
-		// Diz qual funÁ„o deve ser executada quando a imagem
+		// Diz qual fun√ß√£o deve ser executada quando a imagem
 		// for clicada.
 		dude.events.onInputDown.add(dudeFoiClicado);
 		

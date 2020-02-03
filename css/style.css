@@ -451,6 +451,15 @@ textarea {
 	position: absolute;
 }
 
+#modalExamplesList {
+	height: 400px;
+	overflow: auto;
+}
+
+#modalExamplesText {
+	height: 400px;
+}
+
 /*
 	Ace Editor Gutter Fix (1-pixel flicker)
 */

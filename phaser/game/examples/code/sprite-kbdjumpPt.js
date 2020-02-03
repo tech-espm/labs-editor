@@ -1,4 +1,4 @@
-
+ï»¿
 function menu() {
 	
 	var setas;
@@ -10,11 +10,11 @@ function menu() {
 		// Define a cor do fundo para azul claro.
 		game.stage.backgroundColor = "#0066ff";
 		
-		// Carrega a imagem de um sprite (o primeiro parâmetro é como
-		// nós iremos chamar a imagem no nosso jogo, e os dois últimos
-		// são a largura e a altura de cada quadro na imagem, em pixels).
+		// Carrega a imagem de um sprite (o primeiro parÃ¢metro Ã© como
+		// nÃ³s iremos chamar a imagem no nosso jogo, e os dois Ãºltimos
+		// sÃ£o a largura e a altura de cada quadro na imagem, em pixels).
 		//
-		// Para entender mehor, convém abrir a imagem em uma aba nova:
+		// Para entender mehor, convÃ©m abrir a imagem em uma aba nova:
 		// http://tech-espm.github.io/labs-editor/phaser/game/examples/assets/dude.png
 		game.load.spritesheet("dude", "examples/assets/dude.png", 32, 48);
 		
@@ -25,76 +25,76 @@ function menu() {
 		// Cria um objeto para tratar as teclas direcionais
 		// do teclado (cima, baixo, esquerda, direita).
 		//
-		// Mais atributos e métodos de entrada (game.input.xxx):
+		// Mais atributos e mÃ©todos de entrada (game.input.xxx):
 		// https://phaser.io/docs/2.6.2/Phaser.Input.html
 		//
-		// Mais atributos e métodos do teclado (game.input.keyboard.xxx):
+		// Mais atributos e mÃ©todos do teclado (game.input.keyboard.xxx):
 		// http://phaser.io/docs/2.6.2/Phaser.Keyboard.html
 		setas = game.input.keyboard.createCursorKeys();
 		
-		// Cria um objeto para tratar a barra de espaços, e
-		// atribui uma função para ser executada quando a
+		// Cria um objeto para tratar a barra de espaÃ§os, e
+		// atribui uma funÃ§Ã£o para ser executada quando a
 		// tecla for pressionada.
 		//
-		// Mais teclas disponíveis:
+		// Mais teclas disponÃ­veis:
 		// https://phaser.io/docs/2.6.2/Phaser.KeyCode.html
 		//
-		// Mais atributos e métodos das teclas (tecla.xxx):
+		// Mais atributos e mÃ©todos das teclas (tecla.xxx):
 		// https://phaser.io/docs/2.6.2/Phaser.Key.html
 		teclaPulo = game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
 		teclaPulo.onDown.add(pular);
 		
 		// Adiciona o sprite na coordenada (20, 100) da tela,
-		// lembrando que (0, 0) está no canto superior esquerdo!
+		// lembrando que (0, 0) estÃ¡ no canto superior esquerdo!
 		//
-		// Diferença entre sprites e imagens no Phaser 2: imagens
-		// não podem ter animação nem física!
+		// DiferenÃ§a entre sprites e imagens no Phaser 2: imagens
+		// nÃ£o podem ter animaÃ§Ã£o nem fÃ­sica!
 		//
 		// Como iremos trabalhar com o sprite depois, precisamos
-		// armazenar em uma variável.
+		// armazenar em uma variÃ¡vel.
 		dude = game.add.sprite(20, 100, "dude");
 		
-		// Habilita o motor de física tradicional.
+		// Habilita o motor de fÃ­sica tradicional.
 		game.physics.arcade.enable(dude);
 		
-		// Cria três animações chamadas "esquerda", "parado" e "direita"
+		// Cria trÃªs animaÃ§Ãµes chamadas "esquerda", "parado" e "direita"
 		// para o sprite, com seus respectivos quadros, a uma velocidade
 		// de 8 quadros por segundo, repetindo para sempre.
 		dude.animations.add("esquerda", [0, 1, 2, 3], 8, true);
 		dude.animations.add("parado", [4], 1, true);
 		dude.animations.add("direita", [5, 6, 7, 8], 8, true);
-		// Inicia a animação "parado".
+		// Inicia a animaÃ§Ã£o "parado".
 		dude.animations.play("parado");
 		
 		// Previne que o sprite saia da tela.
 		dude.body.collideWorldBounds = true;
-		// Configura a gravidade (em pixels/s²) aplicada ao sprite,
+		// Configura a gravidade (em pixels/sÂ²) aplicada ao sprite,
 		// lembrando que valores positivos apontam para baixo!
 		dude.body.gravity.y = 800;
 		// Configura o fator de rebatimento do sprite, definido
-		// como o percentual da velocidade que ele terá quando
-		// colidir com algum obstáculo.
+		// como o percentual da velocidade que ele terÃ¡ quando
+		// colidir com algum obstÃ¡culo.
 		dude.body.bounce.x = 0.5;
 		dude.body.bounce.y = 0.5;
-		// Configura a velocidade horizontal máxima do sprite,
-		// porque agora iremos trabalhar com a aceleração do
+		// Configura a velocidade horizontal mÃ¡xima do sprite,
+		// porque agora iremos trabalhar com a aceleraÃ§Ã£o do
 		// sprite, sem alterar sua velocidade diretamente.
 		dude.body.maxVelocity.x = 1000;
-		// Configura o arrasto/desaceleração horizontal do sprite.
+		// Configura o arrasto/desaceleraÃ§Ã£o horizontal do sprite.
 		dude.body.drag.x = 2000;
 		
 		// Outros atributos comuns de body:
 		// dude.body.velocity.x (em pixels/s)
 		// dude.body.velocity.y (em pixels/s)
-		// dude.body.acceleration.x (em pixels/s²)
-		// dude.body.acceleration.y (em pixels/s²)
-		// dude.body.drag.y (arrasto/desaceleração em pixels/s²)
+		// dude.body.acceleration.x (em pixels/sÂ²)
+		// dude.body.acceleration.y (em pixels/sÂ²)
+		// dude.body.drag.y (arrasto/desaceleraÃ§Ã£o em pixels/sÂ²)
 		// dude.body.maxVelocity.y (em pixels/s)
 		//
-		// Mais atributos e métodos de body (dude.body.xxx):
+		// Mais atributos e mÃ©todos de body (dude.body.xxx):
 		// https://phaser.io/docs/2.6.2/Phaser.Physics.Arcade.Body.html
 		//
-		// Mais informações relacionados à física de arcade:
+		// Mais informaÃ§Ãµes relacionados Ã  fÃ­sica de arcade:
 		// https://phaser.io/docs/2.6.2/index#arcadephysics
 		
 	};
@@ -102,13 +102,13 @@ function menu() {
 	this.update = function () {
 		
 		// Controle de movimentos simples. Se a seta esquerda estiver
-		// pressionada, aplica uma aceleração negativa (esquerda) ao
+		// pressionada, aplica uma aceleraÃ§Ã£o negativa (esquerda) ao
 		// o sprite. Se a seta direita estiver pressionada, aplica uma
-		// aceleração positiva (direita) ao sprite. Se nenhuma tecla
-		// estiver pressionada, remove a aceleração do sprite, deixando
-		// que o arrasto/desaceleração (drag) pare o sprite.
+		// aceleraÃ§Ã£o positiva (direita) ao sprite. Se nenhuma tecla
+		// estiver pressionada, remove a aceleraÃ§Ã£o do sprite, deixando
+		// que o arrasto/desaceleraÃ§Ã£o (drag) pare o sprite.
 		//
-		// Além disso, define a animação correta do sprite dependendo
+		// AlÃ©m disso, define a animaÃ§Ã£o correta do sprite dependendo
 		// da seta que estiver pressionada.
 		if (setas.left.isDown) {
 			dude.body.acceleration.x = -3000;
@@ -123,16 +123,16 @@ function menu() {
 			}
 		}
 		
-		// Poderíamos também alterar a animação do sprite não apenas com
-		// base no teclado, mas com base em sua velocidade, ou uma combinação
+		// PoderÃ­amos tambÃ©m alterar a animaÃ§Ã£o do sprite nÃ£o apenas com
+		// base no teclado, mas com base em sua velocidade, ou uma combinaÃ§Ã£o
 		// de ambos! :)
 		
 	};
 	
 	function pular() {
 		// Pular significa aplicar a um sprite uma velocidade para cima
-		// (negativa). Contudo, só podemos deixar que o jogador pule se
-		// o sprite estiver sobre o chão. Se bem que... alguns jogos
+		// (negativa). Contudo, sÃ³ podemos deixar que o jogador pule se
+		// o sprite estiver sobre o chÃ£o. Se bem que... alguns jogos
 		// deixam que o jogador pule mesmo no ar... ;)
 		if (dude.body.onFloor() || dude.body.touching.down) {
 			dude.body.velocity.y = -500;

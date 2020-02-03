@@ -1,4 +1,4 @@
-
+Ôªø
 function menu() {
 	
 	this.preload = function () {
@@ -6,11 +6,11 @@ function menu() {
 		// Define a cor do fundo para azul claro.
 		game.stage.backgroundColor = "#0066ff";
 		
-		// Carrega a imagem de um sprite (o primeiro par‚metro È como
-		// nÛs iremos chamar a imagem no nosso jogo, e os dois ˙ltimos
-		// s„o a largura e a altura de cada quadro na imagem, em pixels).
+		// Carrega a imagem de um sprite (o primeiro par√¢metro √© como
+		// n√≥s iremos chamar a imagem no nosso jogo, e os dois √∫ltimos
+		// s√£o a largura e a altura de cada quadro na imagem, em pixels).
 		//
-		// Para entender mehor, convÈm abrir a imagem em uma aba nova:
+		// Para entender mehor, conv√©m abrir a imagem em uma aba nova:
 		// http://tech-espm.github.io/labs-editor/phaser/game/examples/assets/dude.png
 		game.load.spritesheet("dude", "examples/assets/dude.png", 32, 48);
 		
@@ -19,10 +19,10 @@ function menu() {
 	this.create = function () {
 		
 		// Adiciona o sprite na coordenada (20, 100) da tela,
-		// lembrando que (0, 0) est· no canto superior esquerdo!
+		// lembrando que (0, 0) est√° no canto superior esquerdo!
 		//
-		// DiferenÁa entre sprites e imagens no Phaser 2: imagens
-		// n„o podem ter animaÁ„o nem fÌsica!
+		// Diferen√ßa entre sprites e imagens no Phaser 2: imagens
+		// n√£o podem ter anima√ß√£o nem f√≠sica!
 		game.add.sprite(20, 100, "dude");
 		
 	};
