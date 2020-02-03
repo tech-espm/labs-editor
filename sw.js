@@ -108,7 +108,7 @@ self.addEventListener("install", (event) => {
 			// added a version number in order to try to avoid browsers' own cache
 			"/labs-editor/css/style.css?v=1.0.3",
 			"/labs-editor/css/style-dark.css?v=1.0.2",
-			"/labs-editor/js/advanced.js?v=1.0.3",
+			"/labs-editor/js/advanced.js?v=1.0.4",
 			"/labs-editor/js/advanced-ui.js?v=1.0.2",
 			"/labs-editor/js/main.js?v=1.0.3"
 		];

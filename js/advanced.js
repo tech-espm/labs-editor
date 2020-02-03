@@ -2,6 +2,7 @@
 
 // Globals
 window.maximumFileLength = (2 << 20);
+window.itemLabsEditorNotFirstTime = "labs-editor-not-first-time";
 window.itemLabsEditorTheme = "labs-editor-theme";
 window.itemLabsEditorPopupPreview = "labs-editor-popup-preview";
 window.itemLabsEditorFileListVisible = "labs-editor-file-list-visible";
@@ -1110,7 +1111,8 @@ function saveFilesToZip(zipFileName) {
 
 // Common Actions
 (function () {
-	var editorTogglePopupPreview = _ID("editorTogglePopupPreview"),
+	var firstTime = !localStorage.getItem(itemLabsEditorNotFirstTime),
+		editorTogglePopupPreview = _ID("editorTogglePopupPreview"),
 		editorActionToggleFileListLabel = _ID("editorActionToggleFileListLabel"),
 		editorActionToggleConsoleLabel = _ID("editorActionToggleConsoleLabel"),
 		modalSaveFileName = _ID("modalSaveFileName"),
@@ -1553,14 +1555,19 @@ function saveFilesToZip(zipFileName) {
 	else
 		newWorkspace();
 
-	if (localStorage.getItem(itemLabsEditorPopupPreview))
-		togglePopupPreview();
-
-	if (localStorage.getItem(itemLabsEditorFileListVisible))
+	if (firstTime) {
+		localStorage.setItem(itemLabsEditorNotFirstTime, "1");
 		toggleFileList();
+	} else {
+		if (localStorage.getItem(itemLabsEditorPopupPreview))
+			togglePopupPreview();
 
-	if (localStorage.getItem(itemLabsEditorConsoleVisible))
-		toggleConsole();
+		if (localStorage.getItem(itemLabsEditorFileListVisible))
+			toggleFileList();
+
+		if (localStorage.getItem(itemLabsEditorConsoleVisible))
+			toggleConsole();
+	}
 })();
 
 // Drag and drop
