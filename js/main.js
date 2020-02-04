@@ -478,6 +478,7 @@ function lockUI(lock) {
 		addString("ShowConsole", "Exibir Console");
 		addString("HideConsole", "Ocultar Console");
 		addString("ClearConsole", "Limpar Console");
+		addString("WrapMode", "Quebra de Linha");
 		addString("PreviewInAnotherWindow", "Visualizar em Outra Janela");
 		addString("PreviewInTheSameWindow", "Visualizar na Mesma Janela");
 		addString("Libraries", "Bibliotecas");
@@ -593,6 +594,7 @@ function lockUI(lock) {
 		addString("ShowConsole", "Show Console");
 		addString("HideConsole", "Hide Console");
 		addString("ClearConsole", "Clear Console");
+		addString("WrapMode", "Line Wrap");
 		addString("PreviewInAnotherWindow", "Preview in Another Window");
 		addString("PreviewInTheSameWindow", "Preview in This Widow");
 		addString("Libraries", "Libraries");

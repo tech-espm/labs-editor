@@ -7,6 +7,7 @@ window.itemLabsEditorTheme = "labs-editor-theme";
 window.itemLabsEditorPopupPreview = "labs-editor-popup-preview";
 window.itemLabsEditorFileListVisible = "labs-editor-file-list-visible";
 window.itemLabsEditorConsoleVisible = "labs-editor-console-visible";
+window.itemLabsEditorWrapMode = "labs-editor-wrap-mode";
 window.loading = false;
 window.theme = null;
 window.editorPopupWindowName = "labs-editor-popup-window";
@@ -21,6 +22,7 @@ window.editorFileList = _ID("editorFileList");
 window.editorFileListVisible = false;
 window.editorConsole = _ID("editorConsole");
 window.editorConsoleVisible = false;
+window.editorWrapMode = false;
 window.editorPopupPreview = false;
 window.editorPopupWindow = null;
 window.iframe = _ID("iframe");
@@ -315,9 +317,20 @@ function createSession(lcase, contents) {
 	session.setMode(mode);
 	session.setTabSize(4);
 	session.setUseSoftTabs(false);
-	session.setUseWrapMode(false);
+	session.setUseWrapMode(editorWrapMode);
 	session.getUndoManager().reset();
 	file.session = session;
+}
+
+function updateSessionWrapMode() {
+	var lcase, file, session;
+	if (!documentCacheFileList)
+		return;
+	for (lcase in documentCacheFileList) {
+		if (!(file = documentCacheFileList[lcase]) || !(session = file.session))
+			continue;
+		session.setUseWrapMode(editorWrapMode);
+	}
 }
 
 function cleanupEditorFiles() {
@@ -1115,6 +1128,7 @@ function saveFilesToZip(zipFileName) {
 		editorTogglePopupPreview = _ID("editorTogglePopupPreview"),
 		editorActionToggleFileListLabel = _ID("editorActionToggleFileListLabel"),
 		editorActionToggleConsoleLabel = _ID("editorActionToggleConsoleLabel"),
+		editorActionToggleWrapModeIcon = _ID("editorActionToggleWrapModeIcon"),
 		modalSaveFileName = _ID("modalSaveFileName"),
 		modalSaveOk = _ID("modalSaveOk"),
 		modalRenameFileName = _ID("modalRenameFileName"),
@@ -1311,6 +1325,28 @@ function saveFilesToZip(zipFileName) {
 		$(editorMenuDropdown).dropdown("toggle");
 
 		window.clearLog();
+
+		return cancelEvent(e);
+	};
+
+	function toggleWrapMode() {
+		editorWrapMode = !editorWrapMode;
+		editorActionToggleWrapModeIcon.className = (editorWrapMode ? "fa fa-margin fa-check-square-o" : "fa fa-margin fa-square-o");
+		updateSessionWrapMode();
+	}
+
+	_ID("editorActionToggleWrapMode").onclick = function (e) {
+		if (loading)
+			return cancelEvent(e);
+
+		$(editorMenuDropdown).dropdown("toggle");
+
+		toggleWrapMode();
+
+		if (editorWrapMode)
+			localStorage.setItem(itemLabsEditorWrapMode, "1");
+		else
+			localStorage.removeItem(itemLabsEditorWrapMode);
 
 		return cancelEvent(e);
 	};
@@ -1567,6 +1603,9 @@ function saveFilesToZip(zipFileName) {
 
 		if (localStorage.getItem(itemLabsEditorConsoleVisible))
 			toggleConsole();
+
+		if (localStorage.getItem(itemLabsEditorWrapMode))
+			toggleWrapMode();
 	}
 })();
 
