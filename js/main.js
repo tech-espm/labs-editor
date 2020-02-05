@@ -609,7 +609,7 @@ function lockUI(lock) {
 		addString("gameHeight", "gameHeight");
 	}
 
-	window.translate = function (key) { return (editorStrings[key] || key); };
+	window.translate = function (key) { return ((key in editorStrings) ? editorStrings[key] : key); };
 
 	window.placeholderText = translate("PlaceholderText");
 
