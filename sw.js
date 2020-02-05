@@ -6,7 +6,7 @@
 // whenever it detects a change in the source code of the
 // service worker).
 const CACHE_PREFIX = "labs-editor-static-cache";
-const CACHE_VERSION = "-v9";
+const CACHE_VERSION = "-v10";
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
 const HTML_CACHE_NAME = "labs-editor-html-cache";
 const GAME_CACHE_NAME = "labs-editor-game-cache";
@@ -110,7 +110,7 @@ self.addEventListener("install", (event) => {
 			"/labs-editor/css/style-dark.css?v=1.0.2",
 			"/labs-editor/js/advanced.js?v=1.0.5",
 			"/labs-editor/js/advanced-ui.js?v=1.0.2",
-			"/labs-editor/js/main.js?v=1.0.4"
+			"/labs-editor/js/main.js?v=1.0.5"
 		];
 		const promises = new Array(files.length);
 		for (let i = files.length - 1; i >= 0; i--)
@@ -204,6 +204,12 @@ function cacheMatchAndFixResponse(url, cache) {
 	});
 }
 
+function cacheMatch(url) {
+	return caches.open(CACHE_NAME).then((cache) => {
+		return cache.match(url);
+	});
+}
+
 self.addEventListener("fetch", (event) => {
 
 	const url = event.request.url;
@@ -213,6 +219,18 @@ self.addEventListener("fetch", (event) => {
 		// Do not cache the examples!
 		url.indexOf("/examples/") >= 0)
 		return fetch(event.request);
+
+	// Try to always use a fresh copy of the main pages
+	if (url.endsWith("/labs-editor/") ||
+		url.endsWith("/phaser/") ||
+		url.endsWith("/html/")) {
+		event.respondWith(fetch(event.request).then((response) => {
+			return response || cacheMatch(url);
+		}, () => {
+			return cacheMatch(url);
+		}));
+		return;
+	}
 
 	if (url.indexOf("/labs-editor/html/site/") >= 0) {
 		// Look for the resource in the html cache, not in our cache.

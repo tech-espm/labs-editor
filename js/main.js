@@ -581,7 +581,7 @@ function lockUI(lock) {
 		addString("GoogleFontsEllipsis", "Google Fonts\u2026");
 		addString("AddBootstrap", "Add Bootstrap 3");
 		addString("RemoveBootstrap", "Remove Bootstrap 3");
-		addString("ExampleFileSuffix", "");
+		addString("ExampleFileSuffix", "Pt"); // temporarily
 		addString("ExampleFile", "/labs-editor/example.html");
 		addString("ExampleFileHTML", "/labs-editor/example-html.html");
 		addString("Install", "Install Editor\u2026");
