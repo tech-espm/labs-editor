@@ -5,16 +5,27 @@ function menu() {
 	var teclaTiro;
 	var horaParaOProximoTiro;
 	var tiros;
+	var frutas;
 	var dude;
+	var pontuacao;
+	var texto;
 	
 	this.preload = function () {
 		
 		// Define a cor do fundo para azul claro.
 		game.stage.backgroundColor = "#0066ff";
 		
+		// Carrega imagem do fundo (o primeiro parâmetro é como
+		// nós iremos chamar a imagem no nosso jogo).
+		game.load.image("fundo", "examples/assets/background2.png");
+		
 		// Carrega imagem dos tiros (o primeiro parâmetro é como
 		// nós iremos chamar a imagem no nosso jogo).
 		game.load.image("tiro", "examples/assets/bullet0.png");
+		
+		// Carrega imagem das frutas (o primeiro parâmetro é como
+		// nós iremos chamar a imagem no nosso jogo).
+		game.load.spritesheet("frutas", "examples/assets/fruitnveg32wh37.png", 32, 32); 
 		
 		// Carrega a imagem de um sprite (o primeiro parâmetro é como
 		// nós iremos chamar a imagem no nosso jogo, e os dois últimos
@@ -33,6 +44,15 @@ function menu() {
 	};
 	
 	this.create = function () {
+		
+		var i;
+		
+		// Adiciona a imagem de fundo na coordenada (0, 0) da
+		// tela, com 800 pixels de largura e 600 pixels de altura.
+		// Contudo, se o tamanho original da imagem não for o
+		// desejado, em vez de esticar a imagem, ela será repetida
+		// várias vezes, lado a lado.
+		game.add.tileSprite(0, 0, 800, 600, "fundo");
 		
 		// Cria um objeto para tratar as teclas direcionais
 		// do teclado (cima, baixo, esquerda, direita).
@@ -123,7 +143,7 @@ function menu() {
 		// Vamos deixar 5 tiros já criados. Esse valor será
 		// a quantidade máxima de tiros na tela em um dado
 		// momento.
-		for (var i = 0; i < 5; i++) {
+		for (i = 0; i < 5; i++) {
 			// Cria um novo tiro na coordenada (0, 0) da tela,
 			// o que não importa, porque o tiro não aparecerá
 			// ainda, nem terá a física processada (exists = false
@@ -138,9 +158,63 @@ function menu() {
 			tiro.events.onOutOfBounds.add(destruirTiro);
 		}
 		
+		// Idem ao processo dos tiros, acima.
+		frutas = game.add.group();
+		frutas.enableBody = true;
+		frutas.physicsBodyType = Phaser.Physics.ARCADE;
+		// Vamos criar 50 frutas, mas, diferente dos tiros, elas
+		// já iniciarão visíveis na tela.
+		for (i = 0; i < 50; i++) {
+			// game.world.randomX escolhe uma posição x aleatória
+			// da tela.
+			//
+			// Em vez de utilizar game.world.randomY, estamos
+			// utilizando Math.random() * 500, para garantir que
+			// nunca uma fruta seja posicionada nos 100 pixels
+			// da parte de baixo da tela.
+			//
+			// Para que todas as frutas não fiquem iguais na tela,
+			// utilizamos game.rnd.integerInRange(0, 36) para escolher
+			// o quadro inicial do sprite das frutas. Como elas não
+			// serão animadas, o quadro inicial é o que permanecerá.
+			var fruta = frutas.create(game.world.randomX, Math.random() * 500, "frutas", game.rnd.integerInRange(0, 36));
+			// As frutas não devem se mover quando forem acertadas
+			// por um tiro, diferente de uma bola de bilhar, que
+			// deve ser movida quando for acertada por outra bola.
+			fruta.body.immovable = true;
+		}
+		
+		// Especifica o formato básico do texto de forma similar
+		// ao atributo font do CSS normal. A diferença é que a cor
+		// é determinada pelo atributo fill, e não color como
+		// ocorre no CSS normal.
+		//
+		// Mais atributos e métodos dos textos e seus estilos:
+		// https://phaser.io/docs/2.6.2/Phaser.Text.html
+		var estilo = {
+			font: "bold 20px Arial",
+			fill: "#ffffff"
+		};
+		
+		// Adiciona um texto na coordenada (0, 0) da tela,
+		// lembrando que (0, 0) está no canto superior esquerdo!
+		//
+		// Como iremos trabalhar com o sprite depois, precisamos
+		// armazenar em uma variável.
+		texto = game.add.text(0, 0, "Pontuação: 0", estilo);
+		
+		// Nossa pontuação inicial.
+		pontuacao = 0;
+		
 	};
 	
 	this.update = function () {
+		
+		// Usamos overlap() porque não queremos que os tiros/frutas
+		// rebatam uns nos outros... Nós queremos apenas saber se um
+		// tiro está sobre uma fruta. Se fosse algo como um jogo de
+		// bilhar, usaríamos collide().
+		game.physics.arcade.overlap(tiros, frutas, tiroAcertouFruta);
 		
 		// Controle de movimentos simples. Se a seta esquerda estiver
 		// pressionada, aplica uma aceleração negativa (esquerda) ao
@@ -191,6 +265,18 @@ function menu() {
 		}
 		
 	};
+	
+	function tiroAcertouFruta(tiro, fruta) {
+		
+		// Quando um tiro acerta uma fruta, nós destruímos
+		// ambos e incrementamos a pontuação.
+		tiro.kill();
+		fruta.kill();
+		
+		pontuacao = pontuacao + 1;
+		texto.setText("Pontuação: " + pontuacao);
+		
+	}
 	
 	function destruirTiro(tiro) {
 		

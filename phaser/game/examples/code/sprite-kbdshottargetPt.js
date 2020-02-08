@@ -243,17 +243,21 @@ function menu() {
 	};
 	
 	function tiroAcertouFruta(tiro, fruta) {
+		
 		// Quando um tiro acerta uma fruta, nós apenas
 		// destruímos ambos.
 		tiro.kill();
 		fruta.kill();
+		
 	}
 	
 	function destruirTiro(tiro) {
+		
 		// Quando o tiro sair da tela ele deve ser destruído.
 		// Caso contrário, ele ficaria ativo para sempre, mesmo
 		// não estando mais visível!
 		tiro.kill();
+		
 	}
 	
 }

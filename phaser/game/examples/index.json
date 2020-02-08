@@ -21,6 +21,31 @@
 			"prefix": "tilesprite"
 		},
 		{
+			"name": "Creating texts",
+			"namePt": "Criando textos",
+			"prefix": "text"
+		},
+		{
+			"name": "Creating texts with shadow",
+			"namePt": "Criando textos com sombra",
+			"prefix": "text-shadow"
+		},
+		{
+			"name": "Changing texts",
+			"namePt": "Alterando textos",
+			"prefix": "text-change"
+		},
+		{
+			"name": "Clicking on texts",
+			"namePt": "Clicando sobre textos",
+			"prefix": "text-click"
+		},
+		{
+			"name": "Displaying time left",
+			"namePt": "Exibindo tempo restante",
+			"prefix": "text-time"
+		},
+		{
 			"name": "Creating sprites",
 			"namePt": "Criando sprites",
 			"prefix": "sprite"
@@ -99,6 +124,11 @@
 			"name": "Controlling and animating sprites (with shots and targets)",
 			"namePt": "Controlando e animando sprites (com tiros e alvos)",
 			"prefix": "sprite-kbdshottarget"
+		},
+		{
+			"name": "Controlling and animating sprites (with shots, targets and score)",
+			"namePt": "Controlando e animando sprites (com tiros, alvos e pontuação)",
+			"prefix": "sprite-kbdshottargetscore"
 		}
 	]
 }

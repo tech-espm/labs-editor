@@ -39,9 +39,11 @@ function menu() {
 	};
 	
 	function dudeFoiClicado() {
+		
 		// Vamos apenas trocar o fundo do jogo quando a imagem
 		// for clicada.
 		game.stage.backgroundColor = "#00ff00";
+		
 	}
 	
 }

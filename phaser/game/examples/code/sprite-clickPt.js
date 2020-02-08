@@ -46,9 +46,11 @@ function menu() {
 	};
 	
 	function dudeFoiClicado() {
+		
 		// Vamos apenas trocar o fundo do jogo quando o sprite
 		// for clicado.
 		game.stage.backgroundColor = "#00ff00";
+		
 	}
 	
 }

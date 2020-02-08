@@ -130,6 +130,7 @@ function menu() {
 	};
 	
 	function pular() {
+		
 		// Pular significa aplicar a um sprite uma velocidade para cima
 		// (negativa). Contudo, só podemos deixar que o jogador pule se
 		// o sprite estiver sobre o chão. Se bem que... alguns jogos
@@ -137,6 +138,7 @@ function menu() {
 		if (dude.body.onFloor() || dude.body.touching.down) {
 			dude.body.velocity.y = -500;
 		}
+		
 	}
 	
 }
