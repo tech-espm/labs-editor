@@ -106,11 +106,11 @@ self.addEventListener("install", (event) => {
 			"/labs-editor/phaser/game/phaser-2.6.2.min.js",
 			// Since these files' contents always change, but their names do not, I
 			// added a version number in order to try to avoid browsers' own cache
-			"/labs-editor/css/style.css?v=1.0.3",
+			"/labs-editor/css/style.css?v=1.0.4",
 			"/labs-editor/css/style-dark.css?v=1.0.2",
 			"/labs-editor/js/advanced.js?v=1.0.5",
 			"/labs-editor/js/advanced-ui.js?v=1.0.2",
-			"/labs-editor/js/main.js?v=1.0.5"
+			"/labs-editor/js/main.js?v=1.0.7"
 		];
 		const promises = new Array(files.length);
 		for (let i = files.length - 1; i >= 0; i--)

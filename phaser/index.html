@@ -56,7 +56,7 @@
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,600|Roboto+Mono:400,700" />
 	<link rel="stylesheet" href="../lib/bootstrap/css/bootstrap-1.0.22.min.css" />
 	<link rel="stylesheet" href="../lib/font-awesome/css/font-awesome-1.0.2.min.css" />
-	<link rel="stylesheet" href="../css/style.css?v=1.0.3" />
+	<link rel="stylesheet" href="../css/style.css?v=1.0.4" />
 </head>
 <body style="visibility: hidden">
 
@@ -73,6 +73,12 @@
 							<div id="modalExamplesList" class="list-group no-margin-bottom"></div>
 						</div>
 						<div class="col-xs-6 col-sm-8">
+							<p>
+								<b>Muito</b> mais exemplos: <a href="https://phaser.io/examples/v2" target="_blank">phaser.io/examples/v2</a>
+							</p>
+							<p>
+								<button type="button" class="btn btn-primary" id="modalExamplesCopyText"><i class="fa fa-copy fa-margin"></i>Copiar o exemplo abaixo para o editor</button>
+							</p>
 							<textarea class="form-control monospace" id="modalExamplesText" spellcheck="false" rows="20" wrap="off"></textarea>
 						</div>
 					</div>
@@ -132,7 +138,7 @@
 	<script type="text/javascript" src="../lib/ace-1.4.7/ext-searchbox.js"></script>
 	<script type="text/javascript" src="../lib/ace-1.4.7/ext-language_tools.js"></script>
 	<script type="text/javascript" src="../js/advanced-ui.js?v=1.0.2"></script>
-	<script type="text/javascript" src="../js/main.js?v=1.0.5"></script>
+	<script type="text/javascript" src="../js/main.js?v=1.0.7"></script>
 	<script type="text/javascript">
 		"use strict";
 
@@ -214,7 +220,7 @@
 					if (loading)
 						return cancelEvent(e);
 
-					var name = _GA(this, "data-prefix") + exampleFileSuffix, a = this;
+					var name = _GA(this, "data-prefix") + exampleFileSuffix, noHeader = _GA(this, "data-noHeader"), a = this;
 
 					function activateLink(value) {
 						if (lastActiveLink)
@@ -242,7 +248,7 @@
 						}
 
 						response.text().then(function (value) {
-							value = defaultMenuHeader + value;
+							value = (noHeader ? value : (defaultMenuHeader + value));
 							localExamples[name] = value;
 							activateLink(value);
 
@@ -274,7 +280,7 @@
 						}
 
 						for (i = 0; i < list.files.length; i++) {
-							_TXT(list.files[i][name], a = _SA(_SA(_CE("a", "list-group-item", modalExamplesList), "href", "#"), "data-prefix", list.files[i].prefix));
+							_TXT(list.files[i][name], a = _SA(_SA(_SA(_CE("a", "list-group-item", modalExamplesList), "href", "#"), "data-prefix", list.files[i].prefix), "data-noHeader", list.files[i].noHeader ? "1" : ""));
 							a.onclick = loadExample;
 						}
 
@@ -291,6 +297,21 @@
 				}, loadError);
 
 				return cancelEvent(e);
+			};
+
+			_ID("modalExamplesCopyText").onclick = function () {
+				if (loading)
+					return;
+
+				var txt = modalExamplesText.value;
+				if (!txt)
+					return;
+
+				// Do this way in order to allow the user to undo it!
+				editor.selectAll();
+				editor.session.replace(editor.selection.getRange(), txt);
+
+				Notification.success(translate("Copied"), true);
 			};
 		})();
 	</script>

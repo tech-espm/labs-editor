@@ -63,7 +63,7 @@
 		"use strict";
 
 		var game = new Phaser.Game((window.larguraJogo || window.gameWidth || 1280) | 0, (window.alturaJogo || window.gameHeight || 720) | 0, Phaser.AUTO, "divGame"),
-			divParent = null, divGame = null, loadedScripts = 0;
+			divParent = null, divGame = null, loadedScripts = 0, fading = false, fadeGraphics = null, fadeTween = null;
 
 		function init() {
 
@@ -136,6 +136,57 @@
 				game.scale.stopFullScreen();
 			else
 				game.scale.startFullScreen(false);
+		}
+
+		function fade(from, to, callback, duration, context) {
+			if (fadeTween)
+				fadeTween.stop(false);
+			if (fadeGraphics)
+				fadeGraphics.destroy(true);
+			fading = true;
+			game.input.enabled = false;
+			fadeGraphics = game.add.graphics();
+			fadeGraphics.beginFill(0x000000, 1.0);
+			fadeGraphics.drawRect(0, 0, larguraJogo, alturaJogo);
+			fadeGraphics.endFill();
+			fadeGraphics.alpha = (from >= 1 ? 1 : (from > 0 ? from : 0));
+			fadeTween = game.add.tween(fadeGraphics).to({ alpha: (to >= 1 ? 1 : (to > 0 ? to : 0)) }, duration > 0 ? duration : 500, Phaser.Easing.Sinusoidal.InOut, true);
+			fadeTween.onComplete.add(function () {
+				fading = false;
+				if (fadeGraphics) {
+					// When fading out, leave the graphics
+					// on the screen, until it is destroyed.
+					if (!to) {
+						fadeGraphics.destroy(true);
+						fadeGraphics = null;
+					}
+					fadeTween = null;
+					game.input.enabled = true;
+					if (callback)
+						callback.apply(context || window);
+				}
+			});
+		}
+
+		function fadeIn(callback, duration, context) {
+			fade(1, 0, callback, duration, context);
+		}
+
+		function fadeOut(callback, duration, context) {
+			fade(0, 1, callback, duration, context);
+		}
+
+		function stopFade() {
+			fading = false;
+			game.input.enabled = true;
+			if (fadeTween) {
+				fadeTween.stop(false);
+				fadeTween = null;
+			}
+			if (fadeGraphics) {
+				fadeGraphics.destroy(true);
+				fadeGraphics = null;
+			}
 		}
 
 		function scriptLoadingFinished() {

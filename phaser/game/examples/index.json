@@ -46,6 +46,18 @@
 			"prefix": "text-time"
 		},
 		{
+			"name": "Changing the level",
+			"namePt": "Mudando de tela",
+			"prefix": "state",
+			"noHeader": true
+		},
+		{
+			"name": "Changing the level with fade",
+			"namePt": "Mudando de tela com fade",
+			"prefix": "state-fade",
+			"noHeader": true
+		},
+		{
 			"name": "Creating sprites",
 			"namePt": "Criando sprites",
 			"prefix": "sprite"

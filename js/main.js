@@ -422,6 +422,7 @@ function lockUI(lock) {
 		addString("LoadImage", "Carregar Imagem");
 		addString("SimpleMode", "Modo Simples");
 		addString("AdvancedMode", "Modo Avançado");
+		addString("Copied", "Copiado! " + emoji.happy);
 		addString("UseLoremIpsum", "Utilizar Parágrafo de Lorem Ipsum");
 		addString("PlaceholderText", "[Digite seu texto aqui]");
 		addString("ErrorBlockInsideInline", "Um elemento block não pode ser filho de um elemento inline " + emoji.sad);
@@ -538,6 +539,7 @@ function lockUI(lock) {
 		addString("LoadImage", "Load Image");
 		addString("SimpleMode", "Simple Mode");
 		addString("AdvancedMode", "Advanced Mode");
+		addString("Copied", "Copied! " + emoji.happy);
 		addString("UseLoremIpsum", "Use Lorem Ipsum Paragraph");
 		addString("PlaceholderText", "[Enter your text here]");
 		addString("ErrorBlockInsideInline", "A block element cannot be a child of an inline element " + emoji.sad);
