@@ -6,7 +6,7 @@
 // whenever it detects a change in the source code of the
 // service worker).
 const CACHE_PREFIX = "labs-editor-static-cache";
-const CACHE_VERSION = "-v10";
+const CACHE_VERSION = "-v11";
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
 const HTML_CACHE_NAME = "labs-editor-html-cache";
 const GAME_CACHE_NAME = "labs-editor-game-cache";
@@ -92,7 +92,7 @@ self.addEventListener("install", (event) => {
 			"/labs-editor/lib/ace-1.4.7/snippets/css.js",
 			"/labs-editor/lib/ace-1.4.7/snippets/html.js",
 			"/labs-editor/lib/ace-1.4.7/snippets/javascript.js",
-			"/labs-editor/lib/bootstrap/css/bootstrap-1.0.22.min.css",
+			"/labs-editor/lib/bootstrap/css/bootstrap-1.0.24.min.css",
 			"/labs-editor/lib/bootstrap/js/bootstrap-1.0.0.min.js",
 			"/labs-editor/lib/font-awesome/css/font-awesome-1.0.2.min.css",
 			"/labs-editor/lib/font-awesome/fonts/fontawesome-webfont.eot?v=4.7.0",
@@ -229,6 +229,21 @@ self.addEventListener("fetch", (event) => {
 		}, () => {
 			return cacheMatch(url);
 		}));
+		return;
+	}
+
+	// @@@ debug only
+	if (url.endsWith("/keybinding-labs.js") ||
+		url.endsWith("/theme-labs.js") ||
+		url.endsWith("/style.css?v=1.0.4") ||
+		url.endsWith("/style-dark.css?v=1.0.2") ||
+		url.endsWith("/main.js?v=1.0.7") ||
+		url.endsWith("/advanced.js?v=1.0.5") ||
+		url.endsWith("/advanced-ui.js?v=1.0.2")) {
+		event.respondWith(fetch(event.request));
+		return;
+	} else if (url.endsWith("/phaser/game/")) {
+		event.respondWith(fetch(event.request).then(injectConsole));
 		return;
 	}
 
