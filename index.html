@@ -621,6 +621,10 @@
 				e.elementTag.moveTarget = moveTargetTop;
 				_TXT("<", e.elementTag);
 				_TXT(name, _CE("span", elementType.block ? "element-name-block" : "element-name", e.elementTag));
+				e.elementTagSpanClass = _CE("span", "hidden", e.elementTag);
+				_TXT(" class", _CE("span", "attribute-name", e.elementTagSpanClass));
+				_TXT("=", e.elementTagSpanClass);
+				e.elementTagSpanClassValue = _CE("span", "attribute-value", e.elementTagSpanClass);
 				_TXT(elementType.noChildren ? " />" : ">", e.elementTag);
 				e.elementIframe = _ICE(name);
 
@@ -689,6 +693,25 @@
 
 				element.elementComment.textContent = text;
 				element.elementIframe.nodeValue = "\n" + text + "\n";
+			}
+		}
+
+		function setElementAttribute(element, name, value) {
+			if (!name || !element || element.elementType === elementTypeText || element.elementType === elementTypeComment)
+				return;
+
+			if (value)
+				_SA(element.elementIframe, name, value);
+			else
+				_RA(element.elementIframe, name);
+
+			if (name === "class") {
+				if (value) {
+					element.elementTagSpanClassValue.textContent = "\"" + value + "\"";
+					element.elementTagSpanClass.className = "";
+				} else {
+					element.elementTagSpanClass.className = "hidden";
+				}
 			}
 		}
 
@@ -1789,7 +1812,7 @@
 						for (i = elementType.attributes.length - 1; i >= 0; i--) {
 							a = elementType.attributes[i].name;
 							if ((v = _GA(element.elementIframe, a)))
-								_SA(newElement.elementIframe, a, v);
+								setElementAttribute(newElement, a, v);
 						}
 						if (!elementType.noChildren) {
 							if (!element.elementContainerVisible)
@@ -1958,17 +1981,14 @@
 				if (loading)
 					return;
 
-				var i, a, v, e = dropdownElement.elementIframe,
+				var i, a, v,
 					elementType = dropdownElement.elementType,
 					attributes = elementType.attributes;
 
 				for (i = 0; i < attributes.length; i++) {
 					a = attributes[i];
 					v = _ID("attributeInput" + a.name).value;
-					if (!v)
-						_RA(e, a.name);
-					else
-						_SA(e, a.name, v);
+					setElementAttribute(dropdownElement, a.name, v);
 				}
 
 				$("#modalAttributes").modal("hide");
@@ -2404,7 +2424,7 @@
 				//var amp = /\&/g, lt = /\</g, gt = /\>/g;
 
 				function createElementsFromDoc(srcParent, dstParent) {
-					var i, j, tag, srcElement, dstElement, emptyText, elementIframe, elementType, attributes, a, v;
+					var i, j, tag, srcElement, dstElement, emptyText, elementType, attributes, a, v;
 					for (i = 0; i < srcParent.childNodes.length; i++) {
 						srcElement = srcParent.childNodes[i];
 						if (!srcElement.tagName) {
@@ -2434,7 +2454,6 @@
 						} else if (((tag = srcElement.tagName.toLowerCase()) in elementTypesByName)) {
 							dstElement = createElement(tag, dstParent, null, true);
 
-							elementIframe = dstElement.elementIframe;
 							elementType = dstElement.elementType;
 							// Make sure to load only supported attributes
 							attributes = elementType.attributes;
@@ -2442,7 +2461,7 @@
 								a = attributes[j].name;
 								v = _GA(srcElement, a);
 								if (v)
-									_SA(elementIframe, a, v);
+									setElementAttribute(dstElement, a, v);
 							}
 
 							createElementsFromDoc(srcElement, dstElement);
