@@ -625,6 +625,8 @@
 				_TXT("<", e.elementTag);
 				_TXT(name, _CE("span", elementType.block ? "element-name-block" : "element-name", e.elementTag));
 				e.elementTagSpanClass = _CE("span", "hidden", e.elementTag);
+				e.elementTagSpanClass.element = e;
+				e.elementTagSpanClass.moveTarget = moveTargetTop;
 				_TXT(" class", _CE("span", "attribute-name", e.elementTagSpanClass));
 				_TXT("=", e.elementTagSpanClass);
 				e.elementTagSpanClassValue = _CE("span", "attribute-value", e.elementTagSpanClass);
