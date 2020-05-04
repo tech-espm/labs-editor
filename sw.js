@@ -6,7 +6,7 @@
 // whenever it detects a change in the source code of the
 // service worker).
 const CACHE_PREFIX = "labs-editor-static-cache";
-const CACHE_VERSION = "-v15";
+const CACHE_VERSION = "-v16";
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
 const HTML_CACHE_NAME = "labs-editor-html-cache";
 const GAME_CACHE_NAME = "labs-editor-game-cache";
@@ -92,8 +92,8 @@ self.addEventListener("install", (event) => {
 			"/labs-editor/lib/ace-1.4.7/snippets/css.js",
 			"/labs-editor/lib/ace-1.4.7/snippets/html.js",
 			"/labs-editor/lib/ace-1.4.7/snippets/javascript.js",
-			"/labs-editor/lib/bootstrap/css/bootstrap-1.0.24.min.css",
-			"/labs-editor/lib/bootstrap/js/bootstrap-1.0.0.min.js",
+			"/labs-editor/lib/bootstrap/css/bootstrap-1.0.27.min.css",
+			"/labs-editor/lib/bootstrap/js/bootstrap-1.0.1.min.js",
 			"/labs-editor/lib/font-awesome/css/font-awesome-1.0.2.min.css",
 			"/labs-editor/lib/font-awesome/fonts/fontawesome-webfont.eot?v=4.7.0",
 			"/labs-editor/lib/font-awesome/fonts/fontawesome-webfont.eot?#iefix&v=4.7.0",
@@ -101,7 +101,7 @@ self.addEventListener("install", (event) => {
 			"/labs-editor/lib/font-awesome/fonts/fontawesome-webfont.ttf?v=4.7.0",
 			"/labs-editor/lib/font-awesome/fonts/fontawesome-webfont.woff?v=4.7.0",
 			"/labs-editor/lib/font-awesome/fonts/fontawesome-webfont.woff2?v=4.7.0",
-			"/labs-editor/lib/jquery/jquery-1.0.0.min.js",
+			"/labs-editor/lib/jquery/jquery-1.0.1.min.js",
 			"/labs-editor/lib/jszip/jszip-1.0.0.min.js",
 			"/labs-editor/phaser/game/phaser-2.6.2.min.js",
 			// Since these files' contents always change, but their names do not, I
