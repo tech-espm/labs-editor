@@ -6,7 +6,7 @@
 // whenever it detects a change in the source code of the
 // service worker).
 const CACHE_PREFIX = "labs-editor-static-cache";
-const CACHE_VERSION = "-v14";
+const CACHE_VERSION = "-v15";
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
 const HTML_CACHE_NAME = "labs-editor-html-cache";
 const GAME_CACHE_NAME = "labs-editor-game-cache";
@@ -223,7 +223,9 @@ self.addEventListener("fetch", (event) => {
 	// Try to always use a fresh copy of the main pages
 	if (url.endsWith("/labs-editor/") ||
 		url.endsWith("/phaser/") ||
-		url.endsWith("/html/")) {
+		url.endsWith("/html/") ||
+		// Debug only
+		url.startsWith("http://localhost")) {
 		event.respondWith(fetch(event.request).then((response) => {
 			return response || cacheMatch(url);
 		}, () => {
@@ -232,17 +234,7 @@ self.addEventListener("fetch", (event) => {
 		return;
 	}
 
-	// @@@ debug only
-	if (url.endsWith("/keybinding-labs.js") ||
-		url.endsWith("/theme-labs.js") ||
-		url.endsWith("/style.css?v=1.0.4") ||
-		url.endsWith("/style-dark.css?v=1.0.2") ||
-		url.endsWith("/main.js?v=1.0.7") ||
-		url.endsWith("/advanced.js?v=1.0.5") ||
-		url.endsWith("/advanced-ui.js?v=1.0.2")) {
-		event.respondWith(fetch(event.request));
-		return;
-	} else if (url.endsWith("/phaser/game/")) {
+	if (url.endsWith("/phaser/game/")) {
 		event.respondWith(fetch(event.request).then(injectConsole));
 		return;
 	}
