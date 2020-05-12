@@ -1,7 +1,7 @@
 "use strict";
 
 // Globals
-window.maximumFileLength = (2 << 20);
+window.maximumFileLength = (5 << 20);
 window.itemLabsEditorNotFirstTime = "labs-editor-not-first-time";
 window.itemLabsEditorTheme = "labs-editor-theme";
 window.itemLabsEditorPopupPreview = "labs-editor-popup-preview";
