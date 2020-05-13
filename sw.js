@@ -6,7 +6,7 @@
 // whenever it detects a change in the source code of the
 // service worker).
 const CACHE_PREFIX = "labs-editor-static-cache";
-const CACHE_VERSION = "-v17";
+const CACHE_VERSION = "-v18";
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
 const HTML_CACHE_NAME = "labs-editor-html-cache";
 const GAME_CACHE_NAME = "labs-editor-game-cache";
@@ -217,8 +217,10 @@ self.addEventListener("fetch", (event) => {
 	// Refer to the comments inside the cache to understand this condition!
 	if (url.indexOf("/labs-editor/") < 0 ||
 		// Do not cache the examples!
-		url.indexOf("/examples/") >= 0)
-		return fetch(event.request);
+		url.indexOf("/examples/") >= 0) {
+		event.respondWith(fetch(event.request));
+		return;
+	}
 
 	// Try to always use a fresh copy of the main pages
 	if (url.endsWith("/labs-editor/") ||
