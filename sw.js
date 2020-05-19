@@ -6,7 +6,7 @@
 // whenever it detects a change in the source code of the
 // service worker).
 const CACHE_PREFIX = "labs-editor-static-cache";
-const CACHE_VERSION = "-v18";
+const CACHE_VERSION = "-v19";
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
 const HTML_CACHE_NAME = "labs-editor-html-cache";
 const GAME_CACHE_NAME = "labs-editor-game-cache";
@@ -244,7 +244,9 @@ self.addEventListener("fetch", (event) => {
 	if (url.indexOf("/labs-editor/html/site/") >= 0) {
 		// Look for the resource in the html cache, not in our cache.
 		event.respondWith(caches.open(HTML_CACHE_NAME).then((cache) => {
-			return cacheMatchAndFixResponse(url.endsWith("/site/") ? "/labs-editor/html/site/index.html" : url, cache);
+			const queryString = url.lastIndexOf("?");
+			const urlWithoutQueryString = ((queryString < 0) ? url : url.substr(0, queryString));
+			return cacheMatchAndFixResponse(urlWithoutQueryString.endsWith("/site/") ? "/labs-editor/html/site/index.html" : urlWithoutQueryString, cache);
 		}));
 		return;
 	}
