@@ -6,7 +6,7 @@
 // whenever it detects a change in the source code of the
 // service worker).
 const CACHE_PREFIX = "labs-editor-static-cache";
-const CACHE_VERSION = "-v20";
+const CACHE_VERSION = "-v21";
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
 const HTML_CACHE_NAME = "labs-editor-html-cache";
 const GAME_CACHE_NAME = "labs-editor-game-cache";
@@ -46,6 +46,7 @@ self.addEventListener("install", (event) => {
 			"/labs-editor/html/",
 			"/labs-editor/phaser/",
 			"/labs-editor/phaser/game/",
+			"/labs-editor/phaser/game/?",
 			"/labs-editor/empty.html",
 			"/labs-editor/example.html",
 			"/labs-editor/example-html.html",
