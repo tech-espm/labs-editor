@@ -6,7 +6,7 @@
 // whenever it detects a change in the source code of the
 // service worker).
 const CACHE_PREFIX = "labs-editor-static-cache";
-const CACHE_VERSION = "-v22";
+const CACHE_VERSION = "-v23";
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
 const HTML_CACHE_NAME = "labs-editor-html-cache";
 const GAME_CACHE_NAME = "labs-editor-game-cache";
@@ -193,7 +193,7 @@ function injectConsole(response) {
 }
 
 function cacheMatchAndFixResponse(url, cache) {
-	return cache.match(url).then((response) => {
+	return cache ? cache.match(url).then((response) => {
 		if (url.endsWith(".html") || url.endsWith(".htm")) {
 			// Try to inject the console redirection into every HTML file
 			return injectConsole(response);
@@ -201,12 +201,8 @@ function cacheMatchAndFixResponse(url, cache) {
 			fixResponseHeaders(response);
 			return response;
 		}
-	});
-}
-
-function cacheMatch(url) {
-	return caches.open(CACHE_NAME).then((cache) => {
-		return cache.match(url);
+	}) : caches.open(CACHE_NAME).then((cache) => {
+		return cacheMatchAndFixResponse(url, cache);
 	});
 }
 
@@ -229,15 +225,15 @@ self.addEventListener("fetch", (event) => {
 		// Debug only
 		url.startsWith("http://localhost")) {
 		event.respondWith(fetch(event.request).then((response) => {
-			return response || cacheMatch(url);
+			return response || cacheMatchAndFixResponse(url);
 		}, () => {
-			return cacheMatch(url);
+			return cacheMatchAndFixResponse(url);
 		}));
 		return;
 	}
 
 	if (url.endsWith("/phaser/game/")) {
-		event.respondWith(fetch(event.request).then(injectConsole));
+		event.respondWith(cacheMatchAndFixResponse(url).then(injectConsole));
 		return;
 	}
 
@@ -254,10 +250,15 @@ self.addEventListener("fetch", (event) => {
 	if (url.indexOf("/labs-editor/phaser/game/") >= 0 &&
 		!url.endsWith("/game/") &&
 		!url.endsWith("/phaser-2.6.2.min.js")) {
-		// Look for the resource in the game cache, not in our cache.
-		event.respondWith(caches.open(GAME_CACHE_NAME).then((cache) => {
-			return cacheMatchAndFixResponse(url.endsWith("?") ? url.substr(0, url.length - 1) : url, cache);
-		}));
+		if (url.endsWith("/phaser/game/?")) {
+			// To prevent injecting the console when saving
+			event.respondWith(cacheMatchAndFixResponse(url.substr(0, url.length - 1)));
+		} else {
+			// Look for the resource in the game cache, not in our cache.
+			event.respondWith(caches.open(GAME_CACHE_NAME).then((cache) => {
+				return cacheMatchAndFixResponse(url, cache);
+			}));
+		}
 		return;
 	}
 
