@@ -255,7 +255,7 @@ textarea {
 
 .element {
 	padding: 0;
-	margin: 8px 0;
+	margin: 0;
 	-webkit-transition: background-color ease-in-out .2s;
 	-o-transition: background-color ease-in-out .2s;
 	transition: background-color ease-in-out .2s;
@@ -277,9 +277,9 @@ textarea {
 	white-space: pre;
 	font-weight: bold;
 	border-radius: 3px;
-	-webkit-transition: background-color ease-in-out .2s, border-color ease-in-out .2s;
-	-o-transition: background-color ease-in-out .2s, border-color ease-in-out .2s;
-	transition: background-color ease-in-out .2s, border-color ease-in-out .2s;
+	-webkit-transition: background-color ease-in-out .2s, border-color ease-in-out .2s, border-top-width ease-in-out .2s, padding-top ease-in-out .2s;
+	-o-transition: background-color ease-in-out .2s, border-color ease-in-out .2s, border-top-width ease-in-out .2s, padding-top ease-in-out .2s;
+	transition: background-color ease-in-out .2s, border-color ease-in-out .2s, border-top-width ease-in-out .2s, padding-top ease-in-out .2s;
 }
 
 	.element-tag.no-click {
@@ -288,6 +288,8 @@ textarea {
 
 .move-target, .move-target-top {
 	border-top: 2px solid transparent;
+	padding-top: 2px;
+	padding-bottom: 4px;
 }
 
 .editor:not(.moving) .element-tag:hover {
@@ -301,7 +303,8 @@ textarea {
 
 	.editor.moving .move-target:hover {
 		border-radius: 0;
-		border-top-color: #00f;
+		border-top-color: #080;
+		border-top-width: 16px;
 	}
 
 .editor.moving-top .move-target-top {
@@ -311,11 +314,13 @@ textarea {
 
 	.editor.moving-top .move-target-top:hover {
 		border-radius: 0;
-		border-top-color: #00f;
+		border-top-color: #080;
+		border-top-width: 16px;
 	}
 
 .element.moving .move-target, .element.moving .move-target:hover, .element.moving .move-target-top, .element.moving .move-target-top:hover {
 	border-top-color: transparent;
+	border-top-width: 2px;
 }
 
 .element.collapsed > .element-tag {

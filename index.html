@@ -56,7 +56,7 @@
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,600|Roboto+Mono:400,700" />
 	<link rel="stylesheet" href="lib/bootstrap/css/bootstrap-1.0.27.min.css" />
 	<link rel="stylesheet" href="lib/font-awesome/css/font-awesome-1.0.2.min.css" />
-	<link rel="stylesheet" href="css/style.css?v=1.0.4" />
+	<link rel="stylesheet" href="css/style.css?v=1.0.5" />
 </head>
 <body style="visibility: hidden">
 
@@ -563,6 +563,8 @@
 				bodyElement.elementIframe = iframeBody;
 
 				bodyElement.elementTag = _CE("div", "element-tag", bodyElement);
+				bodyElement.elementTag.style.paddingTop = "2px";
+				bodyElement.elementTag.style.paddingBottom = "2px";
 				bodyElement.elementTag.element = bodyElement;
 				bodyElement.elementTag.onclick = tagClick;
 				_TXT("<", bodyElement.elementTag);
@@ -573,6 +575,8 @@
 				bodyElement.elementContainer.element = bodyElement;
 
 				bodyElement.elementClosingTag = _CE("div", "element-tag move-target", bodyElement);
+				bodyElement.elementClosingTag.style.paddingTop = "0";
+				bodyElement.elementClosingTag.style.paddingBottom = "2px";
 				bodyElement.elementClosingTag.element = bodyElement;
 				bodyElement.elementClosingTag.onclick = closingTagClick;
 				bodyElement.elementClosingTag.moveTarget = moveTargetClosingTag;
