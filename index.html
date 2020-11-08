@@ -1540,7 +1540,7 @@
 						else
 							_IB(targetElement.parentNode, dropdownElement, targetElement);
 
-						dropdownElement.elementParent = targetElement;
+						dropdownElement.elementParent = (targetElement.elementParent || targetElement);
 					}
 
 					updateCss();
