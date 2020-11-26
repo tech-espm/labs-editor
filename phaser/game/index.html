@@ -146,6 +146,7 @@
 			fading = true;
 			game.input.enabled = false;
 			fadeGraphics = game.add.graphics();
+			fadeGraphics.fixedToCamera = true;
 			fadeGraphics.beginFill(0x000000, 1.0);
 			fadeGraphics.drawRect(0, 0, larguraJogo, alturaJogo);
 			fadeGraphics.endFill();
