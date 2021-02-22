@@ -160,6 +160,8 @@
 					if (!to) {
 						fadeGraphics.destroy(true);
 						fadeGraphics = null;
+					} else {
+						game.stage.backgroundColor = "#000000";
 					}
 					fadeTween = null;
 					game.input.enabled = true;
