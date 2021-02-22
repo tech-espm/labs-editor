@@ -6,7 +6,7 @@
 // whenever it detects a change in the source code of the
 // service worker).
 const CACHE_PREFIX = "labs-editor-static-cache";
-const CACHE_VERSION = "-v26";
+const CACHE_VERSION = "-20210222";
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
 const HTML_CACHE_NAME = "labs-editor-html-cache";
 const GAME_CACHE_NAME = "labs-editor-game-cache";
@@ -20,7 +20,7 @@ self.addEventListener("install", (event) => {
 	// event.waitUntil(). Calling event.waitUntil() forces
 	// the installation process to be marked as finished
 	// only when all promises passed to waitUntil() finish.
-	//
+
 	self.skipWaiting();
 
 	event.waitUntil(caches.open(CACHE_NAME).then((cache) => {
@@ -221,9 +221,10 @@ self.addEventListener("fetch", (event) => {
 	// Try to always use a fresh copy of the main pages
 	if (url.endsWith("/labs-editor/") ||
 		url.endsWith("/phaser/") ||
-		url.endsWith("/html/") ||
+		url.endsWith("/html/")
 		// Debug only
-		url.startsWith("http://localhost")) {
+		//|| (url.startsWith("http://localhost") && url.indexOf("/labs-editor/phaser/game/") < 0 && url.indexOf("/labs-editor/html/site/") < 0)
+		) {
 		event.respondWith(fetch(event.request).then((response) => {
 			return response || cacheMatchAndFixResponse(url);
 		}, () => {
