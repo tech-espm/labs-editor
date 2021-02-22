@@ -2,9 +2,7 @@
 function menu() {
 	
 	var setas;
-	var teclaTiro;
-	var horaParaOProximoTiro;
-	var tiros;
+	var plataformas;
 	var dude;
 	
 	this.preload = function () {
@@ -12,9 +10,8 @@ function menu() {
 		// Define a cor do fundo para azul claro.
 		game.stage.backgroundColor = "#0066ff";
 		
-		// Carrega imagem dos tiros (o primeiro parâmetro é como
-		// nós iremos chamar a imagem no nosso jogo).
-		game.load.image("tiro", "examples/assets/bullet0.png");
+		// Carrega a imagem de uma plataforma.
+		game.load.image("plataforma", "examples/assets/platform.png");
 		
 		// Carrega a imagem de um sprite (o primeiro parâmetro é como
 		// nós iremos chamar a imagem no nosso jogo, e os dois últimos
@@ -23,12 +20,6 @@ function menu() {
 		// Para entender mehor, convém abrir a imagem em uma aba nova:
 		// http://tech-espm.github.io/labs-editor/phaser/game/examples/assets/dude.png
 		game.load.spritesheet("dude", "examples/assets/dude.png", 32, 48);
-		
-		// Para que o tiro não ocorra apenas no momento em que a
-		// tecla foi pressionada, mas também não aconteça em todos
-		// os quadros, vamos utilizar o horário do jogo, dado em
-		// milissegundos, como cadenciador.
-		horaParaOProximoTiro = game.time.now;
 		
 	};
 	
@@ -44,16 +35,34 @@ function menu() {
 		// http://phaser.io/docs/2.6.2/Phaser.Keyboard.html
 		setas = game.input.keyboard.createCursorKeys();
 		
-		// Cria um objeto para tratar a barra de espaços, mas
-		// *não* atribui uma função para ser executada quando a
-		// tecla for pressionada.
-		//
-		// Mais teclas disponíveis:
-		// https://phaser.io/docs/2.6.2/Phaser.KeyCode.html
+		// Atribui uma função para ser executada quando a
+		// seta para cima for pressionada.
 		//
 		// Mais atributos e métodos das teclas (tecla.xxx):
 		// https://phaser.io/docs/2.6.2/Phaser.Key.html
-		teclaTiro = game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
+		setas.up.onDown.add(pular);
+		
+		// Vamos criar todas as plataformas em um único grupo
+		// para facilitar o tratamento das colisões no futuro.
+		//
+		// Como todos os objetos do grupo devem ter física,
+		// usamos game.add.physicsGroup() em vez de game.add.group().
+		// https://phaser.io/docs/2.6.2/Phaser.GameObjectFactory.html#physicsGroup
+		plataformas = game.add.physicsGroup();
+		plataformas.create(100, 550, "plataforma");
+		plataformas.create(150, 450, "plataforma");
+		plataformas.create(200, 350, "plataforma");
+		plataformas.create(250, 250, "plataforma");
+		// As plataformas não devem se mover quando forem acertadas
+		// pelo jogador, diferente de uma bola de bilhar, que
+		// deve ser movida quando for acertada por outra bola.
+		plataformas.setAll("body.immovable", true);
+		// O personagem pode "atravessar" a plataforma se colidir
+		// na parte inferior dela.
+		plataformas.setAll("body.checkCollision.down", false);
+		// Reduz um pouco o tamanho de todas as plataformas.
+		plataformas.setAll("scale.x", 0.25);
+		plataformas.setAll("scale.y", 0.25);
 		
 		// Adiciona o sprite na coordenada (20, 100) da tela,
 		// lembrando que (0, 0) está no canto superior esquerdo!
@@ -113,45 +122,17 @@ function menu() {
 		// Mais informações relacionados à física de arcade:
 		// https://phaser.io/docs/2.6.2/index#arcadephysics
 		
-		// O Phaser 2 possui o conceito de grupo de objetos, que
-		// são objetos com comportamentos e significados similares.
-		// Os grupos são utilizados para facilitar a execução de
-		// tarefas repetidas sobre vários objetos diferentes, mas
-		// que possuem mesma funcionalidade no jogo.
-		//
-		// Mais atributos e métodos dos grupos (tiros.xxx):
-		// https://phaser.io/docs/2.6.2/Phaser.Group.html
-		//
-		// Como todos os objetos do grupo devem ter física,
-		// usamos game.add.physicsGroup() em vez de game.add.group().
-		// https://phaser.io/docs/2.6.2/Phaser.GameObjectFactory.html#physicsGroup
-		tiros = game.add.physicsGroup();
-		
-		// Vamos deixar 5 tiros já criados. Esse valor será
-		// a quantidade máxima de tiros na tela em um dado
-		// momento.
-		for (var i = 0; i < 5; i++) {
-			// Cria um novo tiro na coordenada (0, 0) da tela,
-			// o que não importa, porque o tiro não aparecerá
-			// ainda, nem terá a física processada (exists = false
-			// e visible = false).
-			var tiro = tiros.create(0, 0, "tiro");
-			tiro.exists = false;
-			tiro.visible = false;
-			// Assim como com o personagem, vamos definir a âncora
-			// dos tiros para facilitar.
-			tiro.anchor.x = 0.5;
-			tiro.anchor.y = 1;
-			// Quando o tiro sair da tela ele deve ser destruído.
-			// Caso contrário, ele ficaria ativo para sempre, mesmo
-			// não estando mais visível!
-			tiro.checkWorldBounds = true;
-			tiro.events.onOutOfBounds.add(destruirTiro);
-		}
-		
 	};
 	
 	this.update = function () {
+		
+		// Usamos collide() para que o Phaser trate a colisão do personagem
+		// com todas as plataformas de uma só vez.
+		//
+		// Mais informações:
+		// https://phaser.io/docs/2.6.2/Phaser.Physics.Arcade.html#collide
+		// https://phaser.io/docs/2.6.2/Phaser.Physics.Arcade.html#overlap
+		game.physics.arcade.collide(dude, plataformas);
 		
 		// Controle de movimentos simples. Se a seta esquerda estiver
 		// pressionada, aplica uma aceleração negativa (esquerda) ao
@@ -179,36 +160,17 @@ function menu() {
 		// base no teclado, mas com base em sua velocidade, ou uma combinação
 		// de ambos! :)
 		
-		var agora = game.time.now;
-		
-		// Neste exemplo, o tiro será executada sempre que a tecla
-		// estiver pressionada, mas apenas se já tiver passado o
-		// intervalo de tempo desejado. No nosso caso, um novo tiro
-		// deve ser liberado a cada 100 milissegundos.
-		if (teclaTiro.isDown && agora >= horaParaOProximoTiro) {
-			// Nós criamos 5 tiros, assim, só poderão existir no
-			// máximo 5 tiros na tela, em qualquer momento!
-			var tiro = tiros.getFirstExists(false);
-			
-			if (tiro) {
-				// Caso exista ao menos um tiro disponível,
-				// devemos posicionar o sprite do tiro na
-				// posicão correta, com a velocidade correta.
-				tiro.reset(dude.x, dude.y - 20);
-				tiro.body.velocity.y = -500;
-				
-				horaParaOProximoTiro = agora + 100;
-			}
-		}
-		
 	};
 	
-	function destruirTiro(tiro) {
+	function pular() {
 		
-		// Quando o tiro sair da tela ele deve ser destruído.
-		// Caso contrário, ele ficaria ativo para sempre, mesmo
-		// não estando mais visível!
-		tiro.kill();
+		// Pular significa aplicar a um sprite uma velocidade para cima
+		// (negativa). Contudo, só podemos deixar que o jogador pule se
+		// o sprite estiver sobre o chão. Se bem que... alguns jogos
+		// deixam que o jogador pule mesmo no ar... ;)
+		if (dude.body.onFloor() || dude.body.touching.down) {
+			dude.body.velocity.y = -500;
+		}
 		
 	}
 	

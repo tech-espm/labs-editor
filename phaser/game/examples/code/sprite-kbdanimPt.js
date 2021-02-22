@@ -62,13 +62,18 @@ function menu() {
 		// como o percentual da velocidade que ele terá quando
 		// colidir com algum obstáculo.
 		dude.body.bounce.x = 0.5;
-		dude.body.bounce.y = 0.5;
+		dude.body.bounce.y = 0;
 		// Configura a velocidade horizontal máxima do sprite,
 		// porque agora iremos trabalhar com a aceleração do
 		// sprite, sem alterar sua velocidade diretamente.
-		dude.body.maxVelocity.x = 1000;
+		dude.body.maxVelocity.x = 500;
 		// Configura o arrasto/desaceleração horizontal do sprite.
 		dude.body.drag.x = 2000;
+		// É comum assumir que as coordenadas x e y de um personagem
+		// se refiram ao ponto inferior/central em jogos de plataforma,
+		// o que pode facilitar os cálculos em alguns momentos.
+		dude.anchor.x = 0.5;
+		dude.anchor.y = 1;
 		
 		// Outros atributos comuns de body:
 		// dude.body.velocity.x (em pixels/s)

@@ -104,13 +104,18 @@ function menu() {
 		// como o percentual da velocidade que ele terá quando
 		// colidir com algum obstáculo.
 		dude.body.bounce.x = 0.5;
-		dude.body.bounce.y = 0.5;
+		dude.body.bounce.y = 0;
 		// Configura a velocidade horizontal máxima do sprite,
 		// porque agora iremos trabalhar com a aceleração do
 		// sprite, sem alterar sua velocidade diretamente.
-		dude.body.maxVelocity.x = 1000;
+		dude.body.maxVelocity.x = 500;
 		// Configura o arrasto/desaceleração horizontal do sprite.
 		dude.body.drag.x = 2000;
+		// É comum assumir que as coordenadas x e y de um personagem
+		// se refiram ao ponto inferior/central em jogos de plataforma,
+		// o que pode facilitar os cálculos em alguns momentos.
+		dude.anchor.x = 0.5;
+		dude.anchor.y = 1;
 		
 		// Outros atributos comuns de body:
 		// dude.body.velocity.x (em pixels/s)
@@ -134,10 +139,12 @@ function menu() {
 		//
 		// Mais atributos e métodos dos grupos (tiros.xxx):
 		// https://phaser.io/docs/2.6.2/Phaser.Group.html
-		tiros = game.add.group();
-		// Todos os objetos do grupo devem ter física.
-		tiros.enableBody = true;
-		tiros.physicsBodyType = Phaser.Physics.ARCADE;
+		//
+		// Como todos os objetos do grupo devem ter física,
+		// usamos game.add.physicsGroup() em vez de game.add.group().
+		// https://phaser.io/docs/2.6.2/Phaser.GameObjectFactory.html#physicsGroup
+		tiros = game.add.physicsGroup();
+		
 		// Vamos deixar 5 tiros já criados. Esse valor será
 		// a quantidade máxima de tiros na tela em um dado
 		// momento.
@@ -149,6 +156,10 @@ function menu() {
 			var tiro = tiros.create(0, 0, "tiro");
 			tiro.exists = false;
 			tiro.visible = false;
+			// Assim como com o personagem, vamos definir a âncora
+			// dos tiros para facilitar.
+			tiro.anchor.x = 0.5;
+			tiro.anchor.y = 1;
 			// Quando o tiro sair da tela ele deve ser destruído.
 			// Caso contrário, ele ficaria ativo para sempre, mesmo
 			// não estando mais visível!
@@ -157,9 +168,8 @@ function menu() {
 		}
 		
 		// Idem ao processo dos tiros, acima.
-		frutas = game.add.group();
-		frutas.enableBody = true;
-		frutas.physicsBodyType = Phaser.Physics.ARCADE;
+		frutas = game.add.physicsGroup();
+		
 		// Vamos criar 50 frutas, mas, diferente dos tiros, elas
 		// já iniciarão visíveis na tela.
 		for (i = 0; i < 50; i++) {
@@ -175,12 +185,12 @@ function menu() {
 			// utilizamos game.rnd.integerInRange(0, 36) para escolher
 			// o quadro inicial do sprite das frutas. Como elas não
 			// serão animadas, o quadro inicial é o que permanecerá.
-			var fruta = frutas.create(game.world.randomX, Math.random() * 500, "frutas", game.rnd.integerInRange(0, 36));
-			// As frutas não devem se mover quando forem acertadas
-			// por um tiro, diferente de uma bola de bilhar, que
-			// deve ser movida quando for acertada por outra bola.
-			fruta.body.immovable = true;
+			frutas.create(game.world.randomX, Math.random() * 500, "frutas", game.rnd.integerInRange(0, 36));
 		}
+		// As frutas não devem se mover quando forem acertadas
+		// por um tiro, diferente de uma bola de bilhar, que
+		// deve ser movida quando for acertada por outra bola.
+		frutas.setAll("body.immovable", true);
 		
 	};
 	
@@ -190,6 +200,10 @@ function menu() {
 		// rebatam uns nos outros... Nós queremos apenas saber se um
 		// tiro está sobre uma fruta. Se fosse algo como um jogo de
 		// bilhar, usaríamos collide().
+		//
+		// Mais informações:
+		// https://phaser.io/docs/2.6.2/Phaser.Physics.Arcade.html#collide
+		// https://phaser.io/docs/2.6.2/Phaser.Physics.Arcade.html#overlap
 		game.physics.arcade.overlap(tiros, frutas, tiroAcertouFruta);
 		
 		// Controle de movimentos simples. Se a seta esquerda estiver
@@ -233,7 +247,7 @@ function menu() {
 				// Caso exista ao menos um tiro disponível,
 				// devemos posicionar o sprite do tiro na
 				// posicão correta, com a velocidade correta.
-				tiro.reset(dude.x + 6, dude.y - 8);
+				tiro.reset(dude.x, dude.y - 20);
 				tiro.body.velocity.y = -500;
 				
 				horaParaOProximoTiro = agora + 100;

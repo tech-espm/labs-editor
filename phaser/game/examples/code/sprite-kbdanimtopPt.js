@@ -2,19 +2,13 @@
 function menu() {
 	
 	var setas;
-	var teclaTiro;
-	var horaParaOProximoTiro;
-	var tiros;
 	var dude;
+	var ultimaDirecao;
 	
 	this.preload = function () {
 		
 		// Define a cor do fundo para azul claro.
 		game.stage.backgroundColor = "#0066ff";
-		
-		// Carrega imagem dos tiros (o primeiro parâmetro é como
-		// nós iremos chamar a imagem no nosso jogo).
-		game.load.image("tiro", "examples/assets/bullet0.png");
 		
 		// Carrega a imagem de um sprite (o primeiro parâmetro é como
 		// nós iremos chamar a imagem no nosso jogo, e os dois últimos
@@ -23,12 +17,6 @@ function menu() {
 		// Para entender mehor, convém abrir a imagem em uma aba nova:
 		// http://tech-espm.github.io/labs-editor/phaser/game/examples/assets/dude.png
 		game.load.spritesheet("dude", "examples/assets/dude.png", 32, 48);
-		
-		// Para que o tiro não ocorra apenas no momento em que a
-		// tecla foi pressionada, mas também não aconteça em todos
-		// os quadros, vamos utilizar o horário do jogo, dado em
-		// milissegundos, como cadenciador.
-		horaParaOProximoTiro = game.time.now;
 		
 	};
 	
@@ -43,17 +31,6 @@ function menu() {
 		// Mais atributos e métodos do teclado (game.input.keyboard.xxx):
 		// http://phaser.io/docs/2.6.2/Phaser.Keyboard.html
 		setas = game.input.keyboard.createCursorKeys();
-		
-		// Cria um objeto para tratar a barra de espaços, mas
-		// *não* atribui uma função para ser executada quando a
-		// tecla for pressionada.
-		//
-		// Mais teclas disponíveis:
-		// https://phaser.io/docs/2.6.2/Phaser.KeyCode.html
-		//
-		// Mais atributos e métodos das teclas (tecla.xxx):
-		// https://phaser.io/docs/2.6.2/Phaser.Key.html
-		teclaTiro = game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
 		
 		// Adiciona o sprite na coordenada (20, 100) da tela,
 		// lembrando que (0, 0) está no canto superior esquerdo!
@@ -79,20 +56,23 @@ function menu() {
 		
 		// Previne que o sprite saia da tela.
 		dude.body.collideWorldBounds = true;
-		// Configura a gravidade (em pixels/s²) aplicada ao sprite,
-		// lembrando que valores positivos apontam para baixo!
-		dude.body.gravity.y = 800;
+		// Muito importante! Como aqui estamos falando de um jogo
+		// "visto por cima", não faz sentido ter gravidade como nos
+		// outros exemplos, que são "vistos pelo lado"!
+		//dude.body.gravity.y = 800;
 		// Configura o fator de rebatimento do sprite, definido
 		// como o percentual da velocidade que ele terá quando
 		// colidir com algum obstáculo.
 		dude.body.bounce.x = 0.5;
-		dude.body.bounce.y = 0;
-		// Configura a velocidade horizontal máxima do sprite,
-		// porque agora iremos trabalhar com a aceleração do
-		// sprite, sem alterar sua velocidade diretamente.
+		dude.body.bounce.y = 0.5;
+		// Configura a velocidade máxima do sprite, porque agora
+		// iremos trabalhar com a aceleração do sprite, sem alterar
+		// sua velocidade diretamente.
 		dude.body.maxVelocity.x = 500;
-		// Configura o arrasto/desaceleração horizontal do sprite.
+		dude.body.maxVelocity.y = 500;
+		// Configura o arrasto/desaceleração do sprite.
 		dude.body.drag.x = 2000;
+		dude.body.drag.y = 2000;
 		// É comum assumir que as coordenadas x e y de um personagem
 		// se refiram ao ponto inferior/central em jogos de plataforma,
 		// o que pode facilitar os cálculos em alguns momentos.
@@ -113,41 +93,9 @@ function menu() {
 		// Mais informações relacionados à física de arcade:
 		// https://phaser.io/docs/2.6.2/index#arcadephysics
 		
-		// O Phaser 2 possui o conceito de grupo de objetos, que
-		// são objetos com comportamentos e significados similares.
-		// Os grupos são utilizados para facilitar a execução de
-		// tarefas repetidas sobre vários objetos diferentes, mas
-		// que possuem mesma funcionalidade no jogo.
-		//
-		// Mais atributos e métodos dos grupos (tiros.xxx):
-		// https://phaser.io/docs/2.6.2/Phaser.Group.html
-		//
-		// Como todos os objetos do grupo devem ter física,
-		// usamos game.add.physicsGroup() em vez de game.add.group().
-		// https://phaser.io/docs/2.6.2/Phaser.GameObjectFactory.html#physicsGroup
-		tiros = game.add.physicsGroup();
-		
-		// Vamos deixar 5 tiros já criados. Esse valor será
-		// a quantidade máxima de tiros na tela em um dado
-		// momento.
-		for (var i = 0; i < 5; i++) {
-			// Cria um novo tiro na coordenada (0, 0) da tela,
-			// o que não importa, porque o tiro não aparecerá
-			// ainda, nem terá a física processada (exists = false
-			// e visible = false).
-			var tiro = tiros.create(0, 0, "tiro");
-			tiro.exists = false;
-			tiro.visible = false;
-			// Assim como com o personagem, vamos definir a âncora
-			// dos tiros para facilitar.
-			tiro.anchor.x = 0.5;
-			tiro.anchor.y = 1;
-			// Quando o tiro sair da tela ele deve ser destruído.
-			// Caso contrário, ele ficaria ativo para sempre, mesmo
-			// não estando mais visível!
-			tiro.checkWorldBounds = true;
-			tiro.events.onOutOfBounds.add(destruirTiro);
-		}
+		// Inicia com o personagem olhando para a direita.
+		// Dê uma olhada na função update() para entender :)
+		ultimaDirecao = 1;
 		
 	};
 	
@@ -162,16 +110,47 @@ function menu() {
 		//
 		// Além disso, define a animação correta do sprite dependendo
 		// da seta que estiver pressionada.
+		if (setas.up.isDown) {
+			dude.body.acceleration.y = -3000;
+		} else {
+			if (setas.down.isDown) {
+				dude.body.acceleration.y = 3000;
+			} else {
+				dude.body.acceleration.y = 0;
+			}
+		}
+
 		if (setas.left.isDown) {
+			// Muda ultimaDirecao para indicar que o personagem deverá
+			// continuar atirando para a esquerda, mesmo se ficar parado
+			// no futuro.
+			ultimaDirecao = -1;
 			dude.body.acceleration.x = -3000;
 			dude.animations.play("esquerda");
 		} else {
 			if (setas.right.isDown) {
+				// Muda ultimaDirecao para indicar que o personagem deverá
+				// continuar atirando para a direita, mesmo se ficar parado
+				// no futuro.
+				ultimaDirecao = 1;
 				dude.body.acceleration.x = 3000;
 				dude.animations.play("direita");
 			} else {
+				// Não vamos alterar o valor de ultimaDirecao aqui, para
+				// que o personagem continue atirando na direção para onde
+				// ele estava andando anteriormente.
 				dude.body.acceleration.x = 0;
-				dude.animations.play("parado");
+				// Apenas para ter uma animação quando estiver andando
+				// puramente para cima ou para baixo.
+				if (setas.up.isDown || setas.down.isDown) {
+					if (ultimaDirecao > 0) {
+						dude.animations.play("direita");
+					} else {
+						dude.animations.play("esquerda");
+					}
+				} else {
+					dude.animations.play("parado");
+				}
 			}
 		}
 		
@@ -179,37 +158,6 @@ function menu() {
 		// base no teclado, mas com base em sua velocidade, ou uma combinação
 		// de ambos! :)
 		
-		var agora = game.time.now;
-		
-		// Neste exemplo, o tiro será executada sempre que a tecla
-		// estiver pressionada, mas apenas se já tiver passado o
-		// intervalo de tempo desejado. No nosso caso, um novo tiro
-		// deve ser liberado a cada 100 milissegundos.
-		if (teclaTiro.isDown && agora >= horaParaOProximoTiro) {
-			// Nós criamos 5 tiros, assim, só poderão existir no
-			// máximo 5 tiros na tela, em qualquer momento!
-			var tiro = tiros.getFirstExists(false);
-			
-			if (tiro) {
-				// Caso exista ao menos um tiro disponível,
-				// devemos posicionar o sprite do tiro na
-				// posicão correta, com a velocidade correta.
-				tiro.reset(dude.x, dude.y - 20);
-				tiro.body.velocity.y = -500;
-				
-				horaParaOProximoTiro = agora + 100;
-			}
-		}
-		
 	};
-	
-	function destruirTiro(tiro) {
-		
-		// Quando o tiro sair da tela ele deve ser destruído.
-		// Caso contrário, ele ficaria ativo para sempre, mesmo
-		// não estando mais visível!
-		tiro.kill();
-		
-	}
 	
 }

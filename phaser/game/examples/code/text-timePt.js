@@ -48,8 +48,10 @@ function menu() {
 		
 		milissegundosRestantes = milissegundosRestantes - delta;
 		
-		// O | 0 é para truncar o valor (remover a parte fracionária).
-		texto.setText((milissegundosRestantes / 1000) | 0);
+		// Ao utilizar Math.round() o jogador terá tempo para ler
+		// 60. Compare com o que acontece quando você utiliza
+		// Math.floor() em vez de Math.round().
+		texto.setText(Math.round(milissegundosRestantes / 1000));
 		
 	};
 	

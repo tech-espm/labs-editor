@@ -42,7 +42,7 @@ function menu() {
 		// como o percentual da velocidade que ele terá quando
 		// colidir com algum obstáculo.
 		dude.body.bounce.x = 0.5;
-		dude.body.bounce.y = 0.5;
+		dude.body.bounce.y = 0;
 		
 		// Outros atributos comuns de body:
 		// dude.body.velocity.x (em pixels/s)

@@ -53,7 +53,12 @@ function menu() {
 		// como o percentual da velocidade que ele terá quando
 		// colidir com algum obstáculo.
 		dude.body.bounce.x = 0.5;
-		dude.body.bounce.y = 0.5;
+		dude.body.bounce.y = 0;
+		// É comum assumir que as coordenadas x e y de um personagem
+		// se refiram ao ponto inferior/central em jogos de plataforma,
+		// o que pode facilitar os cálculos em alguns momentos.
+		dude.anchor.x = 0.5;
+		dude.anchor.y = 1;
 		
 		// Outros atributos comuns de body:
 		// dude.body.velocity.x (em pixels/s)

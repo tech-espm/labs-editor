@@ -98,13 +98,18 @@
 			"prefix": "sprite-kbdanim"
 		},
 		{
-			"name": "Handling keys",
-			"namePt": "Tratando teclas",
+			"name": "Controlling and animating sprites (viewed from above)",
+			"namePt": "Controlando e animando sprites (visto por cima)",
+			"prefix": "sprite-kbdanimtop"
+		},
+		{
+			"name": "Handling other keys",
+			"namePt": "Tratando outras teclas",
 			"prefix": "sprite-kbdevt"
 		},
 		{
-			"name": "Handling keys (2)",
-			"namePt": "Tratando teclas (2)",
+			"name": "Handling other keys (2)",
+			"namePt": "Tratando outras teclas (2)",
 			"prefix": "sprite-kbdpoll"
 		},
 		{
@@ -128,9 +133,29 @@
 			"prefix": "sprite-kbdjump"
 		},
 		{
+			"name": "Controlling and animating sprites (with jump and platforms)",
+			"namePt": "Controlando e animando sprites (com pulo e plataformas)",
+			"prefix": "sprite-kbdjumpplatform"
+		},
+		{
+			"name": "Controlling and animating sprites (with jump and platforms 2)",
+			"namePt": "Controlando e animando sprites (com pulo e plataformas 2)",
+			"prefix": "sprite-kbdjumpplatformthrough"
+		},
+		{
 			"name": "Controlling and animating sprites (with shots)",
 			"namePt": "Controlando e animando sprites (com tiros)",
 			"prefix": "sprite-kbdshot"
+		},
+		{
+			"name": "Controlling and animating sprites (with sideways shots)",
+			"namePt": "Controlando e animando sprites (com tiros laterais)",
+			"prefix": "sprite-kbdshotside"
+		},
+		{
+			"name": "Controlling and animating sprites (with sideways shots and jump)",
+			"namePt": "Controlando e animando sprites (com tiros laterais e pulo)",
+			"prefix": "sprite-kbdshotsidejump"
 		},
 		{
 			"name": "Controlling and animating sprites (with shots and targets)",
