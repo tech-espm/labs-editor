@@ -1118,7 +1118,9 @@ function saveFilesToZip(zipFileName) {
 		debug: function (msg) { log(msg, false) },
 		exception: function (msg) { log(msg, true) },
 		trace: function (msg) { log() },
-		errorHandler: function (msg, url, line, col, error) { log("Ln " + line + ": " + msg, true); }
+		errorHandler: function (msg, url, line, col, error) {
+			log("Ln " + line + ", Col " + col + ": " + msg + "\n\n" + (error.stack || error.toString()), true);
+		}
 	};
 })();
 
