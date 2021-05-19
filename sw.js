@@ -6,7 +6,7 @@
 // whenever it detects a change in the source code of the
 // service worker).
 const CACHE_PREFIX = "labs-editor-static-cache";
-const CACHE_VERSION = "-20210222";
+const CACHE_VERSION = "-20210519";
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
 const HTML_CACHE_NAME = "labs-editor-html-cache";
 const GAME_CACHE_NAME = "labs-editor-game-cache";
@@ -53,9 +53,9 @@ self.addEventListener("install", (event) => {
 			"/labs-editor/examplePt-html.html",
 			"/labs-editor/favicon.ico",
 			"/labs-editor/favicon.png",
-			"/labs-editor/manifest.json",
-			"/labs-editor/manifest-html.json",
-			"/labs-editor/manifest-phaser.json",
+			"/labs-editor/manifest.webmanifest",
+			"/labs-editor/manifest-html.webmanifest",
+			"/labs-editor/manifest-phaser.webmanifest",
 			"/labs-editor/favicons/favicon-512x512.png",
 			"/labs-editor/images/loading-grey-t.gif",
 			"/labs-editor/images/logo.png",
@@ -106,7 +106,7 @@ self.addEventListener("install", (event) => {
 			"/labs-editor/phaser/game/phaser-2.6.2.min.js",
 			// Since these files' contents always change, but their names do not, I
 			// added a version number in order to try to avoid browsers' own cache
-			"/labs-editor/css/style.css?v=1.0.5",
+			"/labs-editor/css/style.css?v=1.0.6",
 			"/labs-editor/css/style-dark.css?v=1.0.2",
 			"/labs-editor/js/advanced.js?v=1.0.6",
 			"/labs-editor/js/advanced-ui.js?v=1.0.2",

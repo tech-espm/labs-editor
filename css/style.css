@@ -361,6 +361,10 @@ textarea {
 	padding-left: 4ch;
 }
 
+.element-container.border {
+	border-left: 1px solid #ccc;
+}
+
 .element.collapsed > .element-container {
 	display: none;
 }
