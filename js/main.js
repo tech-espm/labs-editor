@@ -31,17 +31,6 @@ window.cancelEvent = function (evt) {
 	}
 	return false;
 };
-window.parseQueryString = function () {
-	var i, pair, assoc = {}, keyValues = location.search.substring(1).split("&");
-	for (i in keyValues) {
-		pair = keyValues[i].split("=");
-		if (pair.length > 1) {
-			assoc[decodeURIComponent(pair[0].replace(/\+/g, " "))] = decodeURIComponent(pair[1].replace(/\+/g, " "));
-		}
-	}
-	window.queryString = assoc;
-	return assoc;
-};
 window.encode = (function () {
 	var lt = /</g, gt = />/g;
 	return function (x) {
@@ -350,22 +339,6 @@ function lockUI(lock) {
 	}
 })();
 
-// Query String and PWA
-(function () {
-	window.queryString = "";
-	window.isPWA = false;
-
-	(function () {
-		var i, pair, assoc = {}, keyValues = location.search.substr(1).split("&");
-		for (i = keyValues.length - 1; i >= 0; i--) {
-			pair = keyValues[i].split("=");
-			assoc[decodeURIComponent(pair[0].replace(/\+/g, " "))] = (pair.length === 1 ? "" : decodeURIComponent(pair[1].replace(/\+/g, " ")));
-		}
-		window.queryString = assoc;
-		window.isPWA = ("pwa" in window.queryString);
-	})();
-})();
-
 // Translation
 (function () {
 	if (!window.editorStrings || (typeof window.editorStrings !== "object")) window.editorStrings = {};
@@ -397,6 +370,10 @@ function lockUI(lock) {
 		addString("Comment", "Comentário");
 		addString("EditSelector", "Editar Seletor");
 		addString("Selector", "Seletor");
+		addString("Element", "Elemento");
+		addString("Rule", "Regra");
+		addString("Attribute", "Atributo");
+		addString("Document", "Documento");
 		addString("Name", "Nome");
 		addString("Value", "Valor");
 		addString("EditAttribute", "Editar Atributo");
@@ -417,6 +394,9 @@ function lockUI(lock) {
 		addString("CreateText", "Criar Texto");
 		addString("CreateComment", "Criar Comentário");
 		addString("CreateDocument", "Criar Documento");
+		addString("CreateAbove", "<i class=\"fa fa-arrow-up\"></i> Criar Acima");
+		addString("CreateBelow", "<i class=\"fa fa-arrow-down\"></i> Criar Abaixo");
+		addString("CreateInside", "<i class=\"fa fa-indent\"></i> Criar Dentro");
 		addString("DeleteFile", "Excluir Arquivo");
 		addString("UploadFiles", "Enviar Arquivos");
 		addString("LoadImage", "Carregar Imagem");
@@ -514,6 +494,10 @@ function lockUI(lock) {
 		addString("Comment", "Comment");
 		addString("EditSelector", "Edit Selector");
 		addString("Selector", "Selector");
+		addString("Element", "Element");
+		addString("Rule", "Rule");
+		addString("Attribute", "Attribute");
+		addString("Document", "Document");
 		addString("Name", "Name");
 		addString("Value", "Value");
 		addString("EditAttribute", "Edit Attribute");
@@ -534,6 +518,9 @@ function lockUI(lock) {
 		addString("CreateText", "Create Text");
 		addString("CreateComment", "Create Comment");
 		addString("CreateDocument", "Create Document");
+		addString("CreateAbove", "<i class=\"fa fa-arrow-up\"></i> Create Above");
+		addString("CreateBelow", "<i class=\"fa fa-arrow-down\"></i> Create Below");
+		addString("CreateInside", "<i class=\"fa fa-indent\"></i> Create Inside");
 		addString("DeleteFile", "Delete File");
 		addString("UploadFiles", "Upload Files");
 		addString("LoadImage", "Load Image");

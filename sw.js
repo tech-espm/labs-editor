@@ -92,7 +92,7 @@ self.addEventListener("install", (event) => {
 			"/labs-editor/lib/ace-1.4.7/snippets/css.js",
 			"/labs-editor/lib/ace-1.4.7/snippets/html.js",
 			"/labs-editor/lib/ace-1.4.7/snippets/javascript.js",
-			"/labs-editor/lib/bootstrap/css/bootstrap-1.0.27.min.css",
+			"/labs-editor/lib/bootstrap/css/bootstrap-1.0.28.min.css",
 			"/labs-editor/lib/bootstrap/js/bootstrap-1.0.1.min.js",
 			"/labs-editor/lib/font-awesome/css/font-awesome-1.0.2.min.css",
 			"/labs-editor/lib/font-awesome/fonts/fontawesome-webfont.eot?v=4.7.0",
@@ -106,11 +106,11 @@ self.addEventListener("install", (event) => {
 			"/labs-editor/phaser/game/phaser-2.6.2.min.js",
 			// Since these files' contents always change, but their names do not, I
 			// added a version number in order to try to avoid browsers' own cache
-			"/labs-editor/css/style.css?v=1.0.6",
+			"/labs-editor/css/style.css?v=1.0.7",
 			"/labs-editor/css/style-dark.css?v=1.0.2",
 			"/labs-editor/js/advanced.js?v=1.0.6",
 			"/labs-editor/js/advanced-ui.js?v=1.0.2",
-			"/labs-editor/js/main.js?v=1.0.8"
+			"/labs-editor/js/main.js?v=1.0.9"
 		];
 		const promises = new Array(files.length);
 		for (let i = files.length - 1; i >= 0; i--)

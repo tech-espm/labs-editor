@@ -57,9 +57,9 @@
 	<title>Editor</title>
 
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,600|Roboto+Mono:400,700" />
-	<link rel="stylesheet" href="lib/bootstrap/css/bootstrap-1.0.27.min.css" />
+	<link rel="stylesheet" href="lib/bootstrap/css/bootstrap-1.0.28.min.css" />
 	<link rel="stylesheet" href="lib/font-awesome/css/font-awesome-1.0.2.min.css" />
-	<link rel="stylesheet" href="css/style.css?v=1.0.6" />
+	<link rel="stylesheet" href="css/style.css?v=1.0.7" />
 </head>
 <body style="visibility: hidden">
 
@@ -248,13 +248,13 @@
 		<div class="tab-content">
 			<div id="toolbar" class="editor-toolbar">
 				<div id="toolbarButtons" class="fade in">
-					<button class="btn btn-outline btn-xs btn-fa btn-success" type="button" data-string="title|CreateElement" onclick="toolbarShowType()" id="editorToolbarCreateElement"><i class="fa fa-nomargin fa-code"></i></button>
-					<button class="btn btn-outline btn-xs btn-fa btn-primary" type="button" data-string="title|CreateText" onclick="toolbarCreateText()" id="editorToolbarCreateText"><i class="fa fa-nomargin fa-i-cursor"></i></button>
-					<button class="btn btn-outline btn-xs btn-fa btn-primary" type="button" data-string="title|CreateComment" onclick="toolbarCreateComment()" id="editorToolbarCreateComment"><i class="fa fa-nomargin fa-comment"></i></button>
+					<button class="btn btn-outline btn-fa btn-success" type="button" data-string="title|CreateElement" onclick="toolbarShowType()" id="editorToolbarCreateElement"><i class="fa fa-nomargin fa-code"></i></button>
+					<button class="btn btn-outline btn-fa btn-primary" type="button" data-string="title|CreateText" onclick="toolbarCreateText()" id="editorToolbarCreateText"><i class="fa fa-nomargin fa-i-cursor"></i></button>
+					<button class="btn btn-outline btn-fa btn-primary" type="button" data-string="title|CreateComment" onclick="toolbarCreateComment()" id="editorToolbarCreateComment"><i class="fa fa-nomargin fa-comment"></i></button>
 				</div>
 				<div id="toolbarButtonsCss" class="fade hidden">
-					<button class="btn btn-outline btn-xs btn-fa btn-success" type="button" data-string="title|CreateRule" onclick="toolbarCreateRule()" id="editorToolbarCreateRule"><i class="fa fa-nomargin fa-object-group"></i></button>
-					<button class="btn btn-outline btn-xs btn-fa btn-primary" type="button" data-string="title|CreateAttribute" onclick="toolbarCreateAttribute()" id="editorToolbarCreateAttribute"><i class="fa fa-nomargin fa-paint-brush"></i></button>
+					<button class="btn btn-outline btn-fa btn-success" type="button" data-string="title|CreateRule" onclick="toolbarCreateRule()" id="editorToolbarCreateRule"><i class="fa fa-nomargin fa-object-group"></i></button>
+					<button class="btn btn-outline btn-fa btn-primary" type="button" data-string="title|CreateAttribute" onclick="toolbarCreateAttribute()" id="editorToolbarCreateAttribute"><i class="fa fa-nomargin fa-paint-brush"></i></button>
 				</div>
 			</div>
 			<div id="editor" role="tabpanel" class="tab-pane fade in active editor">
@@ -295,37 +295,39 @@
 		<li class="dropdown-menu-container" id="dropdownTypeContainer"></li>
 	</ul>
 	<div class="editor-menu editor-menu-animated editor-menu-top" id="dropdownMenuTop">
-		<button class="btn btn-outline btn-xs btn-fa btn-success" type="button" data-string="title|CreateElement" onclick="dropdownShowType(true, false)" id="dropdownMenuTopCreateElement"><i class="fa fa-nomargin fa-code"></i></button>
-		<button class="btn btn-outline btn-xs btn-fa btn-success" type="button" data-string="title|CreateRule" onclick="dropdownCreateEditRuleSelector(true, false)" id="dropdownMenuTopCreateRule"><i class="fa fa-nomargin fa-object-group"></i></button>
-		<button class="btn btn-outline btn-xs btn-fa btn-primary" type="button" data-string="title|CreateAttribute" onclick="dropdownCreateEditRuleAttribute(true, false)" id="dropdownMenuTopCreateRuleAttribute"><i class="fa fa-nomargin fa-paint-brush"></i></button>
-		<button class="btn btn-outline btn-xs btn-fa btn-primary" type="button" data-string="title|CreateText" onclick="dropdownCreateText(true)" id="dropdownMenuTopCreateText"><i class="fa fa-nomargin fa-i-cursor"></i></button>
-		<button class="btn btn-outline btn-xs btn-fa btn-primary" type="button" data-string="title|CreateComment" onclick="dropdownCreateComment(true)" id="dropdownMenuTopCreateComment"><i class="fa fa-nomargin fa-comment"></i></button>
+		<div class="editor-menu-label" id="dropdownMenuTopLabel"></div>
+		<button class="btn btn-outline btn-fa btn-success" type="button" data-string="title|Element" onclick="dropdownShowType(true, false)" id="dropdownMenuTopCreateElement"><i class="fa fa-nomargin fa-code"></i></button>
+		<button class="btn btn-outline btn-fa btn-success" type="button" data-string="title|Rule" onclick="dropdownCreateEditRuleSelector(true, false)" id="dropdownMenuTopCreateRule"><i class="fa fa-nomargin fa-object-group"></i></button>
+		<button class="btn btn-outline btn-fa btn-primary" type="button" data-string="title|Attribute" onclick="dropdownCreateEditRuleAttribute(true, false)" id="dropdownMenuTopCreateRuleAttribute"><i class="fa fa-nomargin fa-paint-brush"></i></button>
+		<button class="btn btn-outline btn-fa btn-primary" type="button" data-string="title|Text" onclick="dropdownCreateText(true)" id="dropdownMenuTopCreateText"><i class="fa fa-nomargin fa-i-cursor"></i></button>
+		<button class="btn btn-outline btn-fa btn-primary" type="button" data-string="title|Comment" onclick="dropdownCreateComment(true)" id="dropdownMenuTopCreateComment"><i class="fa fa-nomargin fa-comment"></i></button>
 	</div>
 	<div class="editor-menu editor-menu-animated editor-menu-left" id="dropdownMenuLeft">
-		<button class="btn btn-outline btn-xs btn-fa btn-default" type="button" onclick="dropdownToggleVisibility()" id="dropdownMenuLeftToggleVisibility"><i class="fa fa-nomargin fa-plus"></i></button>
+		<button class="btn btn-outline btn-fa btn-default" type="button" onclick="dropdownToggleVisibility()" id="dropdownMenuLeftToggleVisibility"><i class="fa fa-nomargin fa-plus"></i></button>
 	</div>
 	<div class="editor-menu editor-menu-animated editor-menu-right" id="dropdownMenuRight">
-		<button class="btn btn-outline btn-xs btn-fa btn-default" type="button" data-string="title|Move" onclick="dropdownMove()"><i class="fa fa-nomargin fa-arrows"></i></button>
-		<button class="btn btn-outline btn-xs btn-fa btn-default" type="button" data-string="title|Duplicate" onclick="dropdownDuplicate()"><i class="fa fa-nomargin fa-copy"></i></button>
-		<button class="btn btn-outline btn-xs btn-fa btn-default" type="button" data-string="title|EditText" onclick="dropdownEditText()" id="dropdownMenuRightEditText"><i class="fa fa-nomargin fa-i-cursor"></i></button>
-		<button class="btn btn-outline btn-xs btn-fa btn-default" type="button" data-string="title|FindElement" onclick="dropdownFind()" id="dropdownMenuRightFind"><i class="fa fa-nomargin fa-search"></i></button>
-		<button class="btn btn-outline btn-xs btn-fa btn-default" type="button" data-string="title|ChangeElement" onclick="dropdownShowType(true, true)" id="dropdownMenuRightChangeType"><i class="fa fa-nomargin fa-code"></i></button>
-		<button class="btn btn-outline btn-xs btn-fa btn-default" type="button" data-string="title|EditSelector" onclick="dropdownCreateEditRuleSelector(true, true)" id="dropdownMenuRightEditRuleSelector"><i class="fa fa-nomargin fa-object-group"></i></button>
-		<button class="btn btn-outline btn-xs btn-fa btn-default" type="button" data-string="title|EditAttribute" onclick="dropdownCreateEditRuleAttribute(true, true)" id="dropdownMenuRightEditRuleAttribute"><i class="fa fa-nomargin fa-paint-brush"></i></button>
-		<button class="btn btn-outline btn-xs btn-fa btn-primary" type="button" data-string="title|EditAttributes" onclick="dropdownEditAttributes()" id="dropdownMenuRightEditAttributes"><i class="fa fa-nomargin fa-wrench"></i></button>
-		<button class="btn btn-outline btn-xs btn-fa btn-danger" type="button" data-string="title|Delete" onclick="dropdownDelete()"><i class="fa fa-nomargin fa-times"></i></button>
+		<button class="btn btn-outline btn-fa btn-default" type="button" data-string="title|Move" onclick="dropdownMove()"><i class="fa fa-nomargin fa-arrows"></i></button>
+		<button class="btn btn-outline btn-fa btn-default" type="button" data-string="title|Duplicate" onclick="dropdownDuplicate()"><i class="fa fa-nomargin fa-copy"></i></button>
+		<button class="btn btn-outline btn-fa btn-default" type="button" data-string="title|EditText" onclick="dropdownEditText()" id="dropdownMenuRightEditText"><i class="fa fa-nomargin fa-i-cursor"></i></button>
+		<button class="btn btn-outline btn-fa btn-default" type="button" data-string="title|FindElement" onclick="dropdownFind()" id="dropdownMenuRightFind"><i class="fa fa-nomargin fa-search"></i></button>
+		<button class="btn btn-outline btn-fa btn-default" type="button" data-string="title|ChangeElement" onclick="dropdownShowType(true, true)" id="dropdownMenuRightChangeType"><i class="fa fa-nomargin fa-code"></i></button>
+		<button class="btn btn-outline btn-fa btn-default" type="button" data-string="title|EditSelector" onclick="dropdownCreateEditRuleSelector(true, true)" id="dropdownMenuRightEditRuleSelector"><i class="fa fa-nomargin fa-object-group"></i></button>
+		<button class="btn btn-outline btn-fa btn-default" type="button" data-string="title|EditAttribute" onclick="dropdownCreateEditRuleAttribute(true, true)" id="dropdownMenuRightEditRuleAttribute"><i class="fa fa-nomargin fa-paint-brush"></i></button>
+		<button class="btn btn-outline btn-fa btn-primary" type="button" data-string="title|EditAttributes" onclick="dropdownEditAttributes()" id="dropdownMenuRightEditAttributes"><i class="fa fa-nomargin fa-wrench"></i></button>
+		<button class="btn btn-outline btn-fa btn-danger" type="button" data-string="title|Delete" onclick="dropdownDelete()"><i class="fa fa-nomargin fa-times"></i></button>
 	</div>
 	<div class="editor-menu editor-menu-animated editor-menu-bottom" id="dropdownMenuBottom">
-		<button class="btn btn-outline btn-xs btn-fa btn-success" type="button" data-string="title|CreateElement" onclick="dropdownShowType(false, false)" id="dropdownMenuBottomCreateElement"><i class="fa fa-nomargin fa-code"></i></button>
-		<button class="btn btn-outline btn-xs btn-fa btn-success" type="button" data-string="title|CreateRule" onclick="dropdownCreateEditRuleSelector(false, false)" id="dropdownMenuBottomCreateRule"><i class="fa fa-nomargin fa-object-group"></i></button>
-		<button class="btn btn-outline btn-xs btn-fa btn-primary" type="button" data-string="title|CreateAttribute" onclick="dropdownCreateEditRuleAttribute(false, false)" id="dropdownMenuBottomCreateRuleAttribute"><i class="fa fa-nomargin fa-paint-brush"></i></button>
-		<button class="btn btn-outline btn-xs btn-fa btn-primary" type="button" data-string="title|CreateText" onclick="dropdownCreateText(false)" id="dropdownMenuBottomCreateText"><i class="fa fa-nomargin fa-i-cursor"></i></button>
-		<button class="btn btn-outline btn-xs btn-fa btn-primary" type="button" data-string="title|CreateComment" onclick="dropdownCreateComment(false)" id="dropdownMenuBottomCreateComment"><i class="fa fa-nomargin fa-comment"></i></button>
+		<div class="editor-menu-label" id="dropdownMenuBottomLabel"></div>
+		<button class="btn btn-outline btn-fa btn-success" type="button" data-string="title|Element" onclick="dropdownShowType(false, false)" id="dropdownMenuBottomCreateElement"><i class="fa fa-nomargin fa-code"></i></button>
+		<button class="btn btn-outline btn-fa btn-success" type="button" data-string="title|Rule" onclick="dropdownCreateEditRuleSelector(false, false)" id="dropdownMenuBottomCreateRule"><i class="fa fa-nomargin fa-object-group"></i></button>
+		<button class="btn btn-outline btn-fa btn-primary" type="button" data-string="title|Attribute" onclick="dropdownCreateEditRuleAttribute(false, false)" id="dropdownMenuBottomCreateRuleAttribute"><i class="fa fa-nomargin fa-paint-brush"></i></button>
+		<button class="btn btn-outline btn-fa btn-primary" type="button" data-string="title|Text" onclick="dropdownCreateText(false)" id="dropdownMenuBottomCreateText"><i class="fa fa-nomargin fa-i-cursor"></i></button>
+		<button class="btn btn-outline btn-fa btn-primary" type="button" data-string="title|Comment" onclick="dropdownCreateComment(false)" id="dropdownMenuBottomCreateComment"><i class="fa fa-nomargin fa-comment"></i></button>
 	</div>
 
 	<script type="text/javascript" src="lib/jquery/jquery-1.0.1.min.js"></script>
 	<script type="text/javascript" src="lib/bootstrap/js/bootstrap-1.0.1.min.js"></script>
-	<script type="text/javascript" src="js/main.js?v=1.0.8"></script>
+	<script type="text/javascript" src="js/main.js?v=1.0.9"></script>
 
 	<script type="text/javascript">
 		"use strict";
@@ -537,6 +539,7 @@
 
 			createElement("body");
 			createRule("body");
+			createEmptyRule();
 
 			dirty = false;
 
@@ -887,6 +890,17 @@
 			return e;
 		}
 
+		function createEmptyRule() {
+			var e = _CE("div", "element");
+			e.elementCategory = categoryRule;
+
+			e.elementTag = _CE("div", "element-tag move-target-top no-click empty-rule", e);
+			e.elementTag.element = e;
+			e.elementTag.moveTarget = moveTargetTop;
+
+			_AC(editorCss, e);
+		}
+
 		function deleteRule(element) {
 			if (loading || !element || element.elementCategory !== categoryRule)
 				return;
@@ -895,8 +909,12 @@
 
 			_RC(editorCss, element);
 
-			if (!editorCss.childNodes.length)
+			if (!editorCss.childNodes.length || editorCss.childNodes.length === 1) {
+				while (editorCss.firstChild)
+					editorCss.removeChild(editorCss.firstChild);
 				createRule("body");
+				createEmptyRule();
+			}
 
 			updateCss();
 		}
@@ -1097,7 +1115,8 @@
 
 			var css = "", tmp, i, j, rule, rules = editorCss.childNodes, attribute, attributes;
 
-			for (i = 0; i < rules.length; i++) {
+			// -1 to ignore the last fake child
+			for (i = 0; i < rules.length - 1; i++) {
 				tmp = ("\t" + getRuleSelector(rule = rules[i]) + " {\n");
 
 				attributes = rule.elementContainer.childNodes;
@@ -1248,6 +1267,7 @@
 				dropdownTypeButton = _("dropdownTypeButton"),
 				dropdownTypeContainer = _("dropdownTypeContainer"),
 				dropdownMenuTop = _ID("dropdownMenuTop"),
+				dropdownMenuTopLabel = _ID("dropdownMenuTopLabel"),
 				dropdownMenuTopCreateElement = _ID("dropdownMenuTopCreateElement"),
 				dropdownMenuTopCreateRule = _ID("dropdownMenuTopCreateRule"),
 				dropdownMenuTopCreateRuleAttribute = _ID("dropdownMenuTopCreateRuleAttribute"),
@@ -1263,6 +1283,7 @@
 				dropdownMenuRightEditRuleAttribute = _ID("dropdownMenuRightEditRuleAttribute"),
 				dropdownMenuRightEditAttributes = _ID("dropdownMenuRightEditAttributes"),
 				dropdownMenuBottom = _ID("dropdownMenuBottom"),
+				dropdownMenuBottomLabel = _ID("dropdownMenuBottomLabel"),
 				dropdownMenuBottomCreateElement = _ID("dropdownMenuBottomCreateElement"),
 				dropdownMenuBottomCreateRule = _ID("dropdownMenuBottomCreateRule"),
 				dropdownMenuBottomCreateRuleAttribute = _ID("dropdownMenuBottomCreateRuleAttribute"),
@@ -1618,7 +1639,11 @@
 					return;
 
 				var rect = (closingTag ? element.elementClosingTag : element.elementTag).getBoundingClientRect(),
-					height = (rect.height | 0);
+					height = (rect.height | 0),
+					labelTop = "CreateAbove",
+					labelBottom = "CreateBelow",
+					labelSize = 20,
+					buttonSize = 34;
 
 				dropdownX = (rect.left | 0) + 12;
 				dropdownY = (rect.top | 0) + (height >> 1);
@@ -1634,9 +1659,13 @@
 				switch (element.elementCategory) {
 					case categoryElement:
 						dropdownShowTop = (closingTag || element.elementType !== elementTypeBody);
+						if (closingTag && !element.elementType.noChildren)
+							labelTop = "CreateInside";
 						dropdownShowLeft = (element.elementType !== elementTypeBody && !element.elementType.noChildren);
 						dropdownShowRight = (element.elementType !== elementTypeBody);
 						dropdownShowBottom = (!closingTag || element.elementType !== elementTypeBody);
+						if (!closingTag && !element.elementType.noChildren)
+							labelBottom = "CreateInside";
 						dropdownMenuTopCreateElement.style.display = "";
 						dropdownMenuTopCreateRule.style.display = "none";
 						dropdownMenuTopCreateRuleAttribute.style.display = "none";
@@ -1663,9 +1692,13 @@
 						break;
 					case categoryRule:
 						dropdownShowTop = true;
+						if (closingTag)
+							labelTop = "CreateInside";
 						dropdownShowLeft = true;
 						dropdownShowRight = true;
 						dropdownShowBottom = true;
+						if (!closingTag)
+							labelBottom = "CreateInside";
 						dropdownMenuTopCreateElement.style.display = "none";
 						dropdownMenuTopCreateRule.style.display = (closingTag ? "none" : "");
 						dropdownMenuTopCreateRuleAttribute.style.display = (closingTag ? "" : "none");
@@ -1726,24 +1759,26 @@
 				dropdownCreateEditRuleAttributeOnHide = false;
 
 				if (dropdownShowTop) {
+					dropdownMenuTopLabel.innerHTML = translate(labelTop);
 					dropdownMenuTop.style.display = "block";
 					dropdownMenuTop.style.left = (dropdownX - 1) + "px";
-					dropdownMenuTop.style.top = (dropdownY - (height >> 1) - 25) + "px";
+					dropdownMenuTop.style.top = (dropdownY - (height >> 1) - 2 - 4 - buttonSize - labelSize) + "px";
 				}
 				if (dropdownShowLeft) {
 					dropdownMenuLeft.style.display = "block";
-					dropdownMenuLeft.style.left = (rect.left - 24) + "px";
-					dropdownMenuLeft.style.top = (dropdownY - 10) + "px";
+					dropdownMenuLeft.style.left = ((rect.left | 0) - 2 - buttonSize) + "px";
+					dropdownMenuLeft.style.top = (dropdownY - (buttonSize >> 1)) + "px";
 				}
 				if (dropdownShowRight) {
 					dropdownMenuRight.style.display = "block";
 					dropdownMenuRight.style.left = (dropdownX + 18) + "px";
-					dropdownMenuRight.style.top = (dropdownY - 10) + "px";
+					dropdownMenuRight.style.top = (dropdownY - (buttonSize >> 1)) + "px";
 				}
 				if (dropdownShowBottom) {
+					dropdownMenuBottomLabel.innerHTML = translate(labelBottom);
 					dropdownMenuBottom.style.display = "block";
 					dropdownMenuBottom.style.left = (dropdownX - 1) + "px";
-					dropdownMenuBottom.style.top = (dropdownY + (height >> 1) + 5) + "px";
+					dropdownMenuBottom.style.top = (dropdownY + (height >> 1) + 2 + 4) + "px";
 				}
 				setTimeout(startFadeIn, 50);
 			};
@@ -2433,6 +2468,7 @@
 				loadDocumentCss(doc.head);
 				if (!editorCss.childNodes.length)
 					createRule("body");
+				createEmptyRule();
 				ignoreCssChanges = false;
 				updateCss();
 

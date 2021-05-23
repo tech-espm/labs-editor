@@ -29,9 +29,19 @@ textarea {
 }
 
 .btn-fa {
+	padding: 0;
+    font-size: 14px;
+    line-height: 32px;
+    width: 34px;
+    height: 34px;
+}
+
+.editor-menu-label {
 	padding: 0 4px;
 	font-size: 14px;
-	min-width: 25px;
+	line-height: 20px;
+	height: 20px;
+	color: #555;
 }
 
 .nav-tabs {
@@ -100,7 +110,7 @@ textarea {
 .editor {
 	position: absolute;
 	left: 0;
-	top: 78px;
+	top: 89px;
 	right: 0;
 	bottom: 0;
 	overflow: auto;
@@ -220,7 +230,7 @@ textarea {
 }
 
 .editor-css {
-	padding: 0 2ch 4ch 4ch;
+	padding: 0 2ch 4ch 5ch;
 }
 
 .editor-toolbar {
@@ -292,8 +302,16 @@ textarea {
 	padding-bottom: 4px;
 }
 
-.editor:not(.moving) .element-tag:hover {
+.editor:not(.moving):not(.moving-top) .element-tag:hover {
 	background-color: #eef;
+}
+
+.editor:not(.moving):not(.moving-top) .empty-rule:hover {
+	background-color: transparent;
+}
+
+.editor.moving-top .empty-rule {
+	cursor: pointer;
 }
 
 .editor.moving .move-target {
@@ -355,6 +373,8 @@ textarea {
 .element-comment {
 	color: #080;
 	font-weight: normal;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .element-container {
@@ -413,12 +433,13 @@ textarea {
 
 .editor-menu {
 	display: none;
+	text-align: center;
 	position: fixed;
 	background: #fff;
 	width: auto;
-	border-radius: 3px;
-	-webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
-	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+	border-radius: 4px;
+	-webkit-box-shadow: 0 0.5px 2.5px rgba(0, 0, 0, 0.4);
+	box-shadow: 0 0.5px 2.5px rgba(0, 0, 0, 0.4);
 	z-index: 10;
 }
 
@@ -467,6 +488,14 @@ textarea {
 
 #modalExamplesText {
 	height: 325px;
+}
+
+.color-primary {
+	color: #0062cc;
+}
+
+.color-success {
+	color: #5cb85c;
 }
 
 /*

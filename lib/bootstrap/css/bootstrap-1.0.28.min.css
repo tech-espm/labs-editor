@@ -163,11 +163,11 @@ select.form-control.input-sm {
 .alert-notification {
 	border: 0;
 	margin: 0;
-	border-bottom-left-radius: 0;
-	border-bottom-right-radius: 0;
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
 	position: fixed;
 	left: 2.5%;
-	bottom: 0;
+	top: 0;
 	right: 2.5%;
 	z-index: 10000; /* Bootstrap goes up to 1100 */
 	opacity: 0;
