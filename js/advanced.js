@@ -73,7 +73,7 @@ function closePreview() {
 }
 
 function fixDarkTheme() {
-	var bgColor = null, style = _ID("style-dark-mode");
+	var bgColor = null, style = _ID("style-dark-mode"), metaColorScheme = _ID("metaColorScheme");
 
 	switch (theme) {
 		case "ace/theme/dracula":
@@ -88,13 +88,15 @@ function fixDarkTheme() {
 	}
 
 	if (bgColor) {
-		_SA(_ID("editorImgLogo"), "src", "../images/logo-dark.png");
 		document.body.style.backgroundColor = bgColor;
+		if (metaColorScheme)
+			metaColorScheme.setAttribute("content", "dark");
 		if (!style)
 			_SA(_SA(_SA(_CE("link", null, document.head), "id", "style-dark-mode"), "rel", "stylesheet"), "href", "../css/style-dark.css?v=1.0.2")
 	} else {
-		_SA(_ID("editorImgLogo"), "src", "../images/logo.png");
 		document.body.style.backgroundColor = "";
+		if (metaColorScheme)
+			metaColorScheme.setAttribute("content", "light");
 		if (style)
 			document.head.removeChild(style);
 	}

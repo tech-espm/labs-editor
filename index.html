@@ -5,6 +5,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="viewport" content="width=1024, initial-scale=1" />
+	<meta name="color-scheme" content="light" id="metaColorScheme" />
 
 	<meta property="og:locale" content="pt_BR" />
 	<meta property="og:type" content="website" />
@@ -19,7 +20,7 @@
 	<meta property="og:image:height" content="768">
 	-->
 
-	<meta name="author" content="ESPM TECH" />
+	<meta name="author" content="ESPM" />
 	<meta name="description" content="Editor HTML + CSS para uso em sala de aula." />
 	<meta name="keywords" content="html, css, editor, wysiwyg" />
 
@@ -57,9 +58,9 @@
 	<title>Editor</title>
 
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,600|Roboto+Mono:400,700" />
-	<link rel="stylesheet" href="lib/bootstrap/css/bootstrap-1.0.28.min.css" />
+	<link rel="stylesheet" href="lib/bootstrap/css/bootstrap-1.0.30.min.css" />
 	<link rel="stylesheet" href="lib/font-awesome/css/font-awesome-1.0.2.min.css" />
-	<link rel="stylesheet" href="css/style.css?v=1.0.7" />
+	<link rel="stylesheet" href="css/style.css?v=1.0.8" />
 </head>
 <body style="visibility: hidden">
 
@@ -221,7 +222,7 @@
 			<li role="presentation" class="active"><a id="tabEditor" href="#editor" aria-controls="editor" role="tab" data-toggle="tab">HTML</a></li>
 			<li role="presentation"><a id="tabEditorCss" href="#editorCss" aria-controls="editorCss" role="tab" data-toggle="tab">CSS</a></li>
 		</ul>
-		<a class="nav-tabs-logo" href="https://github.com/tech-espm/labs-editor" target="_blank"><img width="75" src="images/logo.png" style="border: none;" /></a>
+		<a class="nav-tabs-logo" href="https://github.com/tech-espm/labs-editor" target="_blank"><img width="75" src="images/logo.png?1" style="border: none;" /></a>
 		<div class="nav-tabs-menu">
 			<button type="button" id="editorMenuDropdown" class="btn btn-primary btn-outline dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 				<span class="fa fa-bars" data-string="aria-label|Menu"></span>
@@ -247,14 +248,16 @@
 		</div>
 		<div class="tab-content">
 			<div id="toolbar" class="editor-toolbar">
-				<div id="toolbarButtons" class="fade in">
+				<div id="toolbarButtons" class="editor-toolbar-buttons fade in">
 					<button class="btn btn-outline btn-fa btn-success" type="button" data-string="title|CreateElement" onclick="toolbarShowType()" id="editorToolbarCreateElement"><i class="fa fa-nomargin fa-code"></i></button>
 					<button class="btn btn-outline btn-fa btn-primary" type="button" data-string="title|CreateText" onclick="toolbarCreateText()" id="editorToolbarCreateText"><i class="fa fa-nomargin fa-i-cursor"></i></button>
 					<button class="btn btn-outline btn-fa btn-primary" type="button" data-string="title|CreateComment" onclick="toolbarCreateComment()" id="editorToolbarCreateComment"><i class="fa fa-nomargin fa-comment"></i></button>
+					<button class="btn btn-outline btn-default" type="button" data-string="text|UndoDelete" onclick="toolbarUndoDeleteElement()" id="editorToolbarUndoDeleteElement" style="display: none;"><i class="fa fa-margin fa-undo"></i></button>
 				</div>
-				<div id="toolbarButtonsCss" class="fade hidden">
+				<div id="toolbarButtonsCss" class="editor-toolbar-buttons fade hidden">
 					<button class="btn btn-outline btn-fa btn-success" type="button" data-string="title|CreateRule" onclick="toolbarCreateRule()" id="editorToolbarCreateRule"><i class="fa fa-nomargin fa-object-group"></i></button>
 					<button class="btn btn-outline btn-fa btn-primary" type="button" data-string="title|CreateAttribute" onclick="toolbarCreateAttribute()" id="editorToolbarCreateAttribute"><i class="fa fa-nomargin fa-paint-brush"></i></button>
+					<button class="btn btn-outline btn-default" type="button" data-string="text|UndoDelete" onclick="toolbarUndoDeleteCss()" id="editorToolbarUndoDeleteCss" style="display: none;"><i class="fa fa-margin fa-undo"></i></button>
 				</div>
 			</div>
 			<div id="editor" role="tabpanel" class="tab-pane fade in active editor">
@@ -327,7 +330,7 @@
 
 	<script type="text/javascript" src="lib/jquery/jquery-1.0.1.min.js"></script>
 	<script type="text/javascript" src="lib/bootstrap/js/bootstrap-1.0.1.min.js"></script>
-	<script type="text/javascript" src="js/main.js?v=1.0.9"></script>
+	<script type="text/javascript" src="js/main.js?v=1.0.10"></script>
 
 	<script type="text/javascript">
 		"use strict";
@@ -499,7 +502,14 @@
 			tabEditorCss = _ID("tabEditorCss"),
 			toolbar = _ID("toolbar"),
 			toolbarButtons = _ID("toolbarButtons"),
+			editorToolbarCreateElement = _ID("editorToolbarCreateElement"),
+			editorToolbarCreateText = _ID("editorToolbarCreateText"),
+			editorToolbarCreateComment = _ID("editorToolbarCreateComment"),
+			editorToolbarUndoDeleteElement = _ID("editorToolbarUndoDeleteElement"),
+			editorToolbarUndoDeleteCss = _ID("editorToolbarUndoDeleteCss"),
 			toolbarButtonsCss = _ID("toolbarButtonsCss"),
+			editorToolbarCreateRule = _ID("editorToolbarCreateRule"),
+			editorToolbarCreateAttribute = _ID("editorToolbarCreateAttribute"),
 			loremIpsum = [
 				"Lorem ipsum dolor sit amet, consectetur adipiscing elit.\nSuspendisse erat nulla, mattis et maximus in, molestie at felis.\nVestibulum ac eros vel est commodo egestas.\nFusce blandit, purus sit amet aliquam tincidunt, nisl mauris euismod nisi, euismod pulvinar dolor metus sit amet orci.\nPraesent lectus magna, porta a volutpat ac, egestas a dui.\nQuisque semper, ex eget pretium faucibus, ante ipsum dictum nisl, sed iaculis ante nisi vehicula arcu.\nPraesent at feugiat dolor, placerat auctor ligula.\nCras venenatis viverra nisi eu volutpat.",
 				"Morbi sed tortor ac lectus porta vehicula.\nNullam venenatis magna in accumsan sodales.\nDonec massa orci, egestas vel tincidunt eu, laoreet et enim.\nCurabitur fermentum tempor felis, ac condimentum urna dictum sed.\nMaecenas at purus finibus, pellentesque sem at, scelerisque lorem.\nNam pretium vitae lorem ac volutpat.\nInteger ligula turpis, lobortis quis congue ut, suscipit semper velit.\nInteger scelerisque quis lacus eu imperdiet.\nInteger ex tortor, finibus nec ultrices quis, pretium vel elit.\nPhasellus tincidunt hendrerit purus, in cursus erat euismod vitae.",
@@ -518,6 +528,8 @@
 			lastEditedRuleSelector = "p",
 			lastEditedRuleAttributeName = "color",
 			lastEditedRuleAttributeValue = "black",
+			deletedElement = null,
+			deletedCss = null,
 			tmpDiv = _CE("div", null, null),
 			iframe = _ID("iframe"),
 			iframeWindow = null,
@@ -608,6 +620,8 @@
 
 			dirty = true;
 
+			setDeletedElement(null);
+
 			e = _CE("div", "element");
 			e.elementCategory = categoryElement;
 			e.elementParent = parent;
@@ -677,11 +691,56 @@
 			return e;
 		}
 
-		function deleteElement(element) {
+		function setDeletedElement(element) {
+			if (!element) {
+				if (deletedElement) {
+					deletedElement = null;
+					editorToolbarUndoDeleteElement.style.display = "none";
+				}
+				return;
+			}
+
+			deletedElement = {
+				element: element,
+				elementNextSibling: element.nextSibling,
+				elementIframe: element.elementIframe,
+				elementIframeNextSibling: element.elementIframe.nextSibling,
+				elementParent: element.elementParent
+			};
+
+			editorToolbarUndoDeleteElement.style.display = "";
+		}
+
+		function undoDeleteElement() {
+			if (!deletedElement)
+				return;
+
+			var element = deletedElement.element,
+				parent = element.elementParent;
+
+			if (parent && parent.elementContainer && parent.elementIframe) {
+				if (deletedElement.elementNextSibling && deletedElement.elementIframeNextSibling) {
+					_IB(parent.elementContainer, element, deletedElement.elementNextSibling);
+					_IB(parent.elementIframe, deletedElement.elementIframe, deletedElement.elementIframeNextSibling);
+				} else {
+					_AC(parent.elementContainer, element);
+					_AC(parent.elementIframe, deletedElement.elementIframe);
+				}
+
+				dirty = true;
+			}
+
+			setDeletedElement(null);
+		}
+
+		function deleteElement(element, userCommand) {
 			if (loading || !element || !element.elementParent || !element.elementParent.elementContainer)
 				return;
 
 			dirty = true;
+
+			if (userCommand)
+				setDeletedElement(element);
 
 			_RC(element.elementParent.elementContainer, element);
 			_RC(element.elementParent.elementIframe, element.elementIframe);
@@ -784,6 +843,8 @@
 
 			dirty = true;
 
+			setDeletedElement(null);
+
 			var newElement = createElement(newName, element.elementParent, element);
 
 			if (!element.elementType.noChildren) {
@@ -844,11 +905,59 @@
 			return input;
 		}
 
+		function setDeletedCss(element, lastRule) {
+			if (!element) {
+				if (deletedCss) {
+					deletedCss = null;
+					editorToolbarUndoDeleteCss.style.display = "none";
+				}
+				return;
+			}
+
+			deletedCss = {
+				lastRule: !!lastRule,
+				element: element,
+				elementParentNode: element.parentNode,
+				elementNextSibling: element.nextSibling
+			};
+
+			editorToolbarUndoDeleteCss.style.display = "";
+		}
+
+		function undoDeleteCss() {
+			if (!deletedCss)
+				return;
+
+			var element = deletedCss.element,
+				parentNode = deletedCss.elementParentNode;
+
+			if (element && parentNode) {
+				if (deletedCss.lastRule) {
+					while (editorCss.firstChild)
+						editorCss.removeChild(editorCss.firstChild);
+					_AC(editorCss, element);
+					createEmptyRule();
+				} else if (deletedCss.elementNextSibling) {
+					_IB(parentNode, element, deletedCss.elementNextSibling);
+				} else {
+					_AC(parentNode, element);
+				}
+
+				dirty = true;
+
+				updateCss();
+			}
+
+			setDeletedCss(null);
+		}
+
 		function createRule(ruleSelector, siblingBelow, hideUI) {
 			if (loading)
 				return;
 
 			dirty = true;
+
+			setDeletedCss(null);
 
 			// For the future... Perhaps we could use the CSSStyleSheet API?!?!
 			// https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet/insertRule
@@ -901,19 +1010,29 @@
 			_AC(editorCss, e);
 		}
 
-		function deleteRule(element) {
+		function deleteRule(element, userCommand) {
 			if (loading || !element || element.elementCategory !== categoryRule)
 				return;
 
+			var lastRule = (editorCss.childNodes.length <= 2);
+
 			dirty = true;
+
+			if (userCommand)
+				setDeletedCss(element, lastRule);
 
 			_RC(editorCss, element);
 
-			if (!editorCss.childNodes.length || editorCss.childNodes.length === 1) {
+			if (lastRule) {
 				while (editorCss.firstChild)
 					editorCss.removeChild(editorCss.firstChild);
+				var oldDeletedCss = deletedCss;
 				createRule("body");
 				createEmptyRule();
+				if (userCommand) {
+					deletedCss = oldDeletedCss;
+					editorToolbarUndoDeleteCss.style.display = "";
+				}
 			}
 
 			updateCss();
@@ -971,6 +1090,8 @@
 
 			dirty = true;
 
+			setDeletedCss(null);
+
 			e = _CE("div", "element");
 			// These attribute names were chosen like this in order to
 			// avoid any conflicts with existing attribute names!
@@ -1001,11 +1122,14 @@
 			return e;
 		}
 
-		function deleteRuleAttribute(element) {
+		function deleteRuleAttribute(element, userCommand) {
 			if (loading || !element || element.elementCategory !== categoryRuleAttribute)
 				return;
 
 			dirty = true;
+
+			if (userCommand)
+				setDeletedCss(element);
 
 			_RC(element.elementParent.elementContainer, element);
 
@@ -1288,12 +1412,7 @@
 				dropdownMenuBottomCreateRule = _ID("dropdownMenuBottomCreateRule"),
 				dropdownMenuBottomCreateRuleAttribute = _ID("dropdownMenuBottomCreateRuleAttribute"),
 				dropdownMenuBottomCreateText = _ID("dropdownMenuBottomCreateText"),
-				dropdownMenuBottomCreateComment = _ID("dropdownMenuBottomCreateComment"),
-				editorToolbarCreateElement = _ID("editorToolbarCreateElement"),
-				editorToolbarCreateText = _ID("editorToolbarCreateText"),
-				editorToolbarCreateComment = _ID("editorToolbarCreateComment"),
-				editorToolbarCreateRule = _ID("editorToolbarCreateRule"),
-				editorToolbarCreateAttribute = _ID("editorToolbarCreateAttribute");
+				dropdownMenuBottomCreateComment = _ID("dropdownMenuBottomCreateComment");
 
 			dropdownTypeContainer.style.height = (300 - 59) + "px";
 
@@ -1567,6 +1686,10 @@
 						dropdownElement.elementParent = (targetElement.elementParent || targetElement);
 					}
 
+					dirty = true;
+
+					setDeletedCss(null);
+
 					updateCss();
 				} else {
 					if (dropdownElement.elementCategory !== categoryElement)
@@ -1590,6 +1713,10 @@
 					_RC(dropdownElement.elementIframe.parentNode, dropdownElement.elementIframe);
 
 					dropdownElement.elementParent = targetParent;
+
+					dirty = true;
+
+					setDeletedElement(null);
 
 					if (moveTarget === moveTargetClosingTag) {
 						_AC(targetParent.elementContainer, dropdownElement);
@@ -1978,13 +2105,13 @@
 
 				switch (dropdownElement.elementCategory) {
 					case categoryElement:
-						deleteElement(dropdownElement);
+						deleteElement(dropdownElement, true);
 						break;
 					case categoryRule:
-						deleteRule(dropdownElement);
+						deleteRule(dropdownElement, true);
 						break;
 					case categoryRuleAttribute:
-						deleteRuleAttribute(dropdownElement);
+						deleteRuleAttribute(dropdownElement, true);
 						break;
 				}
 				hide();
@@ -2143,6 +2270,20 @@
 				toolbarCreateCommentOnClick = true;
 				lockUI(false);
 				move(true, true);
+			};
+
+			window.toolbarUndoDeleteElement = function () {
+				if (loading || dropdownFading || dropdownMoving || dropdownVisible || dropdownTypeVisible)
+					return;
+
+				undoDeleteElement();
+			};
+
+			window.toolbarUndoDeleteCss = function () {
+				if (loading || dropdownFading || dropdownMoving || dropdownVisible || dropdownTypeVisible)
+					return;
+
+				undoDeleteCss();
 			};
 
 			window.toolbarCreateRule = function () {
@@ -2320,6 +2461,9 @@
 				updateCss();
 
 				dirty = false;
+
+				setDeletedElement(null);
+				setDeletedCss(null);
 			}
 
 			function loadDocument(doc) {
@@ -2722,15 +2866,15 @@
 					clearTimeout(animTimeout);
 				animShow = show;
 				animHide = hide;
-				animShow.className = "fade hidden";
-				animHide.className = "fade in";
+				animShow.className = "editor-toolbar-buttons fade hidden";
+				animHide.className = "editor-toolbar-buttons fade in";
 				animTimeout = setTimeout(function () {
-					animHide.className = "fade";
+					animHide.className = "editor-toolbar-buttons fade";
 					animTimeout = setTimeout(function () {
-						animShow.className = "fade";
-						animHide.className = "fade hidden";
+						animShow.className = "editor-toolbar-buttons fade";
+						animHide.className = "editor-toolbar-buttons fade hidden";
 						animTimeout = setTimeout(function () {
-							animShow.className = "fade in";
+							animShow.className = "editor-toolbar-buttons fade in";
 							animTimeout = 0;
 						}, 10);
 					}, 150);

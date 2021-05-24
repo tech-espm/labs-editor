@@ -7,15 +7,26 @@ window.emoji = {
 window.isEmpty = function (x) {
 	return (x === undefined || x === null);
 };
-window.seal$ = function (obj) {
-	if (Object.seal)
-		Object.seal(obj);
-	return obj;
-};
-window.freeze$ = function (obj) {
-	if (Object.freeze)
-		Object.freeze(obj);
-	return obj;
+window.zeroObject = function (o) {
+	var p, v;
+	for (p in o) {
+		switch (typeof o[p]) {
+			case "function":
+				break;
+			case "boolean":
+				o[p] = false;
+				break;
+			case "number":
+				o[p] = 0;
+				break;
+			default:
+				v = o[p];
+				if (Array.isArray(v))
+					v.fill(null);
+				o[p] = null;
+				break;
+		}
+	}
 };
 window._ = function (id) {
 	return ((typeof id === "string") ? document.getElementById(id) : id);
@@ -308,6 +319,135 @@ function lockUI(lock) {
 	}
 }
 
+// Polyfills
+(function () {
+	if (!Function.prototype.bind) {
+		Function.prototype.bind = function (_this) {
+			// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind
+			// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/apply#Description
+			// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/arguments
+			var originalFunction = this, slice, originalExtraArguments;
+			if (arguments.length <= 1)
+				return function () {
+					return originalFunction.apply(_this, arguments);
+				};
+			slice = Array.prototype.slice;
+			originalExtraArguments = slice.call(arguments, 1);
+			return function () {
+				return originalFunction.apply(_this, originalExtraArguments.concat(slice.call(arguments)));
+			};
+		};
+	}
+
+	if (!Array.prototype.fill) {
+		// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/fill
+		Array.prototype.fill = function (value, start, end) {
+			var i, length = this.length | 0;
+			start |= 0;
+			end = ((end === undefined) ? length : (end | 0));
+			end = ((end < 0) ? Math.max(length + end, 0) : Math.min(end, length));
+			i = ((start < 0) ? Math.max(length + start, 0) : Math.min(start, length));
+			while (i < end)
+				this[i++] = value;
+			return this;
+		};
+	}
+
+	if (!String.prototype.trim) {
+		String.prototype.trim = (function () {
+			var expr = /^\s+|\s+$/g;
+			return function () { return this.replace(expr, ""); };
+		})();
+	}
+
+	if (!String.prototype.startsWith) {
+		String.prototype.startsWith = function (start, position) {
+			// Try to simulate the actual behavior of startsWith()
+			if (this === "")
+				return (start === "");
+			if (!this)
+				return false;
+			if (start === "")
+				return true;
+			if (position === undefined || position < 0)
+				position = 0;
+			if (!start || (start.length + position) > this.length)
+				return false;
+			var i = this.indexOf(start, position);
+			return (i);
+		};
+	}
+
+	if (!String.prototype.endsWith) {
+		String.prototype.endsWith = function (end, desiredLength) {
+			// Try to simulate the actual behavior of endsWith()
+			if (this === "")
+				return (end === "");
+			if (!this)
+				return false;
+			if (end === "")
+				return true;
+			if (desiredLength === undefined || desiredLength > this.length)
+				desiredLength = this.length;
+			if (!end || end.length > desiredLength)
+				return false;
+			var i = this.lastIndexOf(end, desiredLength);
+			return (i >= 0 && i === (desiredLength - end.length));
+		};
+	}
+
+	if (!Date.now) {
+		Date.now = function () {
+			return (new Date()).getTime();
+		};
+	}
+
+	if (!window.performance || !window.performance.now) {
+		(function () {
+			var initialNow = Date.now();
+			if (!window.performance)
+				window.performance = {};
+			window.performance.now = function () {
+				return Date.now() - initialNow;
+			};
+		});
+	}
+
+	if (!window.requestAnimationFrame || !window.cancelAnimationFrame) {
+		(function () {
+			// Modified version of https://gist.github.com/desandro/1866474
+			var lastTime = 0, prefixes = "webkit moz ms o".split(" "),
+				requestAnimationFrame = window.requestAnimationFrame,
+				cancelAnimationFrame = window.cancelAnimationFrame,
+				prefix, i;
+
+			for (i = 0; i < prefixes.length; i++) {
+				if (requestAnimationFrame && cancelAnimationFrame)
+					break;
+				prefix = prefixes[i];
+				if (!requestAnimationFrame)
+					requestAnimationFrame = window[prefix + "RequestAnimationFrame"];
+				if (!cancelAnimationFrame)
+					cancelAnimationFrame = window[prefix + "CancelAnimationFrame"] || window[prefix + "CancelRequestAnimationFrame"];
+			}
+
+			if (!requestAnimationFrame || !cancelAnimationFrame) {
+				requestAnimationFrame = function (callback) {
+					return window.setTimeout(function() {
+						lastTime = performance.now();
+						callback(lastTime);
+					}, Math.max(0, 16 - (performance.now() - lastTime)));
+				};
+
+				cancelAnimationFrame = window.clearTimeout;
+			}
+
+			window.requestAnimationFrame = requestAnimationFrame;
+			window.cancelAnimationFrame = cancelAnimationFrame;
+		})();
+	}
+})();
+
 // Service Worker
 (function () {
 	var installationPrompt = null;
@@ -335,7 +475,7 @@ function lockUI(lock) {
 			return cancelEvent(e);
 		};
 
-		navigator.serviceWorker.register("/labs-editor/sw.js");
+		//navigator.serviceWorker.register("/labs-editor/sw.js");
 	}
 })();
 
@@ -358,6 +498,7 @@ function lockUI(lock) {
 		addString("Load", "Abrir");
 		addString("Save", "Salvar");
 		addString("Options", "Opções");
+		addString("UndoDelete", "Desfazer Exclusão");
 		addString("PreviewPage", "Visualizar Página");
 		addString("StopPreview", "Parar Visualização");
 		addString("FileName", "Nome do Arquivo");
@@ -482,6 +623,7 @@ function lockUI(lock) {
 		addString("Load", "Load");
 		addString("Save", "Save");
 		addString("Options", "Options");
+		addString("UndoDelete", "Undo Delete");
 		addString("PreviewPage", "Preview Page");
 		addString("StopPreview", "Stop Preview");
 		addString("FileName", "File Name");
@@ -627,13 +769,288 @@ function lockUI(lock) {
 	translateChildren(document.body.childNodes);
 })();
 
+// Pointer Handler
+
+//
+// MIT License
+//
+// Copyright (c) 2020 Carlos Rafael Gimenes das Neves
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+//
+// https://github.com/carlosrafaelgn/pixel
+//
+function PointerHandler(element, downCallback, moveCallback, upCallback, lazy, outsidePointerHandler) {
+	this.documentTarget = (document.documentElement || document.body);
+	this.element = element;
+
+	this.downCallback = downCallback;
+	this.moveCallback = moveCallback;
+	this.upCallback = upCallback;
+
+	this.boundExtraTouchStart = null;
+
+	if ("onpointerdown" in element) {
+		this.documentDownEvent = "pointerdown";
+		this.documentMoveEvent = "pointermove";
+		this.documentUpEvent = "pointerup";
+		this.documentCancelEvent = "pointercancel";
+
+		this.boundDocumentDown = this.pointerDown.bind(this);
+		this.boundDocumentUp = this.pointerUp.bind(this);
+		this.boundDocumentMove = this.pointerMove.bind(this);
+
+		// Firefox mobile and a few iOS devices cause a buggy behavior if trying to handle
+		// pointerdown/move/up but not touchstart/end/cancel...
+		if ("ontouchstart" in element)
+			this.boundExtraTouchStart = this.extraTouchStart.bind(this);
+	} else if ("ontouchstart" in element) {
+		this.documentDownEvent = "touchstart";
+		this.documentMoveEvent = "touchmove";
+		this.documentUpEvent = "touchend";
+		this.documentCancelEvent = "touchcancel";
+
+		this.boundDocumentDown = this.touchStart.bind(this);
+		this.boundDocumentUp = this.touchEnd.bind(this);
+		this.boundDocumentMove = this.touchMove.bind(this);
+	} else {
+		this.documentDownEvent = "mousedown";
+		this.documentMoveEvent = "mousemove";
+		this.documentUpEvent = "mouseup";
+		this.documentCancelEvent = null;
+
+		this.boundDocumentDown = this.mouseDown.bind(this);
+		this.boundDocumentUp = this.mouseUp.bind(this);
+		this.boundDocumentMove = this.mouseMove.bind(this);
+	}
+
+	this.lazy = lazy;
+
+	this.outsidePointerHandler = outsidePointerHandler;
+
+	if (this.boundExtraTouchStart)
+		element.addEventListener("touchstart", this.boundExtraTouchStart);
+	element.addEventListener(this.documentDownEvent, this.boundDocumentDown);
+
+	if (!lazy)
+		this.addSecondaryHandlers();
+
+	this._captured = false;
+	this.pointerId = -1;
+}
+PointerHandler.prototype = {
+	destroy: function () {
+		if (this.element) {
+			if (this.boundExtraTouchStart)
+				this.element.removeEventListener("touchstart", this.boundExtraTouchStart);
+			if (this.boundDocumentDown)
+				this.element.removeEventListener(this.documentDownEvent, this.boundDocumentDown);
+		}
+
+		this.removeSecondaryHandlers();
+
+		this.mouseUp({});
+
+		zeroObject(this);
+	},
+
+	captured: function () {
+		return this._captured;
+	},
+
+	addSecondaryHandlers: function () {
+		if (!this.documentTarget)
+			return;
+
+		// Firefox mobile and a few iOS devices treat a few events on the root element as passive by default
+		// https://stackoverflow.com/a/49853392/3569421
+		// https://stackoverflow.com/a/57076149/3569421
+		this.documentTarget.addEventListener(this.documentMoveEvent, this.boundDocumentMove, { capture: true, passive: false });
+		this.documentTarget.addEventListener(this.documentUpEvent, this.boundDocumentUp, true);
+		if (this.documentCancelEvent)
+			this.documentTarget.addEventListener(this.documentCancelEvent, this.boundDocumentUp, true);
+	},
+
+	removeSecondaryHandlers: function () {
+		if (!this.documentTarget)
+			return;
+
+		if (this.boundDocumentUp) {
+			this.documentTarget.removeEventListener(this.documentUpEvent, this.boundDocumentUp, true);
+			if (this.documentCancelEvent)
+				this.documentTarget.removeEventListener(this.documentCancelEvent, this.boundDocumentUp, true);
+		}
+
+		if (this.boundDocumentMove)
+			this.documentTarget.removeEventListener(this.documentMoveEvent, this.boundDocumentMove, true);
+	},
+
+	extraTouchStart: function (e) {
+		if (e.target === this.element || (this.outsidePointerHandler && this.outsidePointerHandler(e)))
+			return cancelEvent(e);
+	},
+
+	pointerDown: function (e) {
+		if (this.pointerId >= 0 && e.pointerType !== "mouse")
+			return cancelEvent(e);
+
+		var ret = this.mouseDown(e);
+
+		if (this._captured)
+			this.pointerId = e.pointerId;
+
+		return ret;
+	},
+
+	pointerMove: function (e) {
+		if (!this._captured || e.pointerId !== this.pointerId)
+			return;
+
+		return this.mouseMove(e);
+	},
+
+	pointerUp: function (e) {
+		if (!this._captured || e.pointerId !== this.pointerId)
+			return;
+
+		this.pointerId = -1;
+
+		return this.mouseUp(e);
+	},
+
+	touchStart: function (e) {
+		if (e.touches.length > 1)
+			return;
+
+		if (this.pointerId >= 0)
+			this.touchEnd(e);
+
+		this.pointerId = 1;
+
+		e.clientX = e.touches[0].clientX;
+		e.clientY = e.touches[0].clientY;
+
+		var ret = this.mouseDown(e);
+		if (ret === undefined)
+			this.pointerId = -1;
+
+		return ret;
+	},
+
+	touchMove: function (e) {
+		if (!this._captured || e.touches.length > 1)
+			return;
+
+		e.clientX = e.touches[0].clientX;
+		e.clientY = e.touches[0].clientY;
+
+		return this.mouseMove(e);
+	},
+
+	touchEnd: function (e) {
+		if (!this._captured || this.pointerId < 0)
+			return;
+
+		this.pointerId = -1;
+
+		return this.mouseUp(e);
+	},
+
+	mouseDown: function (e) {
+		this.mouseUp(e);
+
+		if (e.button || (e.target && e.target !== this.element && (!this.outsidePointerHandler || !this.outsidePointerHandler(e))))
+			return;
+
+		if (this.downCallback && !this.downCallback(e))
+			return cancelEvent(e);
+
+		this._captured = true;
+		if (this.lazy)
+			this.addSecondaryHandlers();
+
+		return cancelEvent(e);
+	},
+
+	mouseMove: function (e) {
+		if (!this._captured)
+			return;
+
+		if (this.moveCallback)
+			this.moveCallback(e);
+
+		return cancelEvent(e);
+	},
+
+	mouseUp: function (e) {
+		if (!this._captured)
+			return;
+
+		this._captured = false;
+		if (this.lazy)
+			this.removeSecondaryHandlers();
+
+		if (this.upCallback)
+			this.upCallback(e);
+
+		return cancelEvent(e);
+	}
+};
+
 // Resize
 (function () {
 	var bar = _ID("bar"),
 		barVisible = true,
 		barDrag = false,
 		barDragX = 0,
-		barX = (window.innerWidth >> 1);
+		barX = (window.innerWidth >> 1),
+		downCallback = function (e) {
+			var rect = bar.getBoundingClientRect();
+			barDragX = (e.clientX - rect.left) | 0;
+			barDrag = true;
+			document.body.style.cursor = "ew-resize";
+			editorContainer.style.cursor = "ew-resize";
+			iframe.style.cursor = "ew-resize";
+			bar.className = "editor-bar editor-bar-drag";
+			lockUI(true);
+			return true;
+		},
+		moveCallback = function (e) {
+			if (!barDrag)
+				return;
+			var x = (e.clientX - barDragX) | 0;
+			if (barX !== x) {
+				barX = x;
+				window.resizeWindow();
+			}
+		},
+		upCallback = function (e) {
+			if (!barDrag)
+				return;
+			barDrag = false;
+			document.body.style.cursor = "";
+			editorContainer.style.cursor = "";
+			iframe.style.cursor = "";
+			bar.className = "editor-bar";
+			lockUI(false);
+		},
+		pointerHandler = new PointerHandler(bar, downCallback, moveCallback, upCallback, false);
 
 	window.setBarVisibility = function (visible) {
 		barVisible = visible;
@@ -672,41 +1089,6 @@ function lockUI(lock) {
 	}
 
 	window.onresize = window.resizeWindow;
-
-	bar.onmousedown = function (e) {
-		if (e.button)
-			return;
-		var rect = bar.getBoundingClientRect();
-		barDragX = (e.clientX - rect.left) | 0;
-		barDrag = true;
-		document.body.style.cursor = "ew-resize";
-		editorContainer.style.cursor = "ew-resize";
-		iframe.style.cursor = "ew-resize";
-		bar.className = "editor-bar editor-bar-drag";
-		lockUI(true);
-		return cancelEvent(e);
-	};
-
-	document.addEventListener("mousemove", function (e) {
-		if (!barDrag)
-			return;
-		var x = (e.clientX - barDragX) | 0;
-		if (barX !== x) {
-			barX = x;
-			window.resizeWindow();
-		}
-	}, true);
-
-	document.addEventListener("mouseup", function (e) {
-		if (!barDrag)
-			return;
-		barDrag = false;
-		document.body.style.cursor = "";
-		editorContainer.style.cursor = "";
-		iframe.style.cursor = "";
-		bar.className = "editor-bar";
-		lockUI(false);
-	}, true);
 
 	bar.style.display = "block";
 })();

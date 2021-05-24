@@ -6,7 +6,7 @@
 // whenever it detects a change in the source code of the
 // service worker).
 const CACHE_PREFIX = "labs-editor-static-cache";
-const CACHE_VERSION = "-20210523";
+const CACHE_VERSION = "-20210524";
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
 const HTML_CACHE_NAME = "labs-editor-html-cache";
 const GAME_CACHE_NAME = "labs-editor-game-cache";
@@ -58,8 +58,7 @@ self.addEventListener("install", (event) => {
 			"/labs-editor/manifest-phaser.webmanifest",
 			"/labs-editor/favicons/favicon-512x512.png",
 			"/labs-editor/images/loading-grey-t.gif",
-			"/labs-editor/images/logo.png",
-			"/labs-editor/images/logo-dark.png",
+			"/labs-editor/images/logo.png?1",
 			"/labs-editor/lib/ace-1.4.7/ace.js",
 			"/labs-editor/lib/ace-1.4.7/ext-keybinding_menu.js",
 			"/labs-editor/lib/ace-1.4.7/ext-language_tools.js",
@@ -92,7 +91,7 @@ self.addEventListener("install", (event) => {
 			"/labs-editor/lib/ace-1.4.7/snippets/css.js",
 			"/labs-editor/lib/ace-1.4.7/snippets/html.js",
 			"/labs-editor/lib/ace-1.4.7/snippets/javascript.js",
-			"/labs-editor/lib/bootstrap/css/bootstrap-1.0.28.min.css",
+			"/labs-editor/lib/bootstrap/css/bootstrap-1.0.30.min.css",
 			"/labs-editor/lib/bootstrap/js/bootstrap-1.0.1.min.js",
 			"/labs-editor/lib/font-awesome/css/font-awesome-1.0.2.min.css",
 			"/labs-editor/lib/font-awesome/fonts/fontawesome-webfont.eot?v=4.7.0",
@@ -106,11 +105,11 @@ self.addEventListener("install", (event) => {
 			"/labs-editor/phaser/game/phaser-2.6.2.min.js",
 			// Since these files' contents always change, but their names do not, I
 			// added a version number in order to try to avoid browsers' own cache
-			"/labs-editor/css/style.css?v=1.0.7",
+			"/labs-editor/css/style.css?v=1.0.8",
 			"/labs-editor/css/style-dark.css?v=1.0.2",
-			"/labs-editor/js/advanced.js?v=1.0.6",
+			"/labs-editor/js/advanced.js?v=1.0.7",
 			"/labs-editor/js/advanced-ui.js?v=1.0.2",
-			"/labs-editor/js/main.js?v=1.0.9"
+			"/labs-editor/js/main.js?v=1.0.10"
 		];
 		const promises = new Array(files.length);
 		for (let i = files.length - 1; i >= 0; i--)
