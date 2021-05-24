@@ -475,7 +475,7 @@ function lockUI(lock) {
 			return cancelEvent(e);
 		};
 
-		//navigator.serviceWorker.register("/labs-editor/sw.js");
+		navigator.serviceWorker.register("/labs-editor/sw.js");
 	}
 })();
 
