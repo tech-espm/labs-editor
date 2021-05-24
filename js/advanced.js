@@ -89,12 +89,14 @@ function fixDarkTheme() {
 
 	if (bgColor) {
 		document.body.style.backgroundColor = bgColor;
+		_SA(_ID("editorImgLogoGit"), "src", "../images/logo-github-w.png?1");
 		if (metaColorScheme)
 			metaColorScheme.setAttribute("content", "dark");
 		if (!style)
 			_SA(_SA(_SA(_CE("link", null, document.head), "id", "style-dark-mode"), "rel", "stylesheet"), "href", "../css/style-dark.css?v=1.0.2")
 	} else {
 		document.body.style.backgroundColor = "";
+		_SA(_ID("editorImgLogoGit"), "src", "../images/logo-github.png?1");
 		if (metaColorScheme)
 			metaColorScheme.setAttribute("content", "light");
 		if (style)

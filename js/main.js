@@ -1076,8 +1076,8 @@ PointerHandler.prototype = {
 			iframeWidth = 150;
 			editorWidth = width - iframeWidth - 8;
 		}
-		if (editorWidth < 230) {
-			editorWidth = 230;
+		if (editorWidth < 270) {
+			editorWidth = 270;
 			iframeWidth = width - editorWidth - 8;
 		}
 		editorContainer.style.width = editorWidth + "px";

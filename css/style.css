@@ -47,7 +47,7 @@ textarea {
 }
 
 .nav-tabs {
-	padding: 4px 0 0 91px;
+	padding: 4px 0 0 134px;
 }
 
 	.nav-tabs > li > a {
@@ -76,7 +76,7 @@ textarea {
 
 .nav-tabs-buttons {
 	position: absolute;
-	left: 88px;
+	left: 134px;
 	top: 5px;
 }
 
