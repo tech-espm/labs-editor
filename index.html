@@ -58,7 +58,7 @@
 	<title>Editor</title>
 
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,600|Roboto+Mono:400,700" />
-	<link rel="stylesheet" href="lib/bootstrap/css/bootstrap-1.0.30.min.css" />
+	<link rel="stylesheet" href="lib/bootstrap/css/bootstrap-1.0.31.min.css" />
 	<link rel="stylesheet" href="lib/font-awesome/css/font-awesome-1.0.2.min.css" />
 	<link rel="stylesheet" href="css/style.css?v=1.0.9" />
 </head>
@@ -228,9 +228,7 @@
 			<a href="https://github.com/tech-espm/labs-editor" target="_blank" title="GitHub"><img width="29" height="29" src="images/logo-github.png?1" style="border: none;" /></a>
 		</div>
 		<div class="nav-tabs-menu">
-			<button type="button" id="editorMenuDropdown" class="btn btn-primary btn-outline dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-				<span class="fa fa-bars" data-string="aria-label|Menu"></span>
-			</button>
+			<button type="button" id="editorMenuDropdown" data-string="text|Menu" class="btn btn-primary btn-outline dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-margin fa-bars"></i></button>
 			<ul class="dropdown-menu dropdown-menu-right">
 				<li><a href="#" data-string="text|New" id="editorActionNew"><i class="fa fa-margin fa-file-o"></i></a></li>
 				<li role="separator" class="divider"></li>
@@ -253,14 +251,14 @@
 		<div class="tab-content">
 			<div id="toolbar" class="editor-toolbar">
 				<div id="toolbarButtons" class="editor-toolbar-buttons fade in">
-					<button class="btn btn-outline btn-fa btn-success" type="button" data-string="title|CreateElement" onclick="toolbarShowType()" id="editorToolbarCreateElement"><i class="fa fa-nomargin fa-code"></i></button>
-					<button class="btn btn-outline btn-fa btn-primary" type="button" data-string="title|CreateText" onclick="toolbarCreateText()" id="editorToolbarCreateText"><i class="fa fa-nomargin fa-i-cursor"></i></button>
-					<button class="btn btn-outline btn-fa btn-primary" type="button" data-string="title|CreateComment" onclick="toolbarCreateComment()" id="editorToolbarCreateComment"><i class="fa fa-nomargin fa-comment"></i></button>
+					<button class="btn btn-outline btn-success" type="button" data-string="text|CreateElement" onclick="toolbarShowType()" id="editorToolbarCreateElement"><i class="fa fa-margin fa-code"></i></button>
+					<button class="btn btn-outline btn-primary" type="button" data-string="text|CreateText" onclick="toolbarCreateText()" id="editorToolbarCreateText"><i class="fa fa-margin fa-i-cursor"></i></button>
+					<button class="btn btn-outline btn-primary" type="button" data-string="text|CreateComment" onclick="toolbarCreateComment()" id="editorToolbarCreateComment"><i class="fa fa-margin fa-comment"></i></button>
 					<button class="btn btn-outline btn-default" type="button" data-string="text|UndoDelete" onclick="toolbarUndoDeleteElement()" id="editorToolbarUndoDeleteElement" style="display: none;"><i class="fa fa-margin fa-undo"></i></button>
 				</div>
 				<div id="toolbarButtonsCss" class="editor-toolbar-buttons fade hidden">
-					<button class="btn btn-outline btn-fa btn-success" type="button" data-string="title|CreateRule" onclick="toolbarCreateRule()" id="editorToolbarCreateRule"><i class="fa fa-nomargin fa-object-group"></i></button>
-					<button class="btn btn-outline btn-fa btn-primary" type="button" data-string="title|CreateAttribute" onclick="toolbarCreateAttribute()" id="editorToolbarCreateAttribute"><i class="fa fa-nomargin fa-paint-brush"></i></button>
+					<button class="btn btn-outline btn-success" type="button" data-string="text|CreateRule" onclick="toolbarCreateRule()" id="editorToolbarCreateRule"><i class="fa fa-margin fa-object-group"></i></button>
+					<button class="btn btn-outline btn-primary" type="button" data-string="text|CreateAttribute" onclick="toolbarCreateAttribute()" id="editorToolbarCreateAttribute"><i class="fa fa-margin fa-paint-brush"></i></button>
 					<button class="btn btn-outline btn-default" type="button" data-string="text|UndoDelete" onclick="toolbarUndoDeleteCss()" id="editorToolbarUndoDeleteCss" style="display: none;"><i class="fa fa-margin fa-undo"></i></button>
 				</div>
 			</div>
@@ -334,7 +332,7 @@
 
 	<script type="text/javascript" src="lib/jquery/jquery-1.0.1.min.js"></script>
 	<script type="text/javascript" src="lib/bootstrap/js/bootstrap-1.0.1.min.js"></script>
-	<script type="text/javascript" src="js/main.js?v=1.0.11"></script>
+	<script type="text/javascript" src="js/main.js?v=1.0.12"></script>
 
 	<script type="text/javascript">
 		"use strict";
