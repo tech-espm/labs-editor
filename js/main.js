@@ -513,12 +513,12 @@ function lockUI(lock) {
 		addString("Selector", "Seletor");
 		addString("Element", "Elemento");
 		addString("Rule", "Regra");
-		addString("Attribute", "Atributo");
+		addString("Attribute", "Propriedade");
 		addString("Document", "Documento");
 		addString("Name", "Nome");
 		addString("Value", "Valor");
-		addString("EditAttribute", "Editar Atributo");
-		addString("AttributeHelp", "Ajuda do Atributo");
+		addString("EditAttribute", "Editar Propriedade");
+		addString("AttributeHelp", "Ajuda da Propriedade");
 		addString("Move", "Mover");
 		addString("Duplicate", "Duplicar");
 		addString("Rename", "Renomear");
@@ -531,7 +531,7 @@ function lockUI(lock) {
 		addString("Create", "Criar");
 		addString("CreateElement", "Criar Elemento");
 		addString("CreateRule", "Criar Regra");
-		addString("CreateAttribute", "Criar Atributo");
+		addString("CreateAttribute", "Criar Propriedade");
 		addString("CreateText", "Criar Texto");
 		addString("CreateComment", "Criar Comentário");
 		addString("CreateDocument", "Criar Documento");
@@ -570,7 +570,7 @@ function lockUI(lock) {
 		addString("MoveMessageCreateText", "Clique onde deseja criar o novo texto ou tecle Esc para cancelar");
 		addString("MoveMessageCreateComment", "Clique onde deseja criar o novo comentário ou tecle Esc para cancelar");
 		addString("MoveMessageCreateRule", "Clique onde deseja criar a nova regra ou tecle Esc para cancelar");
-		addString("MoveMessageCreateAttribute", "Clique onde deseja criar o novo atributo ou tecle Esc para cancelar");
+		addString("MoveMessageCreateAttribute", "Clique onde deseja criar a nova propriedade ou tecle Esc para cancelar");
 		addString("HideChildren", "Ocultar Filhos");
 		addString("ShowChildren", "Mostrar Filhos");
 		addString("ElementHelp", "Ajuda do Elemento");
@@ -638,12 +638,12 @@ function lockUI(lock) {
 		addString("Selector", "Selector");
 		addString("Element", "Element");
 		addString("Rule", "Rule");
-		addString("Attribute", "Attribute");
+		addString("Attribute", "Property");
 		addString("Document", "Document");
 		addString("Name", "Name");
 		addString("Value", "Value");
-		addString("EditAttribute", "Edit Attribute");
-		addString("AttributeHelp", "Attribute Help");
+		addString("EditAttribute", "Edit Property");
+		addString("AttributeHelp", "Property Help");
 		addString("Move", "Move");
 		addString("Duplicate", "Duplicate");
 		addString("Rename", "Rename");
@@ -656,7 +656,7 @@ function lockUI(lock) {
 		addString("Create", "Create");
 		addString("CreateElement", "Create Element");
 		addString("CreateRule", "Create Rule");
-		addString("CreateAttribute", "Create Attribute");
+		addString("CreateAttribute", "Create Property");
 		addString("CreateText", "Create Text");
 		addString("CreateComment", "Create Comment");
 		addString("CreateDocument", "Create Document");
@@ -695,7 +695,7 @@ function lockUI(lock) {
 		addString("MoveMessageCreateText", "Click where you wish to create the new text or press Esc to cancel");
 		addString("MoveMessageCreateComment", "Click where you wish to create the new comment or press Esc to cancel");
 		addString("MoveMessageCreateRule", "Click where you wish to create the new rule or press Esc to cancel");
-		addString("MoveMessageCreateAttribute", "Click where you wish to create the new attribute or press Esc to cancel");
+		addString("MoveMessageCreateAttribute", "Click where you wish to create the new property or press Esc to cancel");
 		addString("HideChildren", "Hide Children");
 		addString("ShowChildren", "Show Children");
 		addString("ElementHelp", "Element Help");
