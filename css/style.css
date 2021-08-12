@@ -38,6 +38,21 @@ textarea {
     height: 34px;
 }
 
+.editor-toolbar:not(.hidden-labels) .btn-fa {
+	padding: 6px 12px;
+    line-height: 1.42857143;
+    width: auto;
+    height: auto;
+}
+
+.editor-toolbar.hidden-labels .btn-fa > span {
+	display: none;
+}
+
+.editor-toolbar.hidden-labels .btn-fa > i {
+	margin: 0;
+}
+
 .editor-menu-label {
 	padding: 0 4px;
 	font-size: 14px;

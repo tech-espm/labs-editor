@@ -1019,6 +1019,7 @@ PointerHandler.prototype = {
 		barVisible = true,
 		barDrag = false,
 		barDragX = 0,
+		toolbarLabelsHidden = false,
 		barX = (window.innerWidth >> 1),
 		downCallback = function (e) {
 			var rect = bar.getBoundingClientRect();
@@ -1079,6 +1080,19 @@ PointerHandler.prototype = {
 		if (editorWidth < 330) {
 			editorWidth = 330;
 			iframeWidth = width - editorWidth - 8;
+		}
+		if (window.toolbar) {
+			if (editorWidth < 490) {
+				if (!toolbarLabelsHidden) {
+					toolbarLabelsHidden = true;
+					toolbar.className = "editor-toolbar hidden-labels";
+				}
+			} else {
+				if (toolbarLabelsHidden) {
+					toolbarLabelsHidden = false;
+					toolbar.className = "editor-toolbar";
+				}
+			}
 		}
 		editorContainer.style.width = editorWidth + "px";
 		bar.style.left = editorContainer.style.width;

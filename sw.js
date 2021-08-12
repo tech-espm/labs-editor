@@ -105,11 +105,11 @@ self.addEventListener("install", (event) => {
 			"/labs-editor/phaser/game/phaser-2.6.2.min.js",
 			// Since these files' contents always change, but their names do not, I
 			// added a version number in order to try to avoid browsers' own cache
-			"/labs-editor/css/style.css?v=1.0.9",
+			"/labs-editor/css/style.css?v=1.0.10",
 			"/labs-editor/css/style-dark.css?v=1.0.2",
-			"/labs-editor/js/advanced.js?v=1.0.8",
+			"/labs-editor/js/advanced.js?v=1.0.9",
 			"/labs-editor/js/advanced-ui.js?v=1.0.2",
-			"/labs-editor/js/main.js?v=1.0.13"
+			"/labs-editor/js/main.js?v=1.0.14"
 		];
 		const promises = new Array(files.length);
 		for (let i = files.length - 1; i >= 0; i--)
@@ -222,7 +222,7 @@ self.addEventListener("fetch", (event) => {
 		url.endsWith("/phaser/") ||
 		url.endsWith("/html/")
 		// Debug only
-		//|| (url.startsWith("http://localhost") && url.indexOf("/labs-editor/phaser/game/") < 0 && url.indexOf("/labs-editor/html/site/") < 0)
+		|| (url.startsWith("http://localhost") && url.indexOf("/labs-editor/phaser/game/") < 0 && url.indexOf("/labs-editor/html/site/") < 0)
 		) {
 		event.respondWith(fetch(event.request).then((response) => {
 			return response || cacheMatchAndFixResponse(url);
