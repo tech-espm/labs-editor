@@ -193,7 +193,7 @@ function injectConsole(response) {
 }
 
 function cacheMatchAndFixResponse(url, cache) {
-	return cache ? cache.match(url).then((response) => {
+	return cache ? cache.match(url, { ignoreVary: true }).then((response) => {
 		if (url.endsWith(".html") || url.endsWith(".htm")) {
 			// Try to inject the console redirection into every HTML file
 			return injectConsole(response);
@@ -272,7 +272,7 @@ self.addEventListener("fetch", (event) => {
 	// when the service worker is reinstalled).
 
 	event.respondWith(caches.open(CACHE_NAME).then((cache) => {
-		return cache.match(event.request).then((response) => {
+		return cache.match(event.request, { ignoreVary: true }).then((response) => {
 			// Return the resource if it has been found.
 			if (response)
 				return (url.endsWith("/game/") ? injectConsole(response) : response);
@@ -320,7 +320,7 @@ self.addEventListener("fetch", (event) => {
 				// Therefore, try to fulfill requests for favicons with
 				// the largest favicon we have available in our cache.
 				if (url.indexOf("favicon") >= 0)
-					return cache.match("/labs-editor/favicons/favicon-512x512.png");
+					return cache.match("/labs-editor/favicons/favicon-512x512.png", { ignoreVary: true });
 
 				// The resource was not in our cache, was not available
 				// from the network and was also not a favicon...
