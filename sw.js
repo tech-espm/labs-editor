@@ -5,8 +5,8 @@
 // works because the browser reinstalls the service worker
 // whenever it detects a change in the source code of the
 // service worker).
-const CACHE_PREFIX = "labs-editor-static-cache";
-const CACHE_VERSION = "-20210811";
+const CACHE_PREFIX = "labs-editor-static-cache-";
+const CACHE_VERSION = "20210914";
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
 const HTML_CACHE_NAME = "labs-editor-html-cache";
 const GAME_CACHE_NAME = "labs-editor-game-cache";
@@ -109,7 +109,8 @@ self.addEventListener("install", (event) => {
 			"/labs-editor/css/style-dark.css?v=1.0.2",
 			"/labs-editor/js/advanced.js?v=1.0.9",
 			"/labs-editor/js/advanced-ui.js?v=1.0.2",
-			"/labs-editor/js/main.js?v=1.0.14"
+			"/labs-editor/js/main.js?v=1.0.14",
+			"https://fonts.googleapis.com/css?family=Open+Sans:400,600|Roboto+Mono:400,700"
 		];
 		const promises = new Array(files.length);
 		for (let i = files.length - 1; i >= 0; i--)
